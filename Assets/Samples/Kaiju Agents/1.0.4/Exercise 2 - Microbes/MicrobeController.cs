@@ -1,5 +1,8 @@
-﻿using KaijuSolutions.Agents.Sensors;
+﻿using System;
+using KaijuSolutions.Agents.Sensors;
 using UnityEngine;
+
+public enum MicrobeState { Wandering, Foraging, Hunting, Fleeing, Mating }
 
 namespace KaijuSolutions.Agents.Exercises.Microbes
 {
@@ -18,7 +21,20 @@ namespace KaijuSolutions.Agents.Exercises.Microbes
         [HideInInspector]
         [SerializeField]
         private Microbe microbe;
-        
+
+        [SerializeField] private MicrobeState _state;
+
+        private void StartWandering()
+        {
+            // Look where we move.
+            Agent.LookTransform = null;
+
+            Agent.Wander();
+
+            // Avoid obstacles, without clearing the Wander instruction.
+            Agent.ObstacleAvoidance(clear: false);
+        }
+
         /// <summary>
         /// Called after the <see cref="microbe"/> has mated.
         /// </summary>
@@ -48,7 +64,7 @@ namespace KaijuSolutions.Agents.Exercises.Microbes
         /// </summary>
         /// <param name="energySensor">The <see cref="EnergyVisionSensor"/> which was run.</param>
         private void OnEnergySensor(EnergyVisionSensor energySensor) { }
-        
+
         /// <summary>
         /// Callback for when a <see cref="KaijuSensor"/> has been run.
         /// </summary>
@@ -102,6 +118,9 @@ namespace KaijuSolutions.Agents.Exercises.Microbes
             }
             
             base.OnEnable();
+            
+            this._state = MicrobeState.Wandering;
+            StartWandering();
         }
         
         /// <summary>
