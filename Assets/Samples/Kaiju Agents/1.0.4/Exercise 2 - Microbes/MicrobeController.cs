@@ -143,11 +143,15 @@ namespace KaijuSolutions.Agents.Exercises.Microbes
                 // If strongest in vision is prey, we hunt.
                 if (strongestIsPrey)
                 {
+                    // Switch state to hunting and invoke the hunting function.
+                    this.state = MicrobeState.Hunting;
                     HuntEnemy(strongest); 
                 }
                 // If there is an enemy stronger than us in vision, we flee.
                 else
                 {
+                    // Switch state to fleeing and invoke the fleeing function.
+                    this.state = MicrobeState.Fleeing;
                     FleeHunter(strongest);
                 }
             }
@@ -163,8 +167,11 @@ namespace KaijuSolutions.Agents.Exercises.Microbes
                 // If not, current action is higher priority.
                 if (this.state != MicrobeState.Wandering) return;
 
-                // If conditions are satisfied, seek to the strongest potential mate so we can mate.
+                // Select the strongest mate.
                 Microbe mate = potentialMates.OrderByDescending(m => m.Energy).First();
+                
+                // Switch to mating state and seek to our mate.
+                this.state = MicrobeState.Mating;
                 SeekMate(mate);
             }
         }
