@@ -91,6 +91,11 @@ namespace KaijuSolutions.Agents.Exercises.Microbes
         /// <exception cref="NotImplementedException"></exception>
         private void FleeHunter(Microbe hunter)
         {
+            // DEBUG - Temporarily skip fleeing to implement other behaviours
+            this.state = MicrobeState.Wandering;
+            StartWandering();
+            return;
+            
             Transform pos = hunter.transform;
             
             Agent.Flee(pos, 0.1f);
@@ -145,7 +150,7 @@ namespace KaijuSolutions.Agents.Exercises.Microbes
                 Microbe strongest = enemies.OrderByDescending(m => m.Energy).First();
                 
                 // Decide if the strongest is the prey or if we are the prey.
-                bool strongestIsPrey = this.microbe.Energy >= strongest.GetComponent<Microbe>().Energy;
+                bool strongestIsPrey = this.microbe.Energy > strongest.GetComponent<Microbe>().Energy;
                 // Transform nearest = Position.Nearest(enemies, out float _); // TODO - get highest (flee)
 
                 // If strongest in vision is prey, we hunt.
@@ -165,10 +170,17 @@ namespace KaijuSolutions.Agents.Exercises.Microbes
                     this.state = MicrobeState.Fleeing;
                     FleeHunter(strongest);
                 }
+
+                return;
             }
+
+            // If we are on cooldown, return; we aren't interested in mating.
+            if (this.microbe.OnCooldown) return;
             
             // Get microbes in our vision cone of same species which are compatible to mate (not on cooldown, etc).
-            Microbe[] potentialMates = microbeSensor.Observed.Where(m => this.microbe.Compatible(m)).ToArray();
+            Microbe[] potentialMates = microbeSensor.Observed.Where(
+                m => this.microbe.Compatible(m) && !m.OnCooldown).ToArray();
+
             if (potentialMates.Length > 0)
             {
                 // Only mate if energy surplus (above 80).
@@ -200,9 +212,16 @@ namespace KaijuSolutions.Agents.Exercises.Microbes
             // If not, current action is higher priority.
             if (this.state != MicrobeState.Wandering) return;
 
-            // If conditions are satisfied, seek to eat the energy.
-            Transform nearest = Position.Nearest(energySensor.Observed, out float _);
-            SeekFood(nearest);
+            // If we see an energy, seek to eat the energy.
+            if (energySensor.Observed.Count > 0)
+            {
+                Transform nearest = Position.Nearest(energySensor.Observed, out float _);
+                SeekFood(nearest);
+            }
+
+            // Return to wandering.
+            this.state = MicrobeState.Wandering;
+            StartWandering();
         }
 
         /// <summary>
