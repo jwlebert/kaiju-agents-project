@@ -26,6 +26,7 @@ namespace KaijuSolutions.Agents.Exercises.Microbes
         private Microbe microbe;
 
         [SerializeField] private MicrobeState state;
+        private const float maxEnergy = 300;
 
         /// <summary>
         /// Start wandering, to find food, mates, or prey.
@@ -122,6 +123,10 @@ namespace KaijuSolutions.Agents.Exercises.Microbes
         /// <param name="ate">The <see cref="Microbe"/> this ate.</param>
         private void OnEat(Microbe ate)
         {
+            // Clamp energy at maxEnergy (ensures don't scale crazily).
+            // TODO - This prob won't apply to eating energy; but they won't search for energy if above 120.
+            this.microbe.Energy = Math.Clamp(this.microbe.Energy, 0, maxEnergy);
+            
             // Go back to wandering.
             this.state = MicrobeState.Wandering;
             StartWandering();
