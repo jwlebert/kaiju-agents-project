@@ -3,6 +3,7 @@ using System.Linq;
 using KaijuSolutions.Agents.Extensions;
 using KaijuSolutions.Agents.Sensors;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public enum MicrobeState { Wandering, Foraging, Hunting, Fleeing, Mating }
 
@@ -24,7 +25,7 @@ namespace KaijuSolutions.Agents.Exercises.Microbes
         [SerializeField]
         private Microbe microbe;
 
-        [SerializeField] private MicrobeState _state;
+        [SerializeField] private MicrobeState state;
 
         /// <summary>
         /// Start wandering, to find food, mates, or prey.
@@ -32,7 +33,7 @@ namespace KaijuSolutions.Agents.Exercises.Microbes
         private void StartWandering()
         {
             // Switch state to wandering.
-            this._state = MicrobeState.Wandering;
+            this.state = MicrobeState.Wandering;
             
             // Look where we move.
             Agent.LookTransform = null;
@@ -50,7 +51,7 @@ namespace KaijuSolutions.Agents.Exercises.Microbes
         private void SeekFood(Transform food)
         {
             // Switch state to foraging.
-            this._state = MicrobeState.Foraging;
+            this.state = MicrobeState.Foraging;
             
             throw new NotImplementedException();   
         }
@@ -59,10 +60,10 @@ namespace KaijuSolutions.Agents.Exercises.Microbes
         /// Seek same species microbe to mate.
         /// </summary>
         /// <exception cref="NotImplementedException"></exception>
-        private void SeekMate(Transform mate)
+        private void SeekMate(Microbe mate)
         {
             // Switch state to mating.
-            this._state = MicrobeState.Mating;
+            this.state = MicrobeState.Mating;
             
             throw new NotImplementedException();
         }
@@ -71,7 +72,7 @@ namespace KaijuSolutions.Agents.Exercises.Microbes
         /// Hunt microbe of different species using Pursue.
         /// </summary>
         /// <exception cref="NotImplementedException"></exception>
-        private void HuntEnemy(Transform prey)
+        private void HuntEnemy(Microbe prey)
         {
             throw new NotImplementedException();
         }
@@ -80,7 +81,7 @@ namespace KaijuSolutions.Agents.Exercises.Microbes
         /// Flee from microbe of different species using Evade.
         /// </summary>
         /// <exception cref="NotImplementedException"></exception>
-        private void FleeHunter(Transform hunter)
+        private void FleeHunter(Microbe hunter)
         {
             throw new NotImplementedException();
         }
@@ -95,7 +96,7 @@ namespace KaijuSolutions.Agents.Exercises.Microbes
             throw new NotImplementedException();
 
             // Go back to wandering.
-            this._state = MicrobeState.Wandering;
+            this.state = MicrobeState.Wandering;
             StartWandering();
         }
 
@@ -109,7 +110,7 @@ namespace KaijuSolutions.Agents.Exercises.Microbes
             throw new NotImplementedException();
 
             // Go back to wandering.
-            this._state = MicrobeState.Wandering;
+            this.state = MicrobeState.Wandering;
             StartWandering();
         }
 
@@ -128,32 +129,43 @@ namespace KaijuSolutions.Agents.Exercises.Microbes
         /// <param name="microbeSensor">The <see cref="MicrobeVisionSensor"/> which was run.</param>
         private void OnMicrobeSensor(MicrobeVisionSensor microbeSensor)
         {
+            // Get microbes in our vision cone of different species.
             Microbe[] enemies = microbeSensor.Observed.Where(m => this.microbe.Eatable(m)).ToArray();
-            bool enemyPresent = enemies.Length > 0;
-
-            if (enemyPresent)
+            if (enemies.Length > 0)
             {
-                Transform nearest = Position.Nearest(enemies, out float _);
+                // Get the strongest enemy in vision cone.
+                Microbe strongest = enemies.OrderByDescending(m => m.Energy).First();
                 
-                // Flee if energy is lesser. - TODO
-                FleeHunter(nearest);
-                
-                // Hunt if energy is greater - TODO
-                HuntEnemy(nearest);
+                // Decide if the strongest is the prey or if we are the prey.
+                bool strongestIsPrey = this.microbe.Energy >= strongest.GetComponent<Microbe>().Energy;
+                // Transform nearest = Position.Nearest(enemies, out float _); // TODO - get highest (flee)
+
+                // If strongest in vision is prey, we hunt.
+                if (strongestIsPrey)
+                {
+                    HuntEnemy(strongest); 
+                }
+                // If there is an enemy stronger than us in vision, we flee.
+                else
+                {
+                    FleeHunter(strongest);
+                }
             }
             
-            if (!enemyPresent)
+            // Get microbes in our vision cone of same species which are compatible to mate (not on cooldown, etc).
+            Microbe[] potentialMates = microbeSensor.Observed.Where(m => this.microbe.Compatible(m)).ToArray();
+            if (potentialMates.Length > 0)
             {
                 // Only mate if energy surplus (above 80).
                 if (this.microbe.Energy <= 80) return;
                 
                 // Only start mating if current state is wandering.
                 // If not, current action is higher priority.
-                if (this._state != MicrobeState.Wandering) return;
+                if (this.state != MicrobeState.Wandering) return;
 
-                // If conditions are satisfied, seek to mate so we can mate.
-                Transform nearest = Position.Nearest(microbeSensor.Observed, out float _);
-                SeekMate(nearest);
+                // If conditions are satisfied, seek to the strongest potential mate so we can mate.
+                Microbe mate = potentialMates.OrderByDescending(m => m.Energy).First();
+                SeekMate(mate);
             }
         }
 
@@ -168,7 +180,7 @@ namespace KaijuSolutions.Agents.Exercises.Microbes
             
             // Only start eating if current state is wandering.
             // If not, current action is higher priority.
-            if (this._state != MicrobeState.Wandering) return;
+            if (this.state != MicrobeState.Wandering) return;
 
             // If conditions are satisfied, seek to eat the energy.
             Transform nearest = Position.Nearest(energySensor.Observed, out float _);
@@ -229,7 +241,7 @@ namespace KaijuSolutions.Agents.Exercises.Microbes
             
             base.OnEnable();
             
-            this._state = MicrobeState.Wandering;
+            this.state = MicrobeState.Wandering;
             StartWandering();
         }
         
