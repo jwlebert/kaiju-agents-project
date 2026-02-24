@@ -50,10 +50,11 @@ namespace KaijuSolutions.Agents.Exercises.Microbes
         /// <exception cref="NotImplementedException"></exception>
         private void SeekFood(Transform food)
         {
-            // Switch state to foraging.
-            this.state = MicrobeState.Foraging;
-            
-            throw new NotImplementedException();   
+            // Go to the food with Seek.
+            Agent.Seek(food, 0.1f);
+
+            // Look at food as we move to it.
+            Agent.LookTransform = food;
         }
 
         /// <summary>
@@ -62,10 +63,14 @@ namespace KaijuSolutions.Agents.Exercises.Microbes
         /// <exception cref="NotImplementedException"></exception>
         private void SeekMate(Microbe mate)
         {
-            // Switch state to mating.
-            this.state = MicrobeState.Mating;
+            // Get position of mate.
+            Transform pos = mate.transform;
             
-            throw new NotImplementedException();
+            // Go to the food with Seek.
+            Agent.Seek(pos, 0.1f);
+
+            // Look at food as we move to it.
+            Agent.LookTransform = pos;
         }
 
         /// <summary>
@@ -92,9 +97,6 @@ namespace KaijuSolutions.Agents.Exercises.Microbes
         /// <param name="mate">The <see cref="Microbe"/> this mated with.</param>
         private void OnMate(Microbe mate)
         {
-            // Mating functionality - TODO? might be done
-            throw new NotImplementedException();
-
             // Go back to wandering.
             this.state = MicrobeState.Wandering;
             StartWandering();
@@ -106,9 +108,6 @@ namespace KaijuSolutions.Agents.Exercises.Microbes
         /// <param name="ate">The <see cref="Microbe"/> this ate.</param>
         private void OnEat(Microbe ate)
         {
-            // Eating functionality - TODO? might be done
-            throw new NotImplementedException();
-
             // Go back to wandering.
             this.state = MicrobeState.Wandering;
             StartWandering();
