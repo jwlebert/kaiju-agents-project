@@ -79,7 +79,10 @@ namespace KaijuSolutions.Agents.Exercises.Microbes
         /// <exception cref="NotImplementedException"></exception>
         private void HuntEnemy(Microbe prey)
         {
-            throw new NotImplementedException();
+            Transform pos = prey.transform;
+
+            Agent.Pursue(pos, distance: 0.1f);
+            Agent.LookTransform = pos;
         }
 
         /// <summary>
@@ -88,7 +91,13 @@ namespace KaijuSolutions.Agents.Exercises.Microbes
         /// <exception cref="NotImplementedException"></exception>
         private void FleeHunter(Microbe hunter)
         {
-            throw new NotImplementedException();
+            Transform pos = hunter.transform;
+            
+            Agent.Flee(pos, 0.1f);
+            Agent.LookTransform = pos;
+
+            // Todo - when does it stop?
+            // this.microbe.Agent.GetSensor<MicrobeVisionSensor>()
         }
 
         /// <summary>
@@ -142,6 +151,9 @@ namespace KaijuSolutions.Agents.Exercises.Microbes
                 // If strongest in vision is prey, we hunt.
                 if (strongestIsPrey)
                 {
+                    // If we are not currently wandering or hunting, continue what we are doing. 
+                    if (this.state != MicrobeState.Wandering && this.state != MicrobeState.Hunting) return;
+
                     // Switch state to hunting and invoke the hunting function.
                     this.state = MicrobeState.Hunting;
                     HuntEnemy(strongest); 
