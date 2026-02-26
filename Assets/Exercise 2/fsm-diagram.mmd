@@ -1,18 +1,18 @@
-﻿```mermaid
+﻿
 stateDiagram-v2
-    Hunting --> Wandering : Hunts Successfully<br/>Or Prey Escaped
-    Hunting --> Fleeing : Sees More<br/>Powerful Enemy
-    Wandering --> Hunting : Sees Weaker Prey
-
     [*] --> Wandering
-    Foraging --> Wandering : Consumed<br/>Energy
-    Wandering --> Foraging : Energy < 120 & <br/>Detects Energy
-    Foraging --> Fleeing : Sees More<br/>Powerful Enemy
+    
+    Hunting --> Wandering : Prey Eaten
+    Hunting --> Fleeing : Detects Predator
+    Wandering --> Hunting : Energy > 125 &\nDetects Prey
 
-    Wandering --> Fleeing : Sees More<br/>Powerful Enemy
-    Fleeing --> Wandering : Enemy No Longer<br/>In View
+    Foraging --> Wandering : Consumed Energy & \nMovement Stopped
+    Wandering --> Foraging : Energy <= 350 & <br/>Detects Energy
+    Foraging --> Fleeing : Detects Predator
 
-    Wandering --> Mating : Energy > 80 & <br/>Detects Same Species
+    Wandering --> Fleeing : Detects Predator
+    Fleeing --> Wandering : Distance to Predator > 12f
+
+    Wandering --> Mating : Energy > 125 & <br/>Detects Mate
     Mating --> Wandering : Finished<br/>Mating
-    Mating --> Fleeing : Sees More<br/>Powerful Enemy
-```
+    Mating --> Fleeing : Detects Predator
