@@ -44,7 +44,7 @@ namespace KaijuSolutions.Agents.Exercises.Microbes
             Transform pos = mate.transform;
             
             // Go to the food with Seek.
-            Agent.Seek(pos, 0.1f);
+            Agent.Pursue(pos, 0.1f);
 
             // Look at mate as we move to it.
             Agent.LookTransform = pos;
