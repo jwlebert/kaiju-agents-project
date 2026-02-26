@@ -178,7 +178,7 @@ namespace KaijuSolutions.Agents.Exercises.Microbes
                 
                 // Only start mating if current state is wandering.
                 // If not, current action is higher priority.
-                if (this.state != MicrobeState.Wandering) return;
+                if (this.state != MicrobeState.Wandering && this.state != MicrobeState.Mating) return;
 
                 // Select the strongest mate to ensure strong offspring
                 Microbe mate = potentialMates.OrderByDescending(m => m.Energy).First(); 
