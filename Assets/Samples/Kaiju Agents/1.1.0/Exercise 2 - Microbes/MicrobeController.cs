@@ -118,7 +118,7 @@ namespace KaijuSolutions.Agents.Exercises.Microbes
         /// <param name="eater">The <see cref="Microbe"/> which ate this.</param>
         private void OnEaten(Microbe eater)
         {
-            // Handled by the system
+            // Eating is implemented by the package, nothing for us to do
             throw new NotImplementedException();
         }
 
