@@ -26,64 +26,54 @@ namespace KaijuSolutions.Agents.Exercises.Microbes
         private Microbe microbe;
 
         [SerializeField] private MicrobeState state;
-        private const float maxEnergy = 300;
+        private FiniteStateMachine fsm;
+        private const float MaxEnergy = 300;
 
         /// <summary>
-        /// Start wandering, to find food, mates, or prey.
+        /// This function is called when the object becomes enabled and active.
         /// </summary>
-        private void StartWandering()
+        protected override void OnEnable()
         {
-            // Switch state to wandering.
+            if (microbe == null)
+            {
+                microbe = GetComponent<Microbe>();
+                if (microbe == null)
+                {
+                    Debug.LogError("Microbe Controller - No microbe on this GameObject.", this);
+                }
+            }
+            
+            if (microbe != null)
+            {
+                microbe.OnMate += OnMate;
+                microbe.OnEat += OnEat;
+                microbe.OnEaten += OnEaten;
+            }
+            
+            base.OnEnable();
+            
             this.state = MicrobeState.Wandering;
+            this.fsm = this.gameObject.AddComponent<FiniteStateMachine>();
+        }
+        
+        protected void Update()
+        {
+            // Clamp energy at maxEnergy (ensures don't scale crazily).
+            this.microbe.Energy = Math.Clamp(this.microbe.Energy, 0, MaxEnergy);
+
+            // If not doing anything, reset it to Wandering.
+            if (this.Agent.Movements.Count == 0)
+            {
+                this.state = MicrobeState.Wandering;
+            }
+
+            if (this.state == MicrobeState.Fleeing)
+            { // TEMP IGNORE WHILE FLEEING WIP
+                Debug.Log("Fleeing");
+                this.state = MicrobeState.Wandering; 
+            }
             
-            // Look where we move.
-            Agent.LookTransform = null;
-
-            Agent.Wander();
-
-            // Avoid obstacles, without clearing the Wander instruction.
-            Agent.ObstacleAvoidance(clear: false);
-        }
-
-        /// <summary>
-        /// Seek energy to consume.
-        /// </summary>
-        /// <exception cref="NotImplementedException"></exception>
-        private void SeekFood(Transform food)
-        {
-            // Go to the food with Seek.
-            Agent.Seek(food, 0.1f);
-
-            // Look at food as we move to it.
-            Agent.LookTransform = food;
-        }
-
-        /// <summary>
-        /// Seek same species microbe to mate.
-        /// </summary>
-        /// <exception cref="NotImplementedException"></exception>
-        private void SeekMate(Microbe mate)
-        {
-            // Get position of mate.
-            Transform pos = mate.transform;
-            
-            // Go to the food with Seek.
-            Agent.Seek(pos, 0.1f);
-
-            // Look at food as we move to it.
-            Agent.LookTransform = pos;
-        }
-
-        /// <summary>
-        /// Hunt microbe of different species using Pursue.
-        /// </summary>
-        /// <exception cref="NotImplementedException"></exception>
-        private void HuntEnemy(Microbe prey)
-        {
-            Transform pos = prey.transform;
-
-            Agent.Pursue(pos, distance: 0.1f);
-            Agent.LookTransform = pos;
+            fsm.Step(state);
         }
 
         /// <summary>
@@ -125,8 +115,8 @@ namespace KaijuSolutions.Agents.Exercises.Microbes
         private void OnMate(Microbe mate)
         {
             // Go back to wandering.
+            this.fsm.mate = null;
             this.state = MicrobeState.Wandering;
-            StartWandering();
         }
 
         /// <summary>
@@ -135,13 +125,9 @@ namespace KaijuSolutions.Agents.Exercises.Microbes
         /// <param name="ate">The <see cref="Microbe"/> this ate.</param>
         private void OnEat(Microbe ate)
         {
-            // Clamp energy at maxEnergy (ensures don't scale crazily).
-            // TODO - This prob won't apply to eating energy; but they won't search for energy if above 120.
-            this.microbe.Energy = Math.Clamp(this.microbe.Energy, 0, maxEnergy);
-            
             // Go back to wandering.
+            this.fsm.prey = null;
             this.state = MicrobeState.Wandering;
-            StartWandering();
         }
 
         /// <summary>
@@ -177,15 +163,15 @@ namespace KaijuSolutions.Agents.Exercises.Microbes
                     if (this.state != MicrobeState.Wandering && this.state != MicrobeState.Hunting) return;
 
                     // Switch state to hunting and invoke the hunting function.
+                    this.fsm.prey = strongest;
                     this.state = MicrobeState.Hunting;
-                    HuntEnemy(strongest); 
                 }
                 // If there is an enemy stronger than us in vision, we flee.
                 else
                 {
                     // Switch state to fleeing and invoke the fleeing function.
+                    this.fsm.hunter = strongest;
                     this.state = MicrobeState.Fleeing;
-                    FleeHunter(strongest);
                 }
 
                 return;
@@ -208,11 +194,11 @@ namespace KaijuSolutions.Agents.Exercises.Microbes
                 if (this.state != MicrobeState.Wandering) return;
 
                 // Select the strongest mate.
-                Microbe mate = potentialMates.OrderByDescending(m => m.Energy).First();
-                
+                Microbe mate = potentialMates.OrderByDescending(m => m.Energy).First(); 
+
                 // Switch to mating state and seek to our mate.
+                this.fsm.mate = mate;
                 this.state = MicrobeState.Mating;
-                SeekMate(mate);
             }
         }
 
@@ -233,12 +219,16 @@ namespace KaijuSolutions.Agents.Exercises.Microbes
             if (energySensor.Observed.Count > 0)
             {
                 Transform nearest = Position.Nearest(energySensor.Observed, out float _);
-                SeekFood(nearest);
+                this.fsm.energyPos = nearest;
+                this.state = MicrobeState.Foraging;
+                
+                // NOTE - There is no sensor for when we consume energy. TODO
+                //   To consume, we seek to a position. When stopped, we reset to wandering.
             }
 
             // Return to wandering.
             this.state = MicrobeState.Wandering;
-            StartWandering();
+            // StartWandering();
         }
 
         /// <summary>
@@ -272,32 +262,6 @@ namespace KaijuSolutions.Agents.Exercises.Microbes
             }
         }
         
-        /// <summary>
-        /// This function is called when the object becomes enabled and active.
-        /// </summary>
-        protected override void OnEnable()
-        {
-            if (microbe == null)
-            {
-                microbe = GetComponent<Microbe>();
-                if (microbe == null)
-                {
-                    Debug.LogError("Microbe Controller - No microbe on this GameObject.", this);
-                }
-            }
-            
-            if (microbe != null)
-            {
-                microbe.OnMate += OnMate;
-                microbe.OnEat += OnEat;
-                microbe.OnEaten += OnEaten;
-            }
-            
-            base.OnEnable();
-            
-            this.state = MicrobeState.Wandering;
-            StartWandering();
-        }
         
         /// <summary>
         /// This function is called when the behaviour becomes disabled.
