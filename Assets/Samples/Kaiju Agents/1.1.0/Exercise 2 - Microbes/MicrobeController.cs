@@ -27,7 +27,7 @@ namespace KaijuSolutions.Agents.Exercises.Microbes
 
         [SerializeField] private MicrobeState state;
         private FiniteStateMachine fsm;
-        private const float MaxEnergy = 300;
+        private const float MaxEnergy = 500;
 
         /// <summary>
         /// This function is called when the object becomes enabled and active.
@@ -75,6 +75,10 @@ namespace KaijuSolutions.Agents.Exercises.Microbes
                 this.state = MicrobeState.Wandering;
             }
             
+            float t = Mathf.InverseLerp(0f, MaxEnergy, this.microbe.Energy);
+            float energyScale = Mathf.Lerp(0.75f, 1.25f, t);
+            this.transform.localScale = Vector3.one * energyScale;
+            
             fsm.Step(state);
         }
 
@@ -84,6 +88,9 @@ namespace KaijuSolutions.Agents.Exercises.Microbes
         /// <param name="mate">The <see cref="Microbe"/> this mated with.</param>
         private void OnMate(Microbe mate)
         {
+            // Reduce energy after mating.
+            this.microbe.Energy -= 15;
+            
             // Go back to wandering.
             this.fsm.mate = null;
             this.state = MicrobeState.Wandering;
@@ -129,8 +136,11 @@ namespace KaijuSolutions.Agents.Exercises.Microbes
                 // If strongest in vision is prey, we hunt.
                 if (strongestIsPrey)
                 {
-                    // If we are not currently wandering or hunting, continue what we are doing. 
-                    if (this.state != MicrobeState.Wandering && this.state != MicrobeState.Hunting) return;
+                    // If we are not currently wandering, continue what we are doing. 
+                    if (this.state != MicrobeState.Wandering) return;
+                    
+                    // Require some energy to hunt.
+                    if (this.microbe.Energy <= 125) return;
 
                     // Switch state to hunting and invoke the hunting function.
                     this.fsm.prey = strongest;
@@ -157,7 +167,7 @@ namespace KaijuSolutions.Agents.Exercises.Microbes
             if (potentialMates.Length > 0)
             {
                 // Only mate if energy surplus (above 80).
-                if (this.microbe.Energy <= 80) return;
+                if (this.microbe.Energy <= 125) return;
                 
                 // Only start mating if current state is wandering.
                 // If not, current action is higher priority.
@@ -179,12 +189,12 @@ namespace KaijuSolutions.Agents.Exercises.Microbes
         private void OnEnergySensor(EnergyVisionSensor energySensor)
         {
             // Only eat if in need of energy (below or at 120).
-            if (this.microbe.Energy > 120) return;
+            if (this.microbe.Energy > 350) return;
             
             // Only start eating if current state is wandering.
             // If not, current action is higher priority.
             if (this.state != MicrobeState.Wandering) return;
-
+            
             // If we see an energy, seek to eat the energy.
             if (energySensor.Observed.Count > 0)
             {
@@ -195,10 +205,6 @@ namespace KaijuSolutions.Agents.Exercises.Microbes
                 // NOTE - There is no sensor for when we consume energy. TODO
                 //   To consume, we seek to a position. When stopped, we reset to wandering.
             }
-
-            // Return to wandering.
-            this.state = MicrobeState.Wandering;
-            // StartWandering();
         }
 
         /// <summary>
@@ -231,7 +237,6 @@ namespace KaijuSolutions.Agents.Exercises.Microbes
                 microbe = GetComponent<Microbe>();
             }
         }
-        
         
         /// <summary>
         /// This function is called when the behaviour becomes disabled.

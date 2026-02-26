@@ -72,6 +72,7 @@ namespace KaijuSolutions.Agents.Exercises.Microbes
         {
             // Use Evade for human like prediction
             Agent.Evade(hunter.transform, distance: 2.0f);
+            // Agent.ObstacleAvoidance(clear: false);
             
             // Human-like: Don't stare at the thing killing you; look where you're running!
             Agent.LookTransform = null; 
