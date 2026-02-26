@@ -67,45 +67,15 @@ namespace KaijuSolutions.Agents.Exercises.Microbes
                 this.state = MicrobeState.Wandering;
             }
 
-            if (this.state == MicrobeState.Fleeing)
-            { // TEMP IGNORE WHILE FLEEING WIP
-                Debug.Log("Fleeing");
-                this.state = MicrobeState.Wandering; 
+            if (
+                this.state == MicrobeState.Fleeing &&
+                Vector2.Distance(this.Agent.Position, this.fsm.hunter.Position) > 12f)
+            {
+                this.fsm.hunter = null;
+                this.state = MicrobeState.Wandering;
             }
             
             fsm.Step(state);
-        }
-
-        /// <summary>
-        /// Flee from microbe of different species using Evade.
-        /// </summary>
-        /// <exception cref="NotImplementedException"></exception>
-        private void FleeHunter(Microbe hunter)
-        {
-            // Ensure we only trigger the movement once per state change to avoid "jitter"
-            if (this.state != MicrobeState.Fleeing)
-            {
-                this.state = MicrobeState.Fleeing;
-        
-                // Use Evade for human like prediction 
-                Agent.Evade(hunter.transform, distance: 2.0f); 
-        
-                // Human-like: Don't stare at the thing killing you; look where you're running!
-                Agent.LookTransform = null; 
-            }
-
-            // DEBUG - Temporarily skip fleeing to implement other behaviours
-            // this.state = MicrobeState.Wandering;
-            // StartWandering();
-            // return;
-            //
-            // Transform pos = hunter.transform;
-            //
-            // Agent.Flee(pos, 0.1f);
-            // Agent.LookTransform = pos;
-
-            // Todo - when does it stop?
-            // this.microbe.Agent.GetSensor<MicrobeVisionSensor>()
         }
 
         /// <summary>

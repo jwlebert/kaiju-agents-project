@@ -65,6 +65,18 @@ namespace KaijuSolutions.Agents.Exercises.Microbes
             Agent.LookTransform = pos;
         }
         
+        /// <summary>
+        /// Flee from microbe of different species using Evade.
+        /// </summary>
+        private void FleeHunter(Microbe hunter)
+        {
+            // Use Evade for human like prediction
+            Agent.Evade(hunter.transform, distance: 2.0f);
+            
+            // Human-like: Don't stare at the thing killing you; look where you're running!
+            Agent.LookTransform = null; 
+        }
+        
         
         /// <summary> 
         /// Updates state
@@ -89,6 +101,10 @@ namespace KaijuSolutions.Agents.Exercises.Microbes
                     // Hunt prey if position is set
                     if (!this.prey) return;
                     this.HuntEnemy(this.prey);
+                    break;
+                case MicrobeState.Fleeing:
+                    if (!this.hunter) return;
+                    this.FleeHunter(this.hunter);
                     break;
             }
         }

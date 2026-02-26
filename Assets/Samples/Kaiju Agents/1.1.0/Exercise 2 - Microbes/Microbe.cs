@@ -118,6 +118,7 @@ namespace KaijuSolutions.Agents.Exercises.Microbes
         /// Walk into <see cref="EnergyPickup"/> pickups to restore this.
         /// Microbes with higher energy levels than other microbes can eat them.
         /// </summary>
+        [SerializeField]
         private float _energy;
         
         /// <summary>
