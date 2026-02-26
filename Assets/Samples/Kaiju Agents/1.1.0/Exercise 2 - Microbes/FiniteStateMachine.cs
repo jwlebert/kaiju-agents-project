@@ -46,7 +46,7 @@ namespace KaijuSolutions.Agents.Exercises.Microbes
             // Go to the food with Seek.
             Agent.Seek(pos, 0.1f);
 
-            // Look at food as we move to it.
+            // Look at mate as we move to it.
             Agent.LookTransform = pos;
         }
 
@@ -59,6 +59,7 @@ namespace KaijuSolutions.Agents.Exercises.Microbes
             Transform pos = prey.transform;
             
             // Hunt prey using Pursue
+            // (better for moving targets since it predicts future position)
             Agent.Pursue(pos, distance: 0.1f);
 
             // Face the prey while hunting 
@@ -70,17 +71,15 @@ namespace KaijuSolutions.Agents.Exercises.Microbes
         /// </summary>
         private void FleeHunter(Microbe hunter)
         {
-            // Use Evade for human like prediction
+            // Evade predicts where the hunter is going and moves in opposite direction
             Agent.Evade(hunter.transform, distance: 2.0f);
-            // Agent.ObstacleAvoidance(clear: false);
             
-            // Human-like: Don't stare at the thing killing you; look where you're running!
+            // Look at where we are running, not the hunter
             Agent.LookTransform = null; 
         }
         
-        
         /// <summary> 
-        /// Updates state
+        /// Called every frame to envoke the current state's action
         /// </summary> 
         public void Step(MicrobeState state) {
             switch (state)
@@ -89,21 +88,22 @@ namespace KaijuSolutions.Agents.Exercises.Microbes
                     this.StartWandering();
                     break;
                 case MicrobeState.Foraging:
-                    // Seek energy if the position is set
+                    // Only seek energy if energy is detected
                     if (!this.energyPos) return;
                     this.SeekFood(this.energyPos);
                     break;
                 case MicrobeState.Mating:
-                    // Seek mate if their position is set
+                    // Only seek mate if mate detected
                     if (!this.mate) return;
                     this.SeekMate(this.mate);
                     break;
                 case MicrobeState.Hunting:
-                    // Hunt prey if position is set
+                    // Only hunt prey if prey is detected
                     if (!this.prey) return;
                     this.HuntEnemy(this.prey);
                     break;
                 case MicrobeState.Fleeing:
+                    // Only flee if hunter is detected
                     if (!this.hunter) return;
                     this.FleeHunter(this.hunter);
                     break;

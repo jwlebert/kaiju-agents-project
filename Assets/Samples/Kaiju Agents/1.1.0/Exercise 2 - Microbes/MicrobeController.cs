@@ -5,6 +5,7 @@ using KaijuSolutions.Agents.Sensors;
 using UnityEngine;
 using UnityEngine.Serialization;
 
+// Defines the possible behaviours for microbes
 public enum MicrobeState { Wandering, Foraging, Hunting, Fleeing, Mating }
 
 namespace KaijuSolutions.Agents.Exercises.Microbes
@@ -52,6 +53,7 @@ namespace KaijuSolutions.Agents.Exercises.Microbes
             
             base.OnEnable();
             
+            // Initialize the state machine
             this.state = MicrobeState.Wandering;
             this.fsm = this.gameObject.AddComponent<FiniteStateMachine>();
         }
@@ -66,7 +68,8 @@ namespace KaijuSolutions.Agents.Exercises.Microbes
             {
                 this.state = MicrobeState.Wandering;
             }
-
+            
+            // After fleeing, if we are far enough from a hunter, go back to wandering
             if (
                 this.state == MicrobeState.Fleeing &&
                 Vector2.Distance(this.Agent.Position, this.fsm.hunter.Position) > 12f)
@@ -75,10 +78,12 @@ namespace KaijuSolutions.Agents.Exercises.Microbes
                 this.state = MicrobeState.Wandering;
             }
             
+            // Scale the microbe's size based on it's energy
             float t = Mathf.InverseLerp(0f, MaxEnergy, this.microbe.Energy);
             float energyScale = Mathf.Lerp(0.75f, 1.25f, t);
             this.transform.localScale = Vector3.one * energyScale;
             
+            // Tell the FSM to perform the logic for the current state
             fsm.Step(state);
         }
 
@@ -113,33 +118,35 @@ namespace KaijuSolutions.Agents.Exercises.Microbes
         /// <param name="eater">The <see cref="Microbe"/> which ate this.</param>
         private void OnEaten(Microbe eater)
         {
+            // Handled by the system
             throw new NotImplementedException();
         }
 
         /// <summary>
         /// Called when a <see cref="MicrobeVisionSensor"/> has been run.
+        /// Logic for when the microbe sees other microbes
         /// </summary>
         /// <param name="microbeSensor">The <see cref="MicrobeVisionSensor"/> which was run.</param>
         private void OnMicrobeSensor(MicrobeVisionSensor microbeSensor)
         {
-            // Get microbes in our vision cone of different species.
+            // Identify potential prey (microbes of a different species)
             Microbe[] enemies = microbeSensor.Observed.Where(m => this.microbe.Eatable(m)).ToArray();
             if (enemies.Length > 0)
             {
-                // Get the strongest enemy in vision cone.
+                // Get the prey with the highest energy in vision cone. (instead of nearest to be more life like)
                 Microbe strongest = enemies.OrderByDescending(m => m.Energy).First();
                 
                 // Decide if the strongest is the prey or if we are the prey.
                 bool strongestIsPrey = this.microbe.Energy > strongest.GetComponent<Microbe>().Energy;
-                // Transform nearest = Position.Nearest(enemies, out float _); // TODO - get highest (flee)
 
                 // If strongest in vision is prey, we hunt.
                 if (strongestIsPrey)
                 {
                     // If we are not currently wandering, continue what we are doing. 
+                    // (Don't interrupt mating/fleeing/foraging)
                     if (this.state != MicrobeState.Wandering) return;
                     
-                    // Require some energy to hunt.
+                    // Must have enough base energy to hunt
                     if (this.microbe.Energy <= 125) return;
 
                     // Switch state to hunting and invoke the hunting function.
@@ -149,7 +156,7 @@ namespace KaijuSolutions.Agents.Exercises.Microbes
                 // If there is an enemy stronger than us in vision, we flee.
                 else
                 {
-                    // Switch state to fleeing and invoke the fleeing function.
+                    // Switch state to fleeing and invoke the fleeing function.(overrides wandering)
                     this.fsm.hunter = strongest;
                     this.state = MicrobeState.Fleeing;
                 }
@@ -166,14 +173,14 @@ namespace KaijuSolutions.Agents.Exercises.Microbes
 
             if (potentialMates.Length > 0)
             {
-                // Only mate if energy surplus (above 80).
+                // Only mate if high enough energy.
                 if (this.microbe.Energy <= 125) return;
                 
                 // Only start mating if current state is wandering.
                 // If not, current action is higher priority.
                 if (this.state != MicrobeState.Wandering) return;
 
-                // Select the strongest mate.
+                // Select the strongest mate to ensure strong offspring
                 Microbe mate = potentialMates.OrderByDescending(m => m.Energy).First(); 
 
                 // Switch to mating state and seek to our mate.
@@ -184,11 +191,12 @@ namespace KaijuSolutions.Agents.Exercises.Microbes
 
         /// <summary>
         /// Called when a <see cref="EnergyVisionSensor"/> has been run.
+        /// Logic for when a microbe sees energy/food sources (static)
         /// </summary>
         /// <param name="energySensor">The <see cref="EnergyVisionSensor"/> which was run.</param>
         private void OnEnergySensor(EnergyVisionSensor energySensor)
         {
-            // Only eat if in need of energy (below or at 120).
+            // Only eat if in need of energy.
             if (this.microbe.Energy > 350) return;
             
             // Only start eating if current state is wandering.
@@ -198,12 +206,15 @@ namespace KaijuSolutions.Agents.Exercises.Microbes
             // If we see an energy, seek to eat the energy.
             if (energySensor.Observed.Count > 0)
             {
+                // Seek to closest energy source
                 Transform nearest = Position.Nearest(energySensor.Observed, out float _);
                 this.fsm.energyPos = nearest;
                 this.state = MicrobeState.Foraging;
                 
-                // NOTE - There is no sensor for when we consume energy. TODO
-                //   To consume, we seek to a position. When stopped, we reset to wandering.
+                // NOTE: No dedicated callback for eating static energy (unlike OnEat for microbes)
+                // The transition back to wandering is handled in Update() by switching to wandering
+                // when the Agent reaches the energy and it's movement is stopped.
+                // TODO: Maybe move logic to an OnStop callback
             }
         }
 
