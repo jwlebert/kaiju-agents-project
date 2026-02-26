@@ -79,7 +79,7 @@ namespace KaijuSolutions.Agents.Exercises.Microbes
         }
         
         /// <summary> 
-        /// Called every frame to envoke the current state's action
+        /// Called every frame to invoke the current state's action
         /// </summary> 
         public void Step(MicrobeState state) {
             switch (state)
