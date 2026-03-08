@@ -1,7 +1,8 @@
 ﻿{
   "name": "com.kaijusolutions.agents.exercises.ctf",
   "references": [
-    "com.kaijusolutions.agents"
+    "com.kaijusolutions.agents",
+    "com.kaijusolutions.agents.utility"
   ],
   "includePlatforms": [],
   "excludePlatforms": [],
