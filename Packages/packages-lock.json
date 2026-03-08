@@ -10,6 +10,15 @@
       },
       "hash": "3ebd9436f93781482c3103301ee5433a37f048c1"
     },
+    "com.kaijusolutions.agents.utility": {
+      "version": "https://github.com/Kaiju-Solutions/Kaiju-Agents-Utility.git#release",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {
+        "com.kaijusolutions.agents": "1.1.0"
+      },
+      "hash": "fa37d94c3602b98725a0e49b2a866fa4bf22f80a"
+    },
     "com.unity.ai.navigation": {
       "version": "2.0.10",
       "depth": 1,
