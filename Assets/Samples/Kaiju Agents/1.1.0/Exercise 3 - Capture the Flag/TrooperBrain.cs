@@ -1,3 +1,4 @@
+using System;
 using KaijuSolutions.Agents.Utility;
 using UnityEngine;
 
@@ -9,6 +10,12 @@ namespace KaijuSolutions.Agents.Exercises.CTF
         
         [SerializeField] public HealthPickup healthPickup;
         [SerializeField] public AmmoPickup ammoPickup;
+
+        private void Start()
+        {
+            trooper = GetComponent<Trooper>();
+        }
+
         protected override void UpdateBlackboard()
         {
             SetStatus();
