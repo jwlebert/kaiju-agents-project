@@ -1,4 +1,5 @@
 ﻿using KaijuSolutions.Agents.Sensors;
+using KaijuSolutions.Agents.Utility;
 using UnityEngine;
 
 namespace KaijuSolutions.Agents.Exercises.CTF
@@ -16,8 +17,14 @@ namespace KaijuSolutions.Agents.Exercises.CTF
         /// </summary>
         [Tooltip("The trooper this is controlling.")]
         [HideInInspector]
-        [SerializeField]
-        private Trooper trooper;
+        [SerializeField] private Trooper trooper;
+        
+        /// <summary>
+        /// The <see cref="KaijuUtilityBrain"/> for this trooper.
+        /// </summary>
+        [Tooltip("The KaijuUtilityBrain for this trooper.")]
+        [HideInInspector]
+        [SerializeField] private TrooperBrain brain;
         
         /// <summary>
         /// Callback for this <see cref="trooper"/> hitting another <see cref="Trooper"/>.
@@ -158,6 +165,16 @@ namespace KaijuSolutions.Agents.Exercises.CTF
                 if (trooper == null)
                 {
                     Debug.LogError("Trooper Controller - No trooper on this GameObject.", this);
+                }
+            }
+            
+            // Get the KaijuUtilityBrain for this trooper.
+            if (brain == null)
+            {
+                brain = GetComponent<TrooperBrain>();
+                if (brain == null)
+                {
+                    Debug.LogError("Trooper Controller - No trooperBrain on this GameObject.", this);
                 }
             }
             

@@ -354,6 +354,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4870737036990700035}
   - component: {fileID: 4490659907814455891}
+  - component: {fileID: 6135600208100012083}
   - component: {fileID: 5038185696145083086}
   - component: {fileID: 6190703363887382500}
   - component: {fileID: 9114223757832726476}
@@ -397,6 +398,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: com.kaijusolutions.agents.exercises.ctf::KaijuSolutions.Agents.Exercises.CTF.TrooperController
   agent: {fileID: 6190703363887382500}
   trooper: {fileID: 5038185696145083086}
+--- !u!114 &6135600208100012083
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7329593620247676017}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8e78a5d4e0f71364ba6bfa686f02282b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: com.kaijusolutions.agents.exercises.ctf::KaijuSolutions.Agents.Exercises.CTF.TrooperBrain
+  actions: []
+  <Agent>k__BackingField: {fileID: 6190703363887382500}
+  trooper: {fileID: 0}
+  healthPickup: {fileID: 0}
+  ammoPickup: {fileID: 0}
 --- !u!114 &5038185696145083086
 MonoBehaviour:
   m_ObjectHideFlags: 0
