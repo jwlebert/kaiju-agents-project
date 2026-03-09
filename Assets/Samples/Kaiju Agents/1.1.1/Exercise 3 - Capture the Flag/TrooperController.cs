@@ -78,31 +78,57 @@ namespace KaijuSolutions.Agents.Exercises.CTF
         /// Callback for sensing enemies.
         /// </summary>
         /// <param name="sensor">The <see cref="TrooperEnemyVisionSensor"/>.</param>
-        private void OnSenseEnemies(TrooperEnemyVisionSensor sensor) { }
+        private void OnSenseEnemies(TrooperEnemyVisionSensor sensor)
+        {
+            SensorDebug(sensor, "Enemies");
+        }
         
         /// <summary>
         /// Callback for sensing teammates.
         /// </summary>
         /// <param name="sensor">The <see cref="TrooperTeamVisionSensor"/>.</param>
-        private void OnSenseTeam(TrooperTeamVisionSensor sensor) { }
+        private void OnSenseTeam(TrooperTeamVisionSensor sensor)
+        {
+            SensorDebug(sensor, "Team");
+        }
         
         /// <summary>
         /// Callback for sensing all <see cref="Trooper"/>s.
         /// </summary>
         /// <param name="sensor">The <see cref="TrooperTeamVisionSensor"/>.</param>
-        private void OnSenseTroopers(TrooperVisionSensor sensor) { }
-        
+        private void OnSenseTroopers(TrooperVisionSensor sensor)
+        {
+            SensorDebug(sensor, "Troopers");
+        }
+
         /// <summary>
         /// Callback for sensing <see cref="AmmoPickup"/>s.
         /// </summary>
         /// <param name="sensor">The <see cref="AmmoVisionSensor"/>.</param>
-        private void OnSenseAmmo(AmmoVisionSensor sensor) { }
+        private void OnSenseAmmo(AmmoVisionSensor sensor)
+        {
+            SensorDebug(sensor, "Ammo");
+        }
         
         /// <summary>
         /// Callback for sensing <see cref="HealthPickup"/>s.
         /// </summary>
         /// <param name="sensor">The <see cref="AmmoVisionSensor"/>.</param>
-        private void OnSenseHealth(HealthVisionSensor sensor) { }
+        private void OnSenseHealth(HealthVisionSensor sensor)
+        {
+            SensorDebug(sensor, "Health");
+        }
+        
+        /// <summary>
+        /// Debug method to show sensors working.
+        /// </summary>
+        /// <param name="sensor">The sensor.</param>
+        /// <param name="title">The title to log.</param>
+        /// <typeparam name="T">The type of the sensor.</typeparam>
+        private static void SensorDebug<T>(KaijuVisionSensor<T> sensor, string title) where T : Component
+        {
+            Debug.Log(sensor.HasObserved ? $"{title} - {sensor.ObservedCount} - {sensor.Nearest(out float _).name}" : $"{title} - 0");
+        }
         
         /// <summary>
         /// Callback for when a <see cref="KaijuSensor"/> has been run.
