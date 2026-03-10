@@ -1,4 +1,7 @@
-﻿using KaijuSolutions.Agents.Sensors;
+﻿using System.Collections.Generic;
+using System.Linq;
+using KaijuSolutions.Agents.Extensions;
+using KaijuSolutions.Agents.Sensors;
 using KaijuSolutions.Agents.Utility;
 using UnityEngine;
 
@@ -107,16 +110,41 @@ namespace KaijuSolutions.Agents.Exercises.CTF
         /// <param name="sensor">The <see cref="AmmoVisionSensor"/>.</param>
         private void OnSenseAmmo(AmmoVisionSensor sensor)
         {
-            SensorDebug(sensor, "Ammo");
+            // Safety check for null sensor or empty detection list.
+            if (!sensor || !sensor.Observed.Any()) 
+            {
+                return;
+            }
+
+            // Combine current visible pickups with the one we are already tracking.
+            // .Where(p => p) uses Unity's implicit null check to filter out destroyed objects.
+            IEnumerable<AmmoPickup> pickups = sensor.Observed
+                .Append(brain.ammoPickup)
+                .Where(p => p);
+    
+            // Update the brain with the nearest eligible ammo pickup.
+            brain.ammoPickup = Position.Nearest(pickups, out float _);
         }
-        
+
         /// <summary>
         /// Callback for sensing <see cref="HealthPickup"/>s.
         /// </summary>
-        /// <param name="sensor">The <see cref="AmmoVisionSensor"/>.</param>
+        /// <param name="sensor">The <see cref="HealthVisionSensor"/>.</param>
         private void OnSenseHealth(HealthVisionSensor sensor)
         {
-            SensorDebug(sensor, "Health");
+            // Safety check for null sensor or empty detection list.
+            if (!sensor || !sensor.Observed.Any()) 
+            {
+                return;
+            }
+
+            // Combine visible pickups with the currently tracked health pickup.
+            IEnumerable<HealthPickup> pickups = sensor.Observed
+                .Append(brain.healthPickup)
+                .Where(p => p);
+    
+            // Update the brain with the nearest eligible health pickup.
+            brain.healthPickup = Position.Nearest(pickups, out float _);
         }
         
         /// <summary>
