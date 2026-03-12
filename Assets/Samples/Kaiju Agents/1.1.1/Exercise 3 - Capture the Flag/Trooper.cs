@@ -412,6 +412,7 @@ namespace KaijuSolutions.Agents.Exercises.CTF
                 ActiveOne.Remove(this);
                 ActiveTwo.Add(this);
             }
+            _blaster = Agent.GetActuator<BlasterActuator>();
         }
         
         /// <summary>
