@@ -18,8 +18,9 @@ namespace KaijuSolutions.Agents.Exercises.CTF
 
         [SerializeField] public Trooper nearestEnemy;
         
-        private void Start()
+        public override void Awake()
         {
+            base.Awake();
             trooper = GetComponent<Trooper>();
         }
 
