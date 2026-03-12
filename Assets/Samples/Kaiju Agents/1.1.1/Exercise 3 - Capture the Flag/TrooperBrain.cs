@@ -51,29 +51,33 @@ namespace KaijuSolutions.Agents.Exercises.CTF
         {
             Set("AmmoPickup", ammoPickup);
             SetScaled("AmmoPickupDistance", ammoPickup != null 
-                ? this.Agent.transform.Distance(ammoPickup.transform.position) : 0f, 0f, MaxDistance);
+                ? Agent.transform.Distance(ammoPickup.transform.position) : 0f, 0f, MaxDistance);
 
             Set("HealthPickup", healthPickup);
             SetScaled("HealthPickupDistance", healthPickup != null 
-                ? this.Agent.transform.Distance(healthPickup.transform.position) : 0f, 0f, MaxDistance);
+                ? Agent.transform.Distance(healthPickup.transform.position) : 0f, 0f, MaxDistance);
         }
 
         private void SetFlags()
         {
             Set("FriendlyFlag", friendlyFlag);
             SetScaled("FriendlyFlagDistance", friendlyFlag != null 
-                ? this.Agent.transform.Distance(friendlyFlag.position) : 0f, 0f, MaxDistance);
-
+                ? Agent.transform.Distance(friendlyFlag.position) : 0f, 0f, MaxDistance);
+            SetBool("FriendlyFlagMissing", friendlyFlag != null && 
+                (Vector2)friendlyFlag.position != Flag.Base(trooper.TeamOne));
+            
             Set("EnemyFlag", enemyFlag);
             SetScaled("EnemyFlagDistance", enemyFlag != null 
-                ? this.Agent.transform.Distance(enemyFlag.position) : 0f, 0f, MaxDistance);
+                ? Agent.transform.Distance(enemyFlag.position) : 0f, 0f, MaxDistance);
+            SetBool("EnemyFlagMissing", enemyFlag != null && 
+                (Vector2)enemyFlag.position != Flag.Base(!trooper.TeamOne));
         }
 
         private void SetTroopers()
         {
             Set("NearestEnemy", nearestEnemy);
             SetScaled("NearestEnemyDistance", nearestEnemy != null
-                ? this.Agent.transform.Distance(nearestEnemy.transform.position) : 0f, 0f, MaxDistance);
+                ? Agent.transform.Distance(nearestEnemy.transform.position) : 0f, 0f, MaxDistance);
         }
     }
 }
