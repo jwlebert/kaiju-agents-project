@@ -83,7 +83,7 @@ namespace KaijuSolutions.Agents.Exercises.CTF
         /// <param name="sensor">The <see cref="TrooperEnemyVisionSensor"/>.</param>
         private void OnSenseEnemies(TrooperEnemyVisionSensor sensor)
         {
-            SensorDebug(sensor, "Enemies");
+            // SensorDebug(sensor, "Enemies");
         }
         
         /// <summary>
@@ -92,7 +92,7 @@ namespace KaijuSolutions.Agents.Exercises.CTF
         /// <param name="sensor">The <see cref="TrooperTeamVisionSensor"/>.</param>
         private void OnSenseTeam(TrooperTeamVisionSensor sensor)
         {
-            SensorDebug(sensor, "Team");
+            // SensorDebug(sensor, "Team");
         }
         
         /// <summary>
@@ -101,7 +101,7 @@ namespace KaijuSolutions.Agents.Exercises.CTF
         /// <param name="sensor">The <see cref="TrooperTeamVisionSensor"/>.</param>
         private void OnSenseTroopers(TrooperVisionSensor sensor)
         {
-            SensorDebug(sensor, "Troopers");
+            // SensorDebug(sensor, "Troopers");
         }
 
         /// <summary>
@@ -148,14 +148,29 @@ namespace KaijuSolutions.Agents.Exercises.CTF
         }
         
         /// <summary>
-        /// Debug method to show sensors working.
+        /// Callback for sensing <see cref="Flag"/>s.
         /// </summary>
-        /// <param name="sensor">The sensor.</param>
-        /// <param name="title">The title to log.</param>
-        /// <typeparam name="T">The type of the sensor.</typeparam>
-        private static void SensorDebug<T>(KaijuVisionSensor<T> sensor, string title) where T : Component
+        /// <param name="sensor">The <see cref="FlagVisionSensor"/>.</param>
+        private void OnSenseFlag(FlagVisionSensor sensor)
         {
-            Debug.Log(sensor.HasObserved ? $"{title} - {sensor.ObservedCount} - {sensor.Nearest(out float _).name}" : $"{title} - 0");
+            // Safety check for null sensor or empty detection list.
+            if (!sensor || !sensor.Observed.Any()) 
+            {
+                return;
+            }
+
+            foreach (var flag in sensor.Observed)
+            {
+                // Friendly flag!
+                if ((flag.TeamOne && trooper.TeamOne) || (!flag.TeamOne && !trooper.TeamOne))
+                {
+                    brain.friendlyFlag = flag.transform;
+                }
+                else
+                {
+                    brain.enemyFlag = flag.transform;
+                }
+            }
         }
         
         /// <summary>
@@ -179,6 +194,12 @@ namespace KaijuSolutions.Agents.Exercises.CTF
                 }
                 
                 OnSenseTroopers(troopers);
+                return;
+            }
+
+            if (sensor is FlagVisionSensor flag)
+            {
+                OnSenseFlag(flag);
                 return;
             }
             

@@ -106,6 +106,7 @@ GameObject:
   - component: {fileID: 7835736262643835681}
   - component: {fileID: 4926420642002981723}
   - component: {fileID: 5077192622253994605}
+  - component: {fileID: 8124704399941052531}
   - component: {fileID: 7362538916531691696}
   m_Layer: 0
   m_Name: Eyes
@@ -279,6 +280,30 @@ MonoBehaviour:
   mask:
     serializedVersion: 2
     m_Bits: 51
+  triggers: 0
+  editorColor: {r: 1, g: 1, b: 1, a: 1}
+  editorFromAgent: 1
+--- !u!114 &8124704399941052531
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2026237108400773742}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b810a70392ea43d8ae75ccc52d9f9b0c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: com.kaijusolutions.agents.exercises.ctf::KaijuSolutions.Agents.Exercises.CTF.FlagVisionSensor
+  automatic: 1
+  distance: 20
+  angle: 180
+  lineOfSight: 1
+  radius: 0
+  offset: 0
+  mask:
+    serializedVersion: 2
+    m_Bits: 4294967291
   triggers: 0
   editorColor: {r: 1, g: 1, b: 1, a: 1}
   editorFromAgent: 1
@@ -541,6 +566,7 @@ MonoBehaviour:
   trooper: {fileID: 0}
   healthPickup: {fileID: 0}
   ammoPickup: {fileID: 0}
+  flag: {fileID: 0}
 --- !u!114 &5038185696145083086
 MonoBehaviour:
   m_ObjectHideFlags: 0
