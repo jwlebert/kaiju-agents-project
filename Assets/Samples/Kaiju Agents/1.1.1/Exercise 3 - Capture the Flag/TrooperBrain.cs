@@ -73,31 +73,11 @@ namespace KaijuSolutions.Agents.Exercises.CTF
             
             Set("FriendlyFlag", teamFlag);
             Set("FriendlyFlagMissing", teamFlag.transform.position != Flag.Base3(trooper.TeamOne));
-            // Set("FriendlyFlag", friendlyFlag);
-            // Use OR -> they will check if its at base, 
-            // SetBool("FriendlyFlagMissing", friendlyFlag == null || 
-            //                                friendlyFlag.transform.position != Flag.Base3(trooper.TeamOne));
-            // Set("FriendlyFlagExpectedLocation", friendlyFlag == null || friendlyFlag.? Flag.Base3(trooper.TeamOne) : friendlyFlag.transform.position);
             Set("CapturePoint", trooper.TeamOne ? Flag.TeamOneBase3 :  Flag.TeamTwoBase3);
             
             Set("EnemyFlag", otherFlag);
             Set("EnemyFlagCarried", otherFlag.Parent != null && otherFlag.Parent.name != "Flags");
-            // Set("EnemyFlagMissing", otherFlag.transform.position != Flag.Base3(trooper.TeamOne));
             SetScaled("EnemyFlagDistance", Agent.transform.Distance(otherFlag.transform.position), 0f, MaxDistance);
-            // Set("EnemyFlag", enemyFlag);
-            // or (not and); make them check to confirm
-            // SetBool("EnemyFlagMissing", enemyFlag == null ||
-            //                             enemyFlag.transform.position != Flag.Base3(!trooper.TeamOne));
-            // Set("EnemyFlagExpectedLocation", enemyFlag == null ? Flag.Base3(!trooper.TeamOne) : enemyFlag.transform.position);
-            // Flag.TeamOneFlag.
-            
-            // SetScaled("FriendlyFlagDistance", friendlyFlag != null 
-            //     ? Agent.transform.Distance(friendlyFlag.position) : MaxDistance, 0f, MaxDistance);
-            // SetScaled("EnemyFlagDistance", enemyFlag != null 
-            //     ? Agent.transform.Distance(enemyFlag.position) : MaxDistance, 0f, MaxDistance);
-            // or (not and); make them check to confirm
-            // SetBool("EnemyFlagMissing", enemyFlag != null || 
-            //     (Vector2)enemyFlag.position != Flag.Base(!trooper.TeamOne));
         }
 
         private bool CheckLineOfSight(Transform t1, Transform t2)
