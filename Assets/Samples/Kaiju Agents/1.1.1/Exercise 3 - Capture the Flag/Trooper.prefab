@@ -102,6 +102,11 @@ GameObject:
   - component: {fileID: 2295438319909375120}
   - component: {fileID: 1687848521822141408}
   - component: {fileID: 9095882296271135642}
+  - component: {fileID: 9027094188583689557}
+  - component: {fileID: 7835736262643835681}
+  - component: {fileID: 4926420642002981723}
+  - component: {fileID: 5077192622253994605}
+  - component: {fileID: 7362538916531691696}
   m_Layer: 0
   m_Name: Eyes
   m_TagString: Untagged
@@ -181,6 +186,126 @@ MeshRenderer:
   m_SortingOrder: 0
   m_MaskInteraction: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &9027094188583689557
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2026237108400773742}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e4c00fbb16b848bdb7decd27bcfe4bc4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: com.kaijusolutions.agents.exercises.ctf::KaijuSolutions.Agents.Exercises.CTF.TrooperTeamVisionSensor
+  automatic: 1
+  distance: 20
+  angle: 180
+  lineOfSight: 1
+  radius: 0
+  offset: 0
+  mask:
+    serializedVersion: 2
+    m_Bits: 51
+  triggers: 0
+  editorColor: {r: 1, g: 1, b: 1, a: 1}
+  editorFromAgent: 1
+--- !u!114 &7835736262643835681
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2026237108400773742}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0b10fe6d6aeb4b1897514f9ce93ddf86, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: com.kaijusolutions.agents.exercises.ctf::KaijuSolutions.Agents.Exercises.CTF.TrooperEnemyVisionSensor
+  automatic: 1
+  distance: 20
+  angle: 180
+  lineOfSight: 1
+  radius: 0
+  offset: 0
+  mask:
+    serializedVersion: 2
+    m_Bits: 51
+  triggers: 0
+  editorColor: {r: 1, g: 1, b: 1, a: 1}
+  editorFromAgent: 1
+--- !u!114 &4926420642002981723
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2026237108400773742}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 13cd498dac994b699065554fbb1cfd8e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: com.kaijusolutions.agents.exercises.ctf::KaijuSolutions.Agents.Exercises.CTF.AmmoVisionSensor
+  automatic: 1
+  distance: 20
+  angle: 180
+  lineOfSight: 1
+  radius: 0
+  offset: 0
+  mask:
+    serializedVersion: 2
+    m_Bits: 51
+  triggers: 0
+  editorColor: {r: 1, g: 1, b: 1, a: 1}
+  editorFromAgent: 1
+--- !u!114 &5077192622253994605
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2026237108400773742}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 014d40b97c674c4fbbbaec538d62e947, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: com.kaijusolutions.agents.exercises.ctf::KaijuSolutions.Agents.Exercises.CTF.HealthVisionSensor
+  automatic: 1
+  distance: 20
+  angle: 180
+  lineOfSight: 1
+  radius: 0
+  offset: 0
+  mask:
+    serializedVersion: 2
+    m_Bits: 51
+  triggers: 0
+  editorColor: {r: 1, g: 1, b: 1, a: 1}
+  editorFromAgent: 1
+--- !u!114 &7362538916531691696
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2026237108400773742}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9a6c5eb6b4954342b3f27b0a20b90f01, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: com.kaijusolutions.agents.exercises.ctf::KaijuSolutions.Agents.Exercises.CTF.TrooperVisionSensor
+  automatic: 1
+  distance: 20
+  angle: 180
+  lineOfSight: 0
+  radius: 0
+  offset: 0
+  mask:
+    serializedVersion: 2
+    m_Bits: 51
+  triggers: 0
+  editorColor: {r: 1, g: 1, b: 1, a: 1}
+  editorFromAgent: 1
 --- !u!1 &5806169519610590947
 GameObject:
   m_ObjectHideFlags: 0
@@ -359,11 +484,6 @@ GameObject:
   - component: {fileID: 6190703363887382500}
   - component: {fileID: 9114223757832726476}
   - component: {fileID: 7648946763058690993}
-  - component: {fileID: -6113658299943888147}
-  - component: {fileID: -7432322114245073080}
-  - component: {fileID: 215707177903344264}
-  - component: {fileID: -3067324772734924520}
-  - component: {fileID: -1858695978443278753}
   m_Layer: 0
   m_Name: Trooper
   m_TagString: Untagged
@@ -505,126 +625,6 @@ CapsuleCollider:
   m_Height: 1
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &-6113658299943888147
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7329593620247676017}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9a6c5eb6b4954342b3f27b0a20b90f01, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: com.kaijusolutions.agents.exercises.ctf::KaijuSolutions.Agents.Exercises.CTF.TrooperVisionSensor
-  automatic: 1
-  distance: 20
-  angle: 180
-  lineOfSight: 0
-  radius: 0
-  offset: 0
-  mask:
-    serializedVersion: 2
-    m_Bits: 51
-  triggers: 0
-  editorColor: {r: 1, g: 1, b: 1, a: 1}
-  editorFromAgent: 1
---- !u!114 &-7432322114245073080
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7329593620247676017}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e4c00fbb16b848bdb7decd27bcfe4bc4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: com.kaijusolutions.agents.exercises.ctf::KaijuSolutions.Agents.Exercises.CTF.TrooperTeamVisionSensor
-  automatic: 1
-  distance: 20
-  angle: 180
-  lineOfSight: 0
-  radius: 0
-  offset: 0
-  mask:
-    serializedVersion: 2
-    m_Bits: 51
-  triggers: 0
-  editorColor: {r: 1, g: 1, b: 1, a: 1}
-  editorFromAgent: 1
---- !u!114 &215707177903344264
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7329593620247676017}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0b10fe6d6aeb4b1897514f9ce93ddf86, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: com.kaijusolutions.agents.exercises.ctf::KaijuSolutions.Agents.Exercises.CTF.TrooperEnemyVisionSensor
-  automatic: 1
-  distance: 20
-  angle: 180
-  lineOfSight: 0
-  radius: 0
-  offset: 0
-  mask:
-    serializedVersion: 2
-    m_Bits: 51
-  triggers: 0
-  editorColor: {r: 1, g: 1, b: 1, a: 1}
-  editorFromAgent: 1
---- !u!114 &-3067324772734924520
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7329593620247676017}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 13cd498dac994b699065554fbb1cfd8e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: com.kaijusolutions.agents.exercises.ctf::KaijuSolutions.Agents.Exercises.CTF.AmmoVisionSensor
-  automatic: 1
-  distance: 20
-  angle: 180
-  lineOfSight: 0
-  radius: 0
-  offset: 0
-  mask:
-    serializedVersion: 2
-    m_Bits: 51
-  triggers: 0
-  editorColor: {r: 1, g: 1, b: 1, a: 1}
-  editorFromAgent: 1
---- !u!114 &-1858695978443278753
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7329593620247676017}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 014d40b97c674c4fbbbaec538d62e947, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: com.kaijusolutions.agents.exercises.ctf::KaijuSolutions.Agents.Exercises.CTF.HealthVisionSensor
-  automatic: 1
-  distance: 20
-  angle: 180
-  lineOfSight: 0
-  radius: 0
-  offset: 0
-  mask:
-    serializedVersion: 2
-    m_Bits: 51
-  triggers: 0
-  editorColor: {r: 1, g: 1, b: 1, a: 1}
-  editorFromAgent: 1
 --- !u!1 &8630997091936437483
 GameObject:
   m_ObjectHideFlags: 0
