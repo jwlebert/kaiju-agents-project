@@ -1,0 +1,23 @@
+﻿stateDiagram-v2
+    direction TB
+    [*] --> UpdateBlackboard
+
+    UpdateBlackboard --> EvaluateConsiderations : Update Variables (Health, Ammo, Flags, LoS)
+    EvaluateConsiderations --> SetBestAction : Score Actions & Pick Highest Utility
+
+%% Current Actions in your Project
+    SetBestAction --> Action_Idle : Best is Idle
+    SetBestAction --> Action_NavigateHealth : Best is Navigate Health Pickup
+    SetBestAction --> Action_NavigateAmmo : Best is Navigate Ammo Pickup
+    SetBestAction --> Action_ShootNearestEnemy : Best is Shoot Nearest Enemy
+
+%% To-Do Actions for your Assignment Requirements
+    SetBestAction --> Action_CaptureEnemyFlag : Best is Capture Flag (To Be Added)
+    SetBestAction --> Action_DefendBase : Best is Defend Base (To Be Added)
+
+    Action_Idle --> UpdateBlackboard : Complete
+    Action_NavigateHealth --> UpdateBlackboard : Complete
+    Action_NavigateAmmo --> UpdateBlackboard : Complete
+    Action_ShootNearestEnemy --> UpdateBlackboard : Complete
+    Action_CaptureEnemyFlag --> UpdateBlackboard : Complete
+    Action_DefendBase --> UpdateBlackboard : Complete
