@@ -14,12 +14,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: com.kaijusolutions.agents::KaijuSolutions.Agents.Movement.KaijuMovementConfiguration
   weight: 1
   clear: 1
-  approachingDistance: 0.1
+  approachingDistance: 0.3
   leavingDistance: 20
   wanderDistance: 20
   wanderRadius: 1
   separationDistance: 10
   separationCoefficient: 10
+  identifiers: 
   avoidance: 2
   avoidanceDistance: 5
   avoidanceSideDistance: 0
