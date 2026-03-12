@@ -69,16 +69,21 @@ namespace KaijuSolutions.Agents.Exercises.CTF
         private void SetFlags()
         {
             Set("FriendlyFlag", friendlyFlag);
+            // or (not and); make them check to confirm
+            SetBool("FriendlyFlagMissing", friendlyFlag == null || 
+                friendlyFlag.position != Flag.Base3(trooper.TeamOne));
+            Set("FriendlyFlagExpectedLocation", friendlyFlag == null ? Flag.Base3(trooper.TeamOne) : friendlyFlag.position);
+            
+            
             SetScaled("FriendlyFlagDistance", friendlyFlag != null 
-                ? Agent.transform.Distance(friendlyFlag.position) : 0f, 0f, MaxDistance);
-            SetBool("FriendlyFlagMissing", friendlyFlag != null && 
-                (Vector2)friendlyFlag.position != Flag.Base(trooper.TeamOne));
+                ? Agent.transform.Distance(friendlyFlag.position) : MaxDistance, 0f, MaxDistance);
             
             Set("EnemyFlag", enemyFlag);
             SetScaled("EnemyFlagDistance", enemyFlag != null 
-                ? Agent.transform.Distance(enemyFlag.position) : 0f, 0f, MaxDistance);
-            SetBool("EnemyFlagMissing", enemyFlag != null && 
-                (Vector2)enemyFlag.position != Flag.Base(!trooper.TeamOne));
+                ? Agent.transform.Distance(enemyFlag.position) : MaxDistance, 0f, MaxDistance);
+            // or (not and); make them check to confirm
+            // SetBool("EnemyFlagMissing", enemyFlag != null || 
+            //     (Vector2)enemyFlag.position != Flag.Base(!trooper.TeamOne));
         }
 
         private bool CheckLineOfSight(Transform t1, Transform t2)

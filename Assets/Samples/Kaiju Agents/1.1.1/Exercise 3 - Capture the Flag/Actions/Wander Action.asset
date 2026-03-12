@@ -9,7 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fbd18bcf3a98ad04998d9a2724f3d68d, type: 3}
-  m_Name: Idle Action
-  m_EditorClassIdentifier: com.kaijusolutions.agents.exercises.ctf::IdleAction
+  m_Script: {fileID: 11500000, guid: 7af96de0715ed574fbfe1a9e07c77f37, type: 3}
+  m_Name: Wander Action
+  m_EditorClassIdentifier: com.kaijusolutions.agents.exercises.ctf::WanderAction
   <Consideration>k__BackingField: {fileID: 11400000, guid: b8c368e1fde3ca84782a9f8d2890e4ad, type: 2}
