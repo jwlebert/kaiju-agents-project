@@ -2,7 +2,7 @@ using JetBrains.Annotations;
 using UnityEngine;
 using KaijuSolutions.Agents.Utility;
 
-[CreateAssetMenu(fileName = "action", menuName = "Scriptable Objects/action")]
+[CreateAssetMenu(fileName = "Navigate Action", menuName = "Scriptable Objects/Assn3/Navigate Action")]
 public class NavigateAction : KaijuUtilityAction
 {
     [Tooltip("The name of the key for the target")]

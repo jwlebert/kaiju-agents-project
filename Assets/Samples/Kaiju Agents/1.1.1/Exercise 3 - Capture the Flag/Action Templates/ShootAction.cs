@@ -5,6 +5,7 @@ using JetBrains.Annotations;
 using KaijuSolutions.Agents.Exercises.CTF;
 using KaijuSolutions.Agents.Extensions;
 
+[CreateAssetMenu(fileName = "Shoot Action", menuName = "Scriptable Objects/Assn3/Shoot Action")]
 public class ShootAction : KaijuUtilityAction
 {
     [Tooltip("Name of key with target enemy")]
