@@ -41,24 +41,29 @@ namespace KaijuSolutions.Agents.Exercises.CTF
             // Set ammo to [0, 1], scaled along the scale [0, max ammo]
             // Get max ammo from CaptureTheFlagManager, started at 30.
             SetScaled("StatusAmmo", trooper.Ammo, 0f, CaptureTheFlagManager.Ammo);
+            
+            // Check if empty, since checking if full doesn't work.
+            SetBool("HasAmmo", trooper.HasAmmo);
+            SetBool("TrooperCanShoot", trooper.CanAttack);
         }
 
         /// <summary>
         /// Arbitrary decided "max" distance (i.e., all distances greater than this are equal to 1 when scaled)
         /// </summary>
-        private const float MaxDistance = 50f;
+        private const float MaxDistance = 20f;
+
         private void SetPickups()
         {
             Set("AmmoPickup", ammoPickup);
-            // Check if empty, since checking if full doesn't work.
-            SetBool("AmmoEmpty", trooper.HasAmmo);
-            SetScaled("AmmoPickupDistance", ammoPickup != null 
-                ? Agent.transform.Distance(ammoPickup.transform.position) : 0f, 0f, MaxDistance);
+            SetScaled("AmmoPickupDistance", ammoPickup != null
+                ? Agent.transform.Distance(ammoPickup.transform.position)
+                : 0f, 0f, MaxDistance);
 
             Set("HealthPickup", healthPickup);
             SetBool("HealthFull", trooper.Health == CaptureTheFlagManager.Health);
-            SetScaled("HealthPickupDistance", healthPickup != null 
-                ? Agent.transform.Distance(healthPickup.transform.position) : 0f, 0f, MaxDistance);
+            SetScaled("HealthPickupDistance", healthPickup != null
+                ? Agent.transform.Distance(healthPickup.transform.position)
+                : 0f, 0f, MaxDistance);
         }
 
         private void SetFlags()
@@ -81,6 +86,7 @@ namespace KaijuSolutions.Agents.Exercises.CTF
             Set("NearestEnemy", nearestEnemy);
             SetScaled("NearestEnemyDistance", nearestEnemy != null
                 ? Agent.transform.Distance(nearestEnemy.transform.position) : 0f, 0f, MaxDistance);
+            SetBool("NearestEnemyLineOfSight", nearestEnemy != null && trooper.transform.position.HasSight(nearestEnemy.transform.position, out RaycastHit hit, 0.5f));
         }
     }
 }

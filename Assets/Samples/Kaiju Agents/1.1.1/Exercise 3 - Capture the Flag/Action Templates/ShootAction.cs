@@ -10,7 +10,7 @@ public class ShootAction : KaijuUtilityAction
 {
     [Tooltip("Name of key with target enemy")]
     [SerializeField]
-    private string targetKey = "TargetEnemy";
+    private string targetKey;
 
     public override void Enter([NotNull] KaijuUtilityBrain brain)
     {
