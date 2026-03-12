@@ -1,0 +1,15 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5581f1317349be546b3776a74c1f106d, type: 3}
+  m_Name: Wander Action
+  m_EditorClassIdentifier: Assembly-CSharp::KaijuSolutions.Agents.Utility.Exercises.Microbes.WanderAction
+  <Consideration>k__BackingField: {fileID: 11400000, guid: b017ae3153884fd46bfa4c13bbf647d1, type: 2}

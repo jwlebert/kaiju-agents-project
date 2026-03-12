@@ -1,0 +1,17 @@
+﻿{
+  "name": "com.kaijusolutions.agents.utility.exercises.microbes",
+  "references": [
+    "com.kaijusolutions.agents",
+    "com.kaijusolutions.agents.exercises.microbes",
+    "com.kaijusolutions.agents.utility"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}

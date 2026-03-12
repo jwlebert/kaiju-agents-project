@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 86d7fd1e451645c2a11f100c9c9d55a4, type: 3}
+  m_Name: Hunt Consideration
+  m_EditorClassIdentifier: com.kaijusolutions.agents.utility::KaijuSolutions.Agents.Utility.KaijuUtilityCompositeConsideration
+  operation: 3
+  considerations:
+  - {fileID: 11400000, guid: 37f3fc8fe6a9c4c429de1a6d8383c909, type: 2}
+  - {fileID: 11400000, guid: 49b428d5c855f8e44af436e0a97a6418, type: 2}
