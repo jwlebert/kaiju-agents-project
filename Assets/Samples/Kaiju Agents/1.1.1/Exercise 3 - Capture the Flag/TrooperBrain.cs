@@ -81,12 +81,19 @@ namespace KaijuSolutions.Agents.Exercises.CTF
                 (Vector2)enemyFlag.position != Flag.Base(!trooper.TeamOne));
         }
 
+        private bool CheckLineOfSight(Transform t1, Transform t2)
+        {
+            Vector3 offset = Vector3.up * 1.75f;
+            // Debug.Log((t1.position + offset).HasSight(t2.position + offset, out RaycastHit _, 0.1f));
+            return (t1.position + offset).HasSight(t2.position + offset, out RaycastHit _, 0.1f);
+        }
+
         private void SetTroopers()
         {
             Set("NearestEnemy", nearestEnemy);
             SetScaled("NearestEnemyDistance", nearestEnemy != null
-                ? Agent.transform.Distance(nearestEnemy.transform.position) : 0f, 0f, MaxDistance);
-            SetBool("NearestEnemyLineOfSight", nearestEnemy != null && trooper.transform.position.HasSight(nearestEnemy.transform.position, out RaycastHit hit, 0.5f));
+                ? Agent.transform.Distance(nearestEnemy.transform.position) : MaxDistance, 0f, MaxDistance);
+            SetBool("NearestEnemyLineOfSight", nearestEnemy != null && CheckLineOfSight(trooper.transform, nearestEnemy.transform));
         }
     }
 }

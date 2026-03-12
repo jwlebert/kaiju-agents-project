@@ -28,30 +28,44 @@ namespace KaijuSolutions.Agents.Exercises.CTF
         [Tooltip("The KaijuUtilityBrain for this trooper.")]
         [HideInInspector]
         [SerializeField] private TrooperBrain brain;
-        
+
         /// <summary>
         /// Callback for this <see cref="trooper"/> hitting another <see cref="Trooper"/>.
         /// </summary>
         /// <param name="hit">The <see cref="Trooper"/> which was hit.</param>
-        private void OnHitTrooper(Trooper hit) { }
-        
+        private void OnHitTrooper(Trooper hit)
+        {
+            brain.nearestEnemy = null;
+        }
+
         /// <summary>
         /// Callback for this <see cref="trooper"/> getting hit by another <see cref="Trooper"/>.
         /// </summary>
         /// <param name="hitBy">The <see cref="Trooper"/> which hit the <see cref="trooper"/>.</param>
-        private void OnHitByTrooper(Trooper hitBy) { }
-        
+        private void OnHitByTrooper(Trooper hitBy)
+        {
+            brain.nearestEnemy = null;
+        }
+
         /// <summary>
         /// Callback for this <see cref="trooper"/> eliminating another <see cref="Trooper"/>.
         /// </summary>
         /// <param name="eliminated">The <see cref="Trooper"/> which was eliminated.</param>
-        private void OnEliminatedTrooper(Trooper eliminated) { }
-        
+        private void OnEliminatedTrooper(Trooper eliminated)
+        {
+            // So it stops shooting after kills/dies.
+            brain.nearestEnemy = null;
+        }
+
         /// <summary>
         /// Callback for this <see cref="trooper"/> getting eliminated by another <see cref="Trooper"/>.
         /// </summary>
         /// <param name="eliminatedBy">The <see cref="Trooper"/> which eliminated the <see cref="trooper"/>.</param>
-        private void OnEliminatedByTrooper(Trooper eliminatedBy) { }
+        private void OnEliminatedByTrooper(Trooper eliminatedBy)
+        {
+            // So it stops shooting after kills/dies.
+            brain.nearestEnemy = null;
+        }
         
         /// <summary>
         /// Callback for the <see cref="trooper"/> picking up the <see cref="Flag"/>.
