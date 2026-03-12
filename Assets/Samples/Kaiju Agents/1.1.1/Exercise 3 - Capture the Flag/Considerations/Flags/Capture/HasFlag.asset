@@ -9,7 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0a0c22b652244627a061c962576780ba, type: 3}
-  m_Name: CaptureDesire
-  m_EditorClassIdentifier: com.kaijusolutions.agents.utility::KaijuSolutions.Agents.Utility.KaijuUtilityConstantConsideration
-  utility: 0.4
+  m_Script: {fileID: 11500000, guid: d419e8bdc2e846b0bb8474bf0b6d9f46, type: 3}
+  m_Name: HasFlag
+  m_EditorClassIdentifier: com.kaijusolutions.agents.utility::KaijuSolutions.Agents.Utility.KaijuBooleanConsideration
+  key: HasFlag
+  invert: 0

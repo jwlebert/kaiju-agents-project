@@ -65,31 +65,46 @@ namespace KaijuSolutions.Agents.Exercises.CTF
         {
             // So it stops shooting after kills/dies.
             brain.nearestEnemy = null;
+            brain.SetHoldingFlag(true);
         }
-        
+
         /// <summary>
         /// Callback for the <see cref="trooper"/> picking up the <see cref="Flag"/>.
         /// </summary>
         /// <param name="flag">The <see cref="Flag"/>.</param>
-        private void OnFlagPickedUp(Flag flag) { }
-        
+        private void OnFlagPickedUp(Flag flag)
+        {
+            brain.SetHoldingFlag(true);
+        }
+
         /// <summary>
         /// Callback for the <see cref="trooper"/> capturing the <see cref="Flag"/>.
         /// </summary>
         /// <param name="flag">The <see cref="Flag"/>.</param>
-        private void OnFlagCaptured(Flag flag) { }
-        
+        private void OnFlagCaptured(Flag flag)
+        {
+            brain.SetHoldingFlag(false);
+            
+        }
+
         /// <summary>
         /// Callback for the <see cref="trooper"/> returning their <see cref="Flag"/>.
         /// </summary>
         /// <param name="flag">The <see cref="Flag"/>.</param>
-        private void OnFlagReturned(Flag flag) { }
-        
+        private void OnFlagReturned(Flag flag)
+        {
+            brain.SetHoldingFlag(true);
+            
+        }
+
         /// <summary>
         /// Callback for the <see cref="trooper"/> dropping the <see cref="Flag"/>.
         /// </summary>
         /// <param name="flag">The <see cref="Flag"/>.</param>
-        private void OnFlagDropped(Flag flag) { }
+        private void OnFlagDropped(Flag flag)
+        {
+            brain.SetHoldingFlag(true);
+        }
         
         /// <summary>
         /// Callback for sensing enemies.

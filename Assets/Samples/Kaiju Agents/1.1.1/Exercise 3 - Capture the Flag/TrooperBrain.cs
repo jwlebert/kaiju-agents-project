@@ -78,7 +78,7 @@ namespace KaijuSolutions.Agents.Exercises.CTF
             // SetBool("FriendlyFlagMissing", friendlyFlag == null || 
             //                                friendlyFlag.transform.position != Flag.Base3(trooper.TeamOne));
             // Set("FriendlyFlagExpectedLocation", friendlyFlag == null || friendlyFlag.? Flag.Base3(trooper.TeamOne) : friendlyFlag.transform.position);
-            
+            Set("CapturePoint", trooper.TeamOne ? Flag.TeamOneBase3 :  Flag.TeamTwoBase3);
             
             Set("EnemyFlag", otherFlag);
             Set("EnemyFlagCarried", otherFlag.Parent != null && otherFlag.Parent.name != "Flags");
@@ -113,6 +113,11 @@ namespace KaijuSolutions.Agents.Exercises.CTF
             SetScaled("NearestEnemyDistance", nearestEnemy != null
                 ? Agent.transform.Distance(nearestEnemy.transform.position) : MaxDistance, 0f, MaxDistance);
             SetBool("NearestEnemyLineOfSight", nearestEnemy != null && CheckLineOfSight(trooper.transform, nearestEnemy.transform));
+        }
+
+        public void SetHoldingFlag(bool v)
+        {
+            Set("HasFlag", v);
         }
     }
 }
