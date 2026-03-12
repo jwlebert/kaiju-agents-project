@@ -182,9 +182,9 @@ namespace KaijuSolutions.Agents.Exercises.CTF
             foreach (var flag in sensor.Observed)
             {
                 if (flag.TeamOne == trooper.TeamOne)
-                    brain.friendlyFlag = flag.transform;
+                    brain.friendlyFlag = flag;
                 else
-                    brain.enemyFlag = flag.transform;
+                    brain.enemyFlag = flag;
             }
         }
         

@@ -13,8 +13,8 @@ namespace KaijuSolutions.Agents.Exercises.CTF
         [SerializeField] public AmmoPickup ammoPickup;
 
         // Use transform; keep track of last position (not actual flag)
-        [SerializeField] public Transform friendlyFlag;
-        [SerializeField] public Transform enemyFlag;
+        [SerializeField] public Flag friendlyFlag;
+        [SerializeField] public Flag enemyFlag;
 
         [SerializeField] public Trooper nearestEnemy;
         
@@ -68,19 +68,33 @@ namespace KaijuSolutions.Agents.Exercises.CTF
 
         private void SetFlags()
         {
-            Set("FriendlyFlag", friendlyFlag);
+            Flag teamFlag = trooper.TeamOne ? Flag.TeamOneFlag : Flag.TeamTwoFlag;
+            Flag otherFlag = trooper.TeamOne ? Flag.TeamTwoFlag : Flag.TeamOneFlag;
+            
+            Set("FriendlyFlag", teamFlag);
+            Set("FriendlyFlagMissing", teamFlag.transform.position != Flag.Base3(trooper.TeamOne));
+            // Set("FriendlyFlag", friendlyFlag);
+            // Use OR -> they will check if its at base, 
+            // SetBool("FriendlyFlagMissing", friendlyFlag == null || 
+            //                                friendlyFlag.transform.position != Flag.Base3(trooper.TeamOne));
+            // Set("FriendlyFlagExpectedLocation", friendlyFlag == null || friendlyFlag.? Flag.Base3(trooper.TeamOne) : friendlyFlag.transform.position);
+            
+            
+            Set("EnemyFlag", otherFlag);
+            Set("EnemyFlagCarried", otherFlag.Parent != null && otherFlag.Parent.name != "Flags");
+            // Set("EnemyFlagMissing", otherFlag.transform.position != Flag.Base3(trooper.TeamOne));
+            SetScaled("EnemyFlagDistance", Agent.transform.Distance(otherFlag.transform.position), 0f, MaxDistance);
+            // Set("EnemyFlag", enemyFlag);
             // or (not and); make them check to confirm
-            SetBool("FriendlyFlagMissing", friendlyFlag == null || 
-                friendlyFlag.position != Flag.Base3(trooper.TeamOne));
-            Set("FriendlyFlagExpectedLocation", friendlyFlag == null ? Flag.Base3(trooper.TeamOne) : friendlyFlag.position);
+            // SetBool("EnemyFlagMissing", enemyFlag == null ||
+            //                             enemyFlag.transform.position != Flag.Base3(!trooper.TeamOne));
+            // Set("EnemyFlagExpectedLocation", enemyFlag == null ? Flag.Base3(!trooper.TeamOne) : enemyFlag.transform.position);
+            // Flag.TeamOneFlag.
             
-            
-            SetScaled("FriendlyFlagDistance", friendlyFlag != null 
-                ? Agent.transform.Distance(friendlyFlag.position) : MaxDistance, 0f, MaxDistance);
-            
-            Set("EnemyFlag", enemyFlag);
-            SetScaled("EnemyFlagDistance", enemyFlag != null 
-                ? Agent.transform.Distance(enemyFlag.position) : MaxDistance, 0f, MaxDistance);
+            // SetScaled("FriendlyFlagDistance", friendlyFlag != null 
+            //     ? Agent.transform.Distance(friendlyFlag.position) : MaxDistance, 0f, MaxDistance);
+            // SetScaled("EnemyFlagDistance", enemyFlag != null 
+            //     ? Agent.transform.Distance(enemyFlag.position) : MaxDistance, 0f, MaxDistance);
             // or (not and); make them check to confirm
             // SetBool("EnemyFlagMissing", enemyFlag != null || 
             //     (Vector2)enemyFlag.position != Flag.Base(!trooper.TeamOne));
