@@ -7,15 +7,28 @@ public class NavigateAction : KaijuUtilityAction
 {
     [Tooltip("The name of the key for the target")]
     [SerializeField] private string targetKey;
+    
+    [Tooltip("transform is passed if true, else a component.")]
+    [SerializeField] private bool transf;
 
     public override void Enter([NotNull] KaijuUtilityBrain brain)
     {
         // Get the target from brain's blackboard
-        Component target = brain.Get<Component>(targetKey);
-        if (target)
+        if (transf)
         {
-            // Seek for now, TODO update with pathfinding
-            brain.Agent.PathFollow(target, clear: true);
+            Vector3 target = brain.Get<Vector3>(targetKey);
+            if (target != Vector3.zero)
+            {
+                brain.Agent.PathFollow(target, clear: true);
+            }
         }
+        else
+        {
+            Component target = brain.Get<Component>(targetKey);
+            if (target)
+            {
+                brain.Agent.PathFollow(target, clear: true);
+            }
+        };
     }
 }

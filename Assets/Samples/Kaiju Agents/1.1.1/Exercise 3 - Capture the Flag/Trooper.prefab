@@ -567,6 +567,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 953491cfb0a172c48b4c154523d32862, type: 2}
   - {fileID: 11400000, guid: 2f60cc6aa869fca49812e3a813b67e64, type: 2}
   - {fileID: 11400000, guid: 453a781c579ffa145a5d682f56e7acf3, type: 2}
+  - {fileID: 11400000, guid: cc8828e5247499949a5a7224b592bb72, type: 2}
   <Agent>k__BackingField: {fileID: 6190703363887382500}
   trooper: {fileID: 0}
   healthPickup: {fileID: 0}
