@@ -25,6 +25,7 @@ namespace KaijuSolutions.Agents.Exercises.CTF
         {
             SetStatus();
             SetPickups();
+            SetFlags();
         }
 
         private void SetStatus()
@@ -45,19 +46,23 @@ namespace KaijuSolutions.Agents.Exercises.CTF
         private void SetPickups()
         {
             Set("AmmoPickup", ammoPickup);
-            SetScaled("AmmoPickupDistance", this.Agent.transform.Distance(ammoPickup.transform.position), 0f, MaxDistance);
-            
+            SetScaled("AmmoPickupDistance", ammoPickup != null 
+                ? this.Agent.transform.Distance(ammoPickup.transform.position) : 0f, 0f, MaxDistance);
+
             Set("HealthPickup", healthPickup);
-            SetScaled("HealthPickupDistance", this.Agent.transform.Distance(healthPickup.transform.position), 0f, MaxDistance);
+            SetScaled("HealthPickupDistance", healthPickup != null 
+                ? this.Agent.transform.Distance(healthPickup.transform.position) : 0f, 0f, MaxDistance);
         }
 
         private void SetFlags()
         {
             Set("FriendlyFlag", friendlyFlag);
-            SetScaled("FriendlyFlagDistance", this.Agent.transform.Distance(friendlyFlag.transform.position), 0f, MaxDistance);
+            SetScaled("FriendlyFlagDistance", friendlyFlag != null 
+                ? this.Agent.transform.Distance(friendlyFlag.position) : 0f, 0f, MaxDistance);
 
             Set("EnemyFlag", enemyFlag);
-            SetScaled("EnemyFlagDistance", this.Agent.transform.Distance(enemyFlag.transform.position), 0f, MaxDistance);
+            SetScaled("EnemyFlagDistance", enemyFlag != null 
+                ? this.Agent.transform.Distance(enemyFlag.position) : 0f, 0f, MaxDistance);
         }
 
         private void SetTroopers()
