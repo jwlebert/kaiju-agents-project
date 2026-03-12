@@ -16,6 +16,8 @@ namespace KaijuSolutions.Agents.Exercises.CTF
         [SerializeField] public Transform friendlyFlag;
         [SerializeField] public Transform enemyFlag;
 
+        [SerializeField] public Trooper nearestEnemy;
+        
         private void Start()
         {
             trooper = GetComponent<Trooper>();
@@ -26,6 +28,7 @@ namespace KaijuSolutions.Agents.Exercises.CTF
             SetStatus();
             SetPickups();
             SetFlags();
+            SetTroopers();
         }
 
         private void SetStatus()
@@ -67,7 +70,9 @@ namespace KaijuSolutions.Agents.Exercises.CTF
 
         private void SetTroopers()
         {
-            
+            Set("NearestEnemy", nearestEnemy);
+            SetScaled("NearestEnemyDistance", nearestEnemy != null
+                ? this.Agent.transform.Distance(nearestEnemy.transform.position) : 0f, 0f, MaxDistance);
         }
     }
 }

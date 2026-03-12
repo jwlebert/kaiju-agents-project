@@ -83,7 +83,13 @@ namespace KaijuSolutions.Agents.Exercises.CTF
         /// <param name="sensor">The <see cref="TrooperEnemyVisionSensor"/>.</param>
         private void OnSenseEnemies(TrooperEnemyVisionSensor sensor)
         {
-            // SensorDebug(sensor, "Enemies");
+            if (!sensor || !sensor.Observed.Any()) return;
+
+            IEnumerable<Trooper> enemies = sensor.Observed
+                .Append(brain.nearestEnemy)
+                .Where(t => t);
+
+            brain.nearestEnemy = Position.Nearest(enemies, out float _);
         }
         
         /// <summary>
@@ -92,7 +98,7 @@ namespace KaijuSolutions.Agents.Exercises.CTF
         /// <param name="sensor">The <see cref="TrooperTeamVisionSensor"/>.</param>
         private void OnSenseTeam(TrooperTeamVisionSensor sensor)
         {
-            // SensorDebug(sensor, "Team");
+            // no actions require team sensing?
         }
         
         /// <summary>
