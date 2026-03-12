@@ -50,10 +50,13 @@ namespace KaijuSolutions.Agents.Exercises.CTF
         private void SetPickups()
         {
             Set("AmmoPickup", ammoPickup);
+            // Check if empty, since checking if full doesn't work.
+            SetBool("AmmoEmpty", trooper.HasAmmo);
             SetScaled("AmmoPickupDistance", ammoPickup != null 
                 ? Agent.transform.Distance(ammoPickup.transform.position) : 0f, 0f, MaxDistance);
 
             Set("HealthPickup", healthPickup);
+            SetBool("HealthFull", trooper.Health == CaptureTheFlagManager.Health);
             SetScaled("HealthPickupDistance", healthPickup != null 
                 ? Agent.transform.Distance(healthPickup.transform.position) : 0f, 0f, MaxDistance);
         }

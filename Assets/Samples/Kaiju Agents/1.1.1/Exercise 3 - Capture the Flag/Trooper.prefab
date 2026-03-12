@@ -386,6 +386,7 @@ MonoBehaviour:
   checkParents: 1
   lineRenderer: {fileID: 6162746667573148664}
   visible: 1
+  _ammo: 0
 --- !u!120 &6162746667573148664
 LineRenderer:
   serializedVersion: 3
@@ -561,12 +562,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8e78a5d4e0f71364ba6bfa686f02282b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: com.kaijusolutions.agents.exercises.ctf::KaijuSolutions.Agents.Exercises.CTF.TrooperBrain
-  actions: []
+  actions:
+  - {fileID: 11400000, guid: 1f688a447cc480a41b232eb111e6a645, type: 2}
+  - {fileID: 11400000, guid: 953491cfb0a172c48b4c154523d32862, type: 2}
+  - {fileID: 11400000, guid: 2f60cc6aa869fca49812e3a813b67e64, type: 2}
   <Agent>k__BackingField: {fileID: 6190703363887382500}
   trooper: {fileID: 0}
   healthPickup: {fileID: 0}
   ammoPickup: {fileID: 0}
-  flag: {fileID: 0}
+  friendlyFlag: {fileID: 0}
+  enemyFlag: {fileID: 0}
+  nearestEnemy: {fileID: 0}
 --- !u!114 &5038185696145083086
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -580,6 +586,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: com.kaijusolutions.agents.exercises.ctf::KaijuSolutions.Agents.Exercises.CTF.Trooper
   agent: {fileID: 6190703363887382500}
+  <Health>k__BackingField: 0
   <FlagPosition>k__BackingField: {fileID: 7447423002306824928}
 --- !u!114 &6190703363887382500
 MonoBehaviour:
