@@ -563,7 +563,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: com.kaijusolutions.agents.exercises.ctf::KaijuSolutions.Agents.Exercises.CTF.TrooperBrain
   actions:
-  - {fileID: 11400000, guid: 1f688a447cc480a41b232eb111e6a645, type: 2}
+  - {fileID: 11400000, guid: 975e5e3c260f98b4eaa73fc5e2f45436, type: 2}
   - {fileID: 11400000, guid: 953491cfb0a172c48b4c154523d32862, type: 2}
   - {fileID: 11400000, guid: 2f60cc6aa869fca49812e3a813b67e64, type: 2}
   - {fileID: 11400000, guid: 453a781c579ffa145a5d682f56e7acf3, type: 2}
