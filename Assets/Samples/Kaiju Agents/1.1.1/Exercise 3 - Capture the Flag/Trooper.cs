@@ -216,6 +216,7 @@ namespace KaijuSolutions.Agents.Exercises.CTF
         /// <summary>
         /// The current health of this trooper.
         /// </summary>
+        [field: SerializeField] // josh - so that can see and debug
         public int Health { get; private set; }
         
         /// <summary>

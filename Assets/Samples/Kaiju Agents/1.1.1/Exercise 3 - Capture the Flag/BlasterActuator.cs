@@ -22,6 +22,7 @@ namespace KaijuSolutions.Agents.Exercises.CTF
         /// <summary>
         /// The ammo for this blaster.
         /// </summary>
+        [SerializeField]
         private int _ammo;
         
         /// <summary>
