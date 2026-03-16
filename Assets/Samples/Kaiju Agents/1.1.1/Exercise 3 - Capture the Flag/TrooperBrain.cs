@@ -77,7 +77,7 @@ namespace KaijuSolutions.Agents.Exercises.CTF
             
             Set("EnemyFlag", otherFlag);
             Set("EnemyFlagCarried", otherFlag.Parent != null && otherFlag.Parent.name != "Flags");
-            SetScaled("EnemyFlagDistance", Agent.transform.Distance(otherFlag.transform.position), 0f, MaxDistance);
+            SetScaled("EnemyFlagDistance", Agent.transform.Distance(otherFlag.transform.position), 0f, 100f);
         }
 
         private bool CheckLineOfSight(Transform t1, Transform t2)
