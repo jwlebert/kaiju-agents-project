@@ -58,12 +58,15 @@ namespace KaijuSolutions.Agents.Exercises.CTF
             SetScaled("AmmoPickupDistance", ammoPickup != null
                 ? Agent.transform.Distance(ammoPickup.transform.position)
                 : 0f, 0f, MaxDistance);
+            SetBool("AmmoPickupOnCooldown", ammoPickup && ammoPickup.OnCooldown);
 
             Set("HealthPickup", healthPickup);
             SetBool("HealthFull", trooper.Health == CaptureTheFlagManager.Health);
             SetScaled("HealthPickupDistance", healthPickup != null
                 ? Agent.transform.Distance(healthPickup.transform.position)
                 : 0f, 0f, MaxDistance);
+            SetBool("HealthPickupOnCooldown", healthPickup && healthPickup.OnCooldown);
+            
         }
 
         private void SetFlags()

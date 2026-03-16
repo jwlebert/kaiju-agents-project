@@ -14,3 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: com.kaijusolutions.agents.exercises.ctf::NavigateAction
   <Consideration>k__BackingField: {fileID: 11400000, guid: 5d1404cc320848e4caf4473adf71f01e, type: 2}
   targetKey: AmmoPickup
+  transf: 0
+  pickup: 1
