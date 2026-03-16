@@ -22,7 +22,6 @@ public class NavigateAction : KaijuUtilityAction
             {
                 // This is only used by flag captures.
                 brain.Agent.PathFollow(target, clear: true);
-                brain.Agent.Separation(clear: false);
             }
         }
         else
