@@ -10,10 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 86d7fd1e451645c2a11f100c9c9d55a4, type: 3}
-  m_Name: SearchEnemyFlagConsideration
+  m_Name: AttackerCompoundConsideration
   m_EditorClassIdentifier: com.kaijusolutions.agents.utility::KaijuSolutions.Agents.Utility.KaijuUtilityCompositeConsideration
   operation: 3
   considerations:
-  - {fileID: 11400000, guid: 7c292aeada63c5045b4bb6b85359a2b2, type: 2}
-  - {fileID: 11400000, guid: 820bd73329e3e47429951cc9ce33daf7, type: 2}
-  - {fileID: 11400000, guid: a2e0ed9152def9a409e73eccfc0bbdce, type: 2}
+  - {fileID: 11400000, guid: aed1a79000ae313469a13f0955028eff, type: 2}
+  - {fileID: 11400000, guid: 723adbc2b7b59e146987c0b28ffaec90, type: 2}

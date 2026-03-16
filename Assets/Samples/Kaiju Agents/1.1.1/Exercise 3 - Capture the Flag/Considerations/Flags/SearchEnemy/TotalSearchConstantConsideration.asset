@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 86d7fd1e451645c2a11f100c9c9d55a4, type: 3}
+  m_Name: TotalSearchConstantConsideration
+  m_EditorClassIdentifier: com.kaijusolutions.agents.utility::KaijuSolutions.Agents.Utility.KaijuUtilityCompositeConsideration
+  operation: 1
+  considerations:
+  - {fileID: 11400000, guid: 7c292aeada63c5045b4bb6b85359a2b2, type: 2}
+  - {fileID: 11400000, guid: ce62e16d19c9e72468af3ad8c22ba9b9, type: 2}
