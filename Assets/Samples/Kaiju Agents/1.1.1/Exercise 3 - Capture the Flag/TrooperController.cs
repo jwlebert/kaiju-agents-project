@@ -93,7 +93,7 @@ namespace KaijuSolutions.Agents.Exercises.CTF
         /// <param name="flag">The <see cref="Flag"/>.</param>
         private void OnFlagReturned(Flag flag)
         {
-            brain.SetHoldingFlag(true);
+            brain.SetHoldingFlag(false);
             
         }
 
