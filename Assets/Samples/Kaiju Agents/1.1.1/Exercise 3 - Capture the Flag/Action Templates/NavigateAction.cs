@@ -13,6 +13,7 @@ public class NavigateAction : KaijuUtilityAction
 
     public override void Enter([NotNull] KaijuUtilityBrain brain)
     {
+        brain.Agent.LookTransform = null;
         // Get the target from brain's blackboard
         if (transf)
         {
