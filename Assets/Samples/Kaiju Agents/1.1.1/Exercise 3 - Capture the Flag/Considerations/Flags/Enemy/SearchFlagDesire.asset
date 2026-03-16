@@ -12,4 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0a0c22b652244627a061c962576780ba, type: 3}
   m_Name: SearchFlagDesire
   m_EditorClassIdentifier: com.kaijusolutions.agents.utility::KaijuSolutions.Agents.Utility.KaijuUtilityConstantConsideration
-  utility: 0.25
+  utility: 0.9

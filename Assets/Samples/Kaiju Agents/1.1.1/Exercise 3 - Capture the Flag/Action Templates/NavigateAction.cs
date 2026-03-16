@@ -19,7 +19,9 @@ public class NavigateAction : KaijuUtilityAction
             Vector3 target = brain.Get<Vector3>(targetKey);
             if (target != Vector3.zero)
             {
+                // This is only used by flag captures.
                 brain.Agent.PathFollow(target, clear: true);
+                brain.Agent.Separation(clear: false);
             }
         }
         else
