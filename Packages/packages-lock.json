@@ -5,13 +5,21 @@
       "depth": 0,
       "source": "git",
       "dependencies": {
-        "com.unity.ai.navigation": "2.0.10",
-        "com.unity.inputsystem": "1.17.0"
+        "com.unity.ai.navigation": "2.0.11"
       },
-      "hash": "3ebd9436f93781482c3103301ee5433a37f048c1"
+      "hash": "6e2691f57470f05e7a6e53d7cdfc2d40c11a9010"
+    },
+    "com.kaijusolutions.agents.utility": {
+      "version": "https://github.com/Kaiju-Solutions/Kaiju-Agents-Utility.git#release",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {
+        "com.kaijusolutions.agents": "1.1.0"
+      },
+      "hash": "fa37d94c3602b98725a0e49b2a866fa4bf22f80a"
     },
     "com.unity.ai.navigation": {
-      "version": "2.0.10",
+      "version": "2.0.11",
       "depth": 1,
       "source": "registry",
       "dependencies": {
@@ -35,7 +43,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.ide.visualstudio": {
-      "version": "2.0.26",
+      "version": "2.0.27",
       "depth": 0,
       "source": "registry",
       "dependencies": {

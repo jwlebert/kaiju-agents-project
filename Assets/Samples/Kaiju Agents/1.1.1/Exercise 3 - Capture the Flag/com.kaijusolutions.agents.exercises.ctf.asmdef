@@ -1,0 +1,16 @@
+﻿{
+  "name": "com.kaijusolutions.agents.exercises.ctf",
+  "references": [
+    "com.kaijusolutions.agents",
+    "com.kaijusolutions.agents.utility"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}
