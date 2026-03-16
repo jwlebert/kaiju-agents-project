@@ -10,6 +10,6 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0a0c22b652244627a061c962576780ba, type: 3}
-  m_Name: ReturnFlagConsideration
+  m_Name: DefenderConstant
   m_EditorClassIdentifier: com.kaijusolutions.agents.utility::KaijuSolutions.Agents.Utility.KaijuUtilityConstantConsideration
-  utility: 0.8
+  utility: 0.65

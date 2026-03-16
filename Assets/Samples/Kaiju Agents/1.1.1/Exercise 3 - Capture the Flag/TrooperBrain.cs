@@ -2,12 +2,17 @@ using System;
 using KaijuSolutions.Agents.Extensions;
 using KaijuSolutions.Agents.Utility;
 using UnityEngine;
+using Random = System.Random;
+
 
 namespace KaijuSolutions.Agents.Exercises.CTF
 {
     public class TrooperBrain : KaijuUtilityBrain
     {
         [SerializeField] private Trooper trooper;
+        
+        // true = attacker, false = defender
+        [SerializeField] public bool attacker;
         
         [SerializeField] public HealthPickup healthPickup;
         [SerializeField] public AmmoPickup ammoPickup;
@@ -22,6 +27,9 @@ namespace KaijuSolutions.Agents.Exercises.CTF
         {
             base.Awake();
             trooper = GetComponent<Trooper>();
+
+            Random random = new Random();
+            this.attacker = random.NextDouble() < 0.5f;
         }
 
         protected override void UpdateBlackboard()

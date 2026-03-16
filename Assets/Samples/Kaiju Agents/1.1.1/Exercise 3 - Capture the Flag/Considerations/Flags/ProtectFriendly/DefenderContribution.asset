@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 86d7fd1e451645c2a11f100c9c9d55a4, type: 3}
-  m_Name: NavigateFriendlyFlag
+  m_Name: DefenderContribution
   m_EditorClassIdentifier: com.kaijusolutions.agents.utility::KaijuSolutions.Agents.Utility.KaijuUtilityCompositeConsideration
   operation: 3
   considerations:
-  - {fileID: 11400000, guid: d1a7e021669440b4aa6db41781a00995, type: 2}
-  - {fileID: 11400000, guid: 4d90ee1059504df40a1f61ec41a1d7c8, type: 2}
+  - {fileID: 11400000, guid: ab63b66b7beb0fa4eb8ff1ea790f03f9, type: 2}
+  - {fileID: 11400000, guid: 6b2580f5a474b0a48a2afb87c4893f7f, type: 2}
