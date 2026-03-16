@@ -112,12 +112,15 @@ namespace KaijuSolutions.Agents.Exercises.CTF
         /// <param name="sensor">The <see cref="TrooperEnemyVisionSensor"/>.</param>
         private void OnSenseEnemies(TrooperEnemyVisionSensor sensor)
         {
+            // Safety check for null sensor or empty detection list.
             if (!sensor || !sensor.Observed.Any()) return;
 
+            // Combine visible pickups with the currently tracked ammo pickup.
             IEnumerable<Trooper> enemies = sensor.Observed
                 .Append(brain.nearestEnemy)
                 .Where(t => t);
 
+            // Update the brain with the nearest eligible enemy trooper.
             brain.nearestEnemy = Position.Nearest(enemies, out float _);
         }
         
@@ -128,6 +131,7 @@ namespace KaijuSolutions.Agents.Exercises.CTF
         private void OnSenseTeam(TrooperTeamVisionSensor sensor)
         {
             // no actions require team sensing?
+            // could possibly be used to prevent TKs?
         }
         
         /// <summary>
@@ -136,7 +140,7 @@ namespace KaijuSolutions.Agents.Exercises.CTF
         /// <param name="sensor">The <see cref="TrooperTeamVisionSensor"/>.</param>
         private void OnSenseTroopers(TrooperVisionSensor sensor)
         {
-            // SensorDebug(sensor, "Troopers");
+            // none needed
         }
 
         /// <summary>
@@ -151,8 +155,7 @@ namespace KaijuSolutions.Agents.Exercises.CTF
                 return;
             }
 
-            // Combine current visible pickups with the one we are already tracking.
-            // .Where(p => p) uses Unity's implicit null check to filter out destroyed objects.
+            // Combine visible pickups with the currently tracked ammo pickup.
             IEnumerable<AmmoPickup> pickups = sensor.Observed
                 .Append(brain.ammoPickup)
                 .Where(p => p);
@@ -196,6 +199,9 @@ namespace KaijuSolutions.Agents.Exercises.CTF
 
             foreach (var flag in sensor.Observed)
             {
+                // Tracks enemy/friendly flags when observed.
+                // Currently unused; we decided to treat troopers as omniscient with respect to flags.
+                // Just pretend they have walkie talkies.
                 if (flag.TeamOne == trooper.TeamOne)
                     brain.friendlyFlag = flag;
                 else
