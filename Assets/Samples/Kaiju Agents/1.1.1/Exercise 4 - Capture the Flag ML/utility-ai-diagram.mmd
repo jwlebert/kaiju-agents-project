@@ -1,0 +1,20 @@
+﻿stateDiagram-v2
+    direction TB
+    [*] --> UpdateBlackboard
+
+    UpdateBlackboard --> EvaluateConsiderations : Update Variables (Health, Ammo, Flags, LoS)
+    EvaluateConsiderations --> SetBestAction : Score Actions & Pick Highest Utility
+
+    SetBestAction --> Action_Wander : Best is Wander Action
+    SetBestAction --> Action_NavigateHealth : Best is Navigate Health Pickup Action
+    SetBestAction --> Action_NavigateAmmo : Best is Navigate Ammo Pickup Action
+    SetBestAction --> Action_ShootNearestEnemy : Best is Shoot Nearest Enemy
+    SetBestAction --> Action_SearchEnemyFlag : Best is Search Enemy Flag Action
+    SetBestAction --> Action_ReturnFriendlyFlag : Best is Return Friendly Flag Action
+
+    Action_Wander --> UpdateBlackboard : Complete
+    Action_NavigateHealth --> UpdateBlackboard : Complete
+    Action_NavigateAmmo --> UpdateBlackboard : Complete
+    Action_ShootNearestEnemy --> UpdateBlackboard : Complete
+    Action_SearchEnemyFlag --> UpdateBlackboard : Complete
+    Action_ReturnFriendlyFlag --> UpdateBlackboard : Complete

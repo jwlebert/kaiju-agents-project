@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 86d7fd1e451645c2a11f100c9c9d55a4, type: 3}
+  m_Name: AmmoPickupConsideration
+  m_EditorClassIdentifier: com.kaijusolutions.agents.utility::KaijuSolutions.Agents.Utility.KaijuUtilityCompositeConsideration
+  operation: 3
+  considerations:
+  - {fileID: 11400000, guid: 6936791bdfe5f5547a39662481e46335, type: 2}
+  - {fileID: 11400000, guid: 750937f2588801b46bbff7d961b8faaf, type: 2}
+  - {fileID: 11400000, guid: 5f613a93624700f408b69f457adc1130, type: 2}

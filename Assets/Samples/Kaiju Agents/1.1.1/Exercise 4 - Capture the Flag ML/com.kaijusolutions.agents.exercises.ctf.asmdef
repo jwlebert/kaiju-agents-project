@@ -1,0 +1,18 @@
+{
+    "name": "com.kaijusolutions.agents.exercises.ctf2",
+    "rootNamespace": "",
+    "references": [
+        "com.kaijusolutions.agents",
+        "com.kaijusolutions.agents.utility",
+        "Unity.ML-Agents"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
