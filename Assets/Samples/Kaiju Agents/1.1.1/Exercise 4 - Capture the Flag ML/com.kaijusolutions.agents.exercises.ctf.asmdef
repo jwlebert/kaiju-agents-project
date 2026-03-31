@@ -4,7 +4,8 @@
     "references": [
         "com.kaijusolutions.agents",
         "com.kaijusolutions.agents.utility",
-        "Unity.ML-Agents"
+        "Unity.ML-Agents",
+        "Unity.InputSystem"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

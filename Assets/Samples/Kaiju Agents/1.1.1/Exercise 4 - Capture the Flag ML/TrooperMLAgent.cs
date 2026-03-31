@@ -40,47 +40,6 @@ namespace Samples.Kaiju_Agents._1._1._1.Exercise_4___Capture_the_Flag_ML
         private readonly float _maxMapDistance = 150f; 
         private const float MaxSensorDist = 20f;
 
-    public override void Initialize()
-    {
-        // Grab reference to the trooper component
-        trooper = GetComponent<Trooper>();
-        
-        // Find all flags in the scene
-        Flag[] flags = FindObjectsByType<Flag>(FindObjectsInactive.Include, FindObjectsSortMode.None);
-        
-        foreach (Flag f in flags)
-        {
-            if (f.TeamOne == trooper.TeamOne)
-            {
-                friendlyFlag = f;
-                // A team's base is exactly where their flag spawns at the start
-                friendlyBasePosition = f.transform.position; 
-            }
-            else
-            {
-                enemyFlag = f;
-            }
-        }
-    }
-    
-    protected override void OnEnable()
-    {
-        base.OnEnable();
-        if (trooper == null) return;
-        
-        trooper.OnFlagCaptured += HandleFlagCaptured;
-        trooper.OnFlagReturned += HandleFlagReturned;
-        trooper.OnEliminatedTrooper += HandleEliminatedEnemy;
-        trooper.OnEliminatedByTrooper += HandleEliminatedByEnemy;
-        trooper.OnHitTrooper += HandleHitEnemy;
-        trooper.OnFlagPickedUp += HandleFlagPickedUp;
-        trooper.OnFlagDropped += HandleFlagDropped;
-    }
-    
-    protected override void OnDisable()
-    {
-        base.OnDisable();
-        if (trooper == null) return;
         public override void Initialize()
         {
             SetupReferences();
@@ -113,14 +72,7 @@ namespace Samples.Kaiju_Agents._1._1._1.Exercise_4___Capture_the_Flag_ML
             _ammoSensor = _kaijuAgent.GetSensor<AmmoVisionSensor>();
             _healthSensor = _kaijuAgent.GetSensor<HealthVisionSensor>();
             
-            // Determine Team
-            bool isTeamOne = false;
-            if (_trooper != null) isTeamOne = _trooper.TeamOne;
-            else
-            {
-                var prop = _trooperComp.GetType().GetProperty("TeamOne");
-                if (prop != null) isTeamOne = (bool)prop.GetValue(_trooperComp);
-            }
+            bool isTeamOne = GetTrooperBool("TeamOne", true);
 
             // Find world objectives
             Flag[] flags = FindObjectsByType<Flag>(FindObjectsInactive.Include, FindObjectsSortMode.None);
@@ -163,45 +115,6 @@ namespace Samples.Kaiju_Agents._1._1._1.Exercise_4___Capture_the_Flag_ML
             base.OnDisable();
             if (_trooper == null) return;
 
-        // Unsubscribe to prevent memory leaks
-        trooper.OnFlagCaptured -= HandleFlagCaptured;
-        trooper.OnFlagReturned -= HandleFlagReturned;
-        trooper.OnEliminatedTrooper -= HandleEliminatedEnemy;
-        trooper.OnEliminatedByTrooper -= HandleEliminatedByEnemy;
-        trooper.OnHitTrooper -= HandleHitEnemy;
-        trooper.OnFlagPickedUp += HandleFlagPickedUp;
-        trooper.OnFlagDropped += HandleFlagDropped;
-    }
-    
-    public override void OnEpisodeBegin()
-    {
-        // Reset our reward shaping distances when an agent respawns
-        if (enemyFlag != null)
-            previousDistanceToEnemyFlag = Vector3.Distance(transform.position, enemyFlag.transform.position);
-        
-        previousDistanceToFriendlyBase = Vector3.Distance(transform.position, friendlyBasePosition);
-    }
-    
-    public override void CollectObservations(VectorSensor sensor)
-    {
-        // Internal State
-        sensor.AddObservation(trooper.Health / MAX_HEALTH);
-        sensor.AddObservation(trooper.Ammo / MAX_AMMO);
-        sensor.AddObservation(hasFlag ? 1.0f : 0.0f);
-        
-        // Spatial Awareness (based on dungeon example)
-        if (enemyFlag != null)
-        {
-            sensor.AddObservation(Vector3.Distance(transform.position, enemyFlag.transform.position) / maxMapDistance);
-            
-            Vector3 dirToFlag = (enemyFlag.transform.position - transform.position).normalized;
-            sensor.AddObservation(dirToFlag.x);
-            sensor.AddObservation(dirToFlag.z);
-        }
-        else
-        {
-            // Safe fallbacks if a flag is missing
-            sensor.AddObservation(0f); sensor.AddObservation(0f); sensor.AddObservation(0f);
             // Unsubscribe to prevent memory leaks
             _trooper.OnFlagPickedUp -= HandleFlagPickedUp;
             _trooper.OnFlagDropped -= HandleFlagDropped;
@@ -212,129 +125,211 @@ namespace Samples.Kaiju_Agents._1._1._1.Exercise_4___Capture_the_Flag_ML
             _trooper.OnHitTrooper -= HandleHitEnemy;
         }
         
-        }
-
-        // Distance to Friendly Base
-        sensor.AddObservation(Vector3.Distance(transform.position, friendlyBasePosition) / maxMapDistance);
-    }
-    
-    public override void OnActionReceived(ActionBuffers actions)
-    {
-        var discreteActions = actions.DiscreteActions;
-
-        // --- Movement ---
-        int moveAction = discreteActions[0];
-        if (moveAction == 1)
+        public override void OnEpisodeBegin()
         {
-            trooper.Agent.Control = new Vector2(0, 1f);// Move Forward y axis
-        }
-        else if (moveAction == 2)
-        {
-            trooper.Agent.Control = new Vector2(0, -1f); // Move Backward (Y axis)
-        }
-        else
-        {
-            trooper.Agent.Control = Vector2.zero; // Idle
-        }
-
-        // --- Rotation ---
-        int rotateAction = discreteActions[1];
-        if (rotateAction == 1)
-        {
-            trooper.Agent.Spin = 1f; // Turn Right
-        }
-        else if (rotateAction == 2)
-        {
-            trooper.Agent.Spin = -1f; // Turn Left
-        }
-        else
-        {
-            trooper.Agent.Spin = null; // Idle
-        }
-
-        // --- Shooting ---
-        int shootAction = discreteActions[2];
-        if (shootAction == 1)
-        {
-            trooper.Attack();
+            if (!SetupReferences()) return;
+            _kaijuAgent.Stop();
+            
+            if (_enemyFlag != null)
+                _previousDistanceToEnemyFlag = Vector3.Distance(transform.position, _enemyFlag.transform.position);
+            
+            _previousDistanceToFriendlyBase = Vector3.Distance(transform.position, _friendlyBasePosition);
         }
         
-        // Reward Shaping (inspiration from Dungeon example)
-        AddReward(-0.0005f); // Tiny existential penalty to encourage fast action
-        
-        if (!hasFlag && enemyFlag != null)
+        public override void CollectObservations(VectorSensor sensor)
         {
-            float currentDistToFlag = Vector3.Distance(transform.position, enemyFlag.transform.position);
-            if (currentDistToFlag < previousDistanceToEnemyFlag)
+            if (!SetupReferences())
             {
-                AddReward(0.001f); 
+                for (int i = 0; i < 19; i++) sensor.AddObservation(0f);
+                return;
             }
-            previousDistanceToEnemyFlag = currentDistToFlag;
-        }
-        else if (hasFlag)
-        {
-            float currentDistToBase = Vector3.Distance(transform.position, friendlyBasePosition);
-            if (currentDistToBase < previousDistanceToFriendlyBase)
+
+            // Clean, assignment-style data grabbing
+            float health = GetTrooperValue("Health", 100f);
+            float ammo = GetTrooperValue("Ammo", 30f);
+
+            sensor.AddObservation(health / MaxHealth);
+            sensor.AddObservation(ammo / MaxAmmo);
+            sensor.AddObservation(_hasFlag ? 1.0f : 0.0f);
+            
+            if (_enemyFlag != null)
             {
-                AddReward(0.002f); 
+                sensor.AddObservation(Vector3.Distance(transform.position, _enemyFlag.transform.position) / _maxMapDistance);
+                Vector3 dirToFlag = (Quaternion.Inverse(transform.rotation) * (_enemyFlag.transform.position - transform.position)).normalized;
+                sensor.AddObservation(dirToFlag.x);
+                sensor.AddObservation(dirToFlag.z);
             }
-            previousDistanceToFriendlyBase = currentDistToBase;
+            else { sensor.AddObservation(0f); sensor.AddObservation(0f); sensor.AddObservation(0f); }
+
+            if (_friendlyFlag != null)
+            {
+                sensor.AddObservation(Vector3.Distance(transform.position, _friendlyFlag.transform.position) / _maxMapDistance);
+                Vector3 dirToFlag = (Quaternion.Inverse(transform.rotation) * (_friendlyFlag.transform.position - transform.position)).normalized;
+                sensor.AddObservation(dirToFlag.x);
+                sensor.AddObservation(dirToFlag.z);
+            }
+            else { sensor.AddObservation(0f); sensor.AddObservation(0f); sensor.AddObservation(0f); }
+
+            sensor.AddObservation(Vector3.Distance(transform.position, _friendlyBasePosition) / _maxMapDistance);
+
+            float enemyDist = 1.0f;
+            Vector3 enemyDir = Vector3.zero;
+            if (_enemySensor != null && _enemySensor.Observed != null)
+            {
+                float minD = float.MaxValue;
+                foreach (var e in _enemySensor.Observed)
+                {
+                    if (e == null) continue;
+                    float d = Vector3.Distance(transform.position, e.transform.position);
+                    if (d < minD) 
+                    { 
+                        minD = d; 
+                        enemyDir = (Quaternion.Inverse(transform.rotation) * (e.transform.position - transform.position)).normalized; 
+                    }
+                }
+                if (minD != float.MaxValue) enemyDist = minD / MaxSensorDist;
+            }
+            sensor.AddObservation(enemyDist);
+            sensor.AddObservation(enemyDir.x);
+            sensor.AddObservation(enemyDir.z);
+
+            AddPickupObs(sensor, _healthSensor);
+            AddPickupObs(sensor, _ammoSensor);
         }
-    }
-    
-    public override void Heuristic(in ActionBuffers actionsOut)
-    {
-        // This allows to control the agent with the keyboard for testing
-        // before you start the Python training server.
-        var discreteActionsOut = actionsOut.DiscreteActions;
+
+        public override void OnActionReceived(ActionBuffers actions)
+        {
+            if (!SetupReferences()) return;
+
+            var discreteActions = actions.DiscreteActions;
+            
+            // Movement
+            float moveVal = 0;
+            if (discreteActions[0] == 1) moveVal = 1f;
+            else if (discreteActions[0] == 2) moveVal = -1f;
+            _rb.linearVelocity = transform.forward * moveVal * _kaijuAgent.MoveSpeed;
+
+            // Rotation
+            float rotateVal = 0;
+            if (discreteActions[1] == 1) rotateVal = 1f;
+            else if (discreteActions[1] == 2) rotateVal = -1f;
+            if (rotateVal != 0)
+            {
+                transform.Rotate(Vector3.up, rotateVal * _kaijuAgent.LookSpeed * Time.fixedDeltaTime);
+            }
+
+            // Combat
+            if (discreteActions[2] == 1)
+            {
+                _trooperComp.SendMessage("Attack", SendMessageOptions.DontRequireReceiver);
+            }
+            else
+            {
+                _trooperComp.SendMessage("StopAttacking", SendMessageOptions.DontRequireReceiver);
+            }
+            
+            // Reward Shaping (Anti-Wiggle Logic)
+            AddReward(-0.0005f);
+            if (!_hasFlag && _enemyFlag != null)
+            {
+                float currentDist = Vector3.Distance(transform.position, _enemyFlag.transform.position);
+                // Only reward for breaking NEW records of closeness
+                if (currentDist < _previousDistanceToEnemyFlag) 
+                {
+                    AddReward(0.001f);
+                    _previousDistanceToEnemyFlag = currentDist;
+                }
+            }
+            else if (_hasFlag)
+            {
+                float currentDist = Vector3.Distance(transform.position, _friendlyBasePosition);
+                // Only reward for breaking NEW records of closeness to base
+                if (currentDist < _previousDistanceToFriendlyBase) 
+                {
+                    AddReward(0.002f);
+                    _previousDistanceToFriendlyBase = currentDist;
+                }
+            }
+        }
         
-        // Reset defaults
-        discreteActionsOut[0] = 0; 
-        discreteActionsOut[1] = 0; 
-        discreteActionsOut[2] = 0;
+        public override void Heuristic(in ActionBuffers actionsOut)
+        {
+            var discreteActionsOut = actionsOut.DiscreteActions;
+            discreteActionsOut[0] = 0; discreteActionsOut[1] = 0; discreteActionsOut[2] = 0;
 
-        // Movement Keyboard Mapping (W/S)
-        if (Input.GetKey(KeyCode.W)) discreteActionsOut[0] = 1;
-        else if (Input.GetKey(KeyCode.S)) discreteActionsOut[0] = 2;
+            if (Keyboard.current == null) return;
 
-        // Rotation Keyboard Mapping (A/D)
-        if (Input.GetKey(KeyCode.D)) discreteActionsOut[1] = 1;
-        else if (Input.GetKey(KeyCode.A)) discreteActionsOut[1] = 2;
+            if (Keyboard.current.wKey.isPressed) discreteActionsOut[0] = 1;
+            else if (Keyboard.current.sKey.isPressed) discreteActionsOut[0] = 2;
 
-        // Shoot Keyboard Mapping (Spacebar)
-        if (Input.GetKey(KeyCode.Space)) discreteActionsOut[2] = 1;
+            if (Keyboard.current.dKey.isPressed) discreteActionsOut[1] = 1;
+            else if (Keyboard.current.aKey.isPressed) discreteActionsOut[1] = 2;
+
+            if (Keyboard.current.spaceKey.isPressed) discreteActionsOut[2] = 1;
+        }
+
+        // --- Helper methods to handle Assembly Conflicts (Reflection Fallback) ---
+        private float GetTrooperValue(string propName, float fallback)
+        {
+            if (_trooper != null)
+            {
+                var p = _trooper.GetType().GetProperty(propName);
+                if (p != null) return Convert.ToSingle(p.GetValue(_trooper));
+            }
+            if (_trooperComp != null)
+            {
+                var p = _trooperComp.GetType().GetProperty(propName);
+                if (p != null) return Convert.ToSingle(p.GetValue(_trooperComp));
+            }
+            return fallback;
+        }
+
+        private bool GetTrooperBool(string propName, bool fallback)
+        {
+            if (_trooper != null)
+            {
+                var p = _trooper.GetType().GetProperty(propName);
+                if (p != null) return (bool)p.GetValue(_trooper);
+            }
+            if (_trooperComp != null)
+            {
+                var p = _trooperComp.GetType().GetProperty(propName);
+                if (p != null) return (bool)p.GetValue(_trooperComp);
+            }
+            return fallback;
+        }
+
+        private void AddPickupObs<T>(VectorSensor sensor, KaijuVisionSensor<T> s) where T : Pickup
+        {
+            T nearest = null;
+            float minDist = float.MaxValue;
+            if (s != null && s.Observed != null)
+            {
+                foreach (var p in s.Observed)
+                {
+                    if (p == null) continue;
+                    bool onCooldown = false;
+                    if (p is NumberPickup np) onCooldown = np.OnCooldown;
+                    if (onCooldown) continue;
+                    float d = Vector3.Distance(transform.position, p.transform.position);
+                    if (d < minDist) { minDist = d; nearest = p; }
+                }
+            }
+            if (nearest != null)
+            {
+                sensor.AddObservation(minDist / MaxSensorDist);
+                Vector3 dir = (Quaternion.Inverse(transform.rotation) * (nearest.transform.position - transform.position)).normalized;
+                sensor.AddObservation(dir.x); sensor.AddObservation(dir.z);
+            }
+            else { sensor.AddObservation(1.0f); sensor.AddObservation(0f); sensor.AddObservation(0f); }
+        }
+        
+        private void HandleFlagPickedUp(Flag flag) { _hasFlag = true; }
+        private void HandleFlagDropped(Flag flag)  { _hasFlag = false; }
+        private void HandleFlagCaptured(Flag flag) { _hasFlag = false; AddReward(5.0f); EndEpisode(); }
+        private void HandleFlagReturned(Flag flag) { _hasFlag = false; AddReward(2.0f); }
+        private void HandleEliminatedEnemy(Trooper e) { AddReward(1.0f); }
+        private void HandleHitEnemy(Trooper e) { AddReward(0.1f); }
+        private void HandleEliminatedByEnemy(Trooper e) { AddReward(-1.0f); EndEpisode(); }
     }
-    
-    // Rewards
-    private void HandleFlagPickedUp(Flag flag) { hasFlag = true; }
-    private void HandleFlagDropped(Flag flag)  { hasFlag = false; }
-    private void HandleFlagCaptured(Flag flag)
-    {
-        hasFlag = false;
-        AddReward(2.0f); // Massive reward for the ultimate objective
-        EndEpisode();    // End the learning cycle for this agent
-    }
-
-    private void HandleFlagReturned(Flag flag)
-    {
-        hasFlag = false;
-        AddReward(1.0f);
-    }
-
-    private void HandleEliminatedEnemy(Trooper eliminatedEnemy)
-    {
-        AddReward(0.5f);
-    }
-
-    private void HandleHitEnemy(Trooper hitEnemy)
-    {
-        AddReward(0.1f);
-    }
-
-    private void HandleEliminatedByEnemy(Trooper eliminatedBy)
-    {
-        AddReward(-1.0f); // Big penalty for dying
-        EndEpisode();
-    }
-    
 }
