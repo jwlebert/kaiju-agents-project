@@ -8,6 +8,7 @@ using UnityEngine.InputSystem;
 using KaijuSolutions.Agents;
 using System;
 using System.Reflection;
+using UnityEngine.AI;
 
 namespace Samples.Kaiju_Agents._1._1._1.Exercise_4___Capture_the_Flag_ML
 {
@@ -36,6 +37,9 @@ namespace Samples.Kaiju_Agents._1._1._1.Exercise_4___Capture_the_Flag_ML
         
         private bool _hasFlag;
         
+        private int _stepCount;
+        private const int MaxStepsAllowed = 5000;
+        
         // Used for anti-wiggling reward shaping.
         private float _previousDistanceToEnemyFlag;
         private float _previousDistanceToFriendlyBase;
@@ -44,6 +48,27 @@ namespace Samples.Kaiju_Agents._1._1._1.Exercise_4___Capture_the_Flag_ML
         private const float MaxAmmo = 30f;
         private readonly float _maxMapDistance = 150f; 
         private const float MaxSensorDist = 20f;
+        
+        private float GetPathDistance(Vector3 start, Vector3 target)
+        {
+            NavMeshPath path = new NavMeshPath();
+    
+            // Calculate the path around the walls
+            if (NavMesh.CalculatePath(start, target, NavMesh.AllAreas, path))
+            {
+                float distance = 0.0f;
+        
+                // Sum up the length of all the corners along the path
+                for (int i = 0; i < path.corners.Length - 1; i++)
+                {
+                    distance += Vector3.Distance(path.corners[i], path.corners[i + 1]);
+                }
+                return distance;
+            }
+    
+            // Fallback just in case the path fails
+            return Vector3.Distance(start, target); 
+        }
 
         public override void Initialize()
         {
@@ -126,6 +151,8 @@ namespace Samples.Kaiju_Agents._1._1._1.Exercise_4___Capture_the_Flag_ML
                 _trooper.OnEliminatedTrooper += HandleEliminatedEnemy;
                 _trooper.OnEliminatedByTrooper += HandleEliminatedByEnemy;
                 _trooper.OnHitTrooper += HandleHitEnemy;
+                _trooper.OnHealth += HandleHealthPickup;
+                _trooper.OnAmmo += HandleAmmoPickup;
             }
 
             return true;
@@ -150,6 +177,8 @@ namespace Samples.Kaiju_Agents._1._1._1.Exercise_4___Capture_the_Flag_ML
             _trooper.OnEliminatedTrooper -= HandleEliminatedEnemy;
             _trooper.OnEliminatedByTrooper -= HandleEliminatedByEnemy;
             _trooper.OnHitTrooper -= HandleHitEnemy;
+            _trooper.OnHealth -= HandleHealthPickup;
+            _trooper.OnAmmo -= HandleAmmoPickup;
         }
         
         public override void OnEpisodeBegin()
@@ -158,12 +187,13 @@ namespace Samples.Kaiju_Agents._1._1._1.Exercise_4___Capture_the_Flag_ML
             
             // Stop any leftover physics momentum from the previous episode.
             _kaijuAgent.Stop();
+            _stepCount = 0; // Reset the counter
             
             // Baseline the distances so reward shaping only rewards NEW progress.
             if (_enemyFlag != null)
-                _previousDistanceToEnemyFlag = Vector3.Distance(transform.position, _enemyFlag.transform.position);
-            
-            _previousDistanceToFriendlyBase = Vector3.Distance(transform.position, _friendlyBasePosition);
+                _previousDistanceToEnemyFlag = GetPathDistance(transform.position, _enemyFlag.transform.position);
+
+            _previousDistanceToFriendlyBase = GetPathDistance(transform.position, _friendlyBasePosition);
         }
         
         /// <summary>
@@ -176,7 +206,7 @@ namespace Samples.Kaiju_Agents._1._1._1.Exercise_4___Capture_the_Flag_ML
             if (!SetupReferences())
             {
                 // Pad with zeros to prevent Vector size mismatch errors during early frames.
-                for (int i = 0; i < 19; i++) sensor.AddObservation(0f);
+                for (int i = 0; i < 22; i++) sensor.AddObservation(0f);
                 return;
             }
 
@@ -237,6 +267,20 @@ namespace Samples.Kaiju_Agents._1._1._1.Exercise_4___Capture_the_Flag_ML
             // 14-19. Pickups (Health and Ammo)
             AddPickupObs(sensor, _healthSensor);
             AddPickupObs(sensor, _ammoSensor);
+            
+            // Give the agent a compass to the objective
+            if (!_hasFlag && _enemyFlag != null)
+            {
+                sensor.AddObservation(_enemyFlag.transform.localPosition);
+            }
+            else if (_hasFlag && _friendlyFlag != null)
+            {
+                sensor.AddObservation(_friendlyBasePosition);
+            }
+            else
+            {
+                sensor.AddObservation(Vector3.zero);
+            }
         }
 
         public override void OnActionReceived(ActionBuffers actions)
@@ -267,44 +311,51 @@ namespace Samples.Kaiju_Agents._1._1._1.Exercise_4___Capture_the_Flag_ML
             if (discreteActions[2] == 1)
             {
                 _trooperComp.SendMessage("Attack", SendMessageOptions.DontRequireReceiver);
+                AddReward(-0.001f); // Stop them from spamming the walls
             }
             else
             {
                 _trooperComp.SendMessage("StopAttacking", SendMessageOptions.DontRequireReceiver);
             }
             
-            // --- Exploit-Proof Reward Shaping ---
-        
+            // --- REWARD SHAPING: DELTA DISTANCE ---
+
+            // Only calculate distance rewards if we haven't timed out and aren't dead
             if (!_hasFlag && _enemyFlag != null)
             {
-                float currentDist = Vector3.Distance(transform.position, _enemyFlag.transform.position);
-            
-                // Only trigger if they walked closer than they have EVER been this episode
-                if (currentDist < _previousDistanceToEnemyFlag) 
+                float currentDist = GetPathDistance(transform.position, _enemyFlag.transform.position);
+                float distanceDelta = _previousDistanceToEnemyFlag - currentDist;
+        
+                // ONLY reward positive progress. Remove the penalty for negative progress.
+                if (distanceDelta > 0.01f)
                 {
-                    // Reward based on how much new ground they covered
-                    float distanceCovered = _previousDistanceToEnemyFlag - currentDist;
-                    AddReward(distanceCovered * 0.2f);
-                
-                    // Shrink the safe zone (update the high score)
-                    _previousDistanceToEnemyFlag = currentDist; 
+                    AddReward(distanceDelta * 0.1f); // Bumped the multiplier slightly
                 }
+        
+                _previousDistanceToEnemyFlag = currentDist; 
             }
             else if (_hasFlag && _friendlyFlag != null)
             {
-                float currentDist = Vector3.Distance(transform.position, _friendlyBasePosition);
-            
-                if (currentDist < _previousDistanceToFriendlyBase) 
+                float currentDist = GetPathDistance(transform.position, _friendlyBasePosition);
+                float distanceDelta = _previousDistanceToFriendlyBase - currentDist;
+        
+                // ONLY reward positive progress.
+                if (distanceDelta > 0.01f)
                 {
-                    float distanceCovered = _previousDistanceToFriendlyBase - currentDist;
-                    AddReward(distanceCovered * 0.05f);
-                
-                    _previousDistanceToFriendlyBase = currentDist;
+                    AddReward(distanceDelta * 0.1f);
                 }
+        
+                _previousDistanceToFriendlyBase = currentDist;
             }
-            // Add a tiny penalty to encourage the agent to finish the task quickly.
-            // Assuming a Max Step of 5000, this adds a -1.0 total penalty if they time out.
+
+            // Keep the existential penalty so they don't dawdle
             AddReward(-1f / 5000f);
+            
+            if (++_stepCount >= MaxStepsAllowed)
+            {
+                AddReward(-1.0f); // Penalize for failing the objective
+                EndEpisode();
+            }
         }
         
         public override void Heuristic(in ActionBuffers actionsOut)
@@ -412,5 +463,15 @@ namespace Samples.Kaiju_Agents._1._1._1.Exercise_4___Capture_the_Flag_ML
             AddReward(0.2f); // Slightly higher reward for combat success
         }
         private void HandleEliminatedByEnemy(Trooper e) { AddReward(-1.0f); EndEpisode(); }
+        
+        private void HandleHealthPickup(HealthPickup pickup) 
+        { 
+            AddReward(0.5f); // Medium reward for staying alive
+        }
+
+        private void HandleAmmoPickup(AmmoPickup pickup) 
+        { 
+            AddReward(0.5f); // Medium reward for reloading
+        }
     }
 }

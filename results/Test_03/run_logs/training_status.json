@@ -1,0 +1,29 @@
+{
+    "Trooper": {
+        "checkpoints": [
+            {
+                "steps": 230886,
+                "file_path": "results\\Test_03\\Trooper\\Trooper-230886.onnx",
+                "reward": null,
+                "creation_time": 1774990344.9825892,
+                "auxillary_file_paths": [
+                    "results\\Test_03\\Trooper\\Trooper-230886.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 230886,
+            "file_path": "results\\Test_03\\Trooper.onnx",
+            "reward": null,
+            "creation_time": 1774990344.9825892,
+            "auxillary_file_paths": [
+                "results\\Test_03\\Trooper\\Trooper-230886.pt"
+            ]
+        }
+    },
+    "metadata": {
+        "stats_format_version": "0.3.0",
+        "mlagents_version": "1.1.0",
+        "torch_version": "2.1.2+cpu"
+    }
+}
