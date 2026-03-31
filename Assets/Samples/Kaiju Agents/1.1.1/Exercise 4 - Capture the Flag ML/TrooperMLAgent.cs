@@ -273,29 +273,38 @@ namespace Samples.Kaiju_Agents._1._1._1.Exercise_4___Capture_the_Flag_ML
                 _trooperComp.SendMessage("StopAttacking", SendMessageOptions.DontRequireReceiver);
             }
             
-            // --- Reward Shaping ---
-            AddReward(-0.0005f); // Existential penalty to encourage fast completion
-            
-            // Anti-Wiggle Logic: Only reward for breaking NEW records of closeness.
-            // Prevents the agent from stepping back and forth to farm rewards.
+            // --- Exploit-Proof Reward Shaping ---
+        
             if (!_hasFlag && _enemyFlag != null)
             {
                 float currentDist = Vector3.Distance(transform.position, _enemyFlag.transform.position);
+            
+                // Only trigger if they walked closer than they have EVER been this episode
                 if (currentDist < _previousDistanceToEnemyFlag) 
                 {
-                    AddReward(0.001f);
-                    _previousDistanceToEnemyFlag = currentDist;
+                    // Reward based on how much new ground they covered
+                    float distanceCovered = _previousDistanceToEnemyFlag - currentDist;
+                    AddReward(distanceCovered * 0.2f);
+                
+                    // Shrink the safe zone (update the high score)
+                    _previousDistanceToEnemyFlag = currentDist; 
                 }
             }
-            else if (_hasFlag)
+            else if (_hasFlag && _friendlyFlag != null)
             {
                 float currentDist = Vector3.Distance(transform.position, _friendlyBasePosition);
+            
                 if (currentDist < _previousDistanceToFriendlyBase) 
                 {
-                    AddReward(0.002f);
+                    float distanceCovered = _previousDistanceToFriendlyBase - currentDist;
+                    AddReward(distanceCovered * 0.05f);
+                
                     _previousDistanceToFriendlyBase = currentDist;
                 }
             }
+            // Add a tiny penalty to encourage the agent to finish the task quickly.
+            // Assuming a Max Step of 5000, this adds a -1.0 total penalty if they time out.
+            AddReward(-1f / 5000f);
         }
         
         public override void Heuristic(in ActionBuffers actionsOut)
@@ -374,12 +383,34 @@ namespace Samples.Kaiju_Agents._1._1._1.Exercise_4___Capture_the_Flag_ML
         
         // Game Objective Rewards
         // TODO - I think it was bad to have it outside of range [-1f, 1f]?
-        private void HandleFlagPickedUp(Flag flag) { _hasFlag = true; }
-        private void HandleFlagDropped(Flag flag)  { _hasFlag = false; }
+        private void HandleFlagPickedUp(Flag flag)
+        {
+            _hasFlag = true;
+            // Reset base distance so reward shaping starts from the current position
+            _previousDistanceToFriendlyBase = Vector3.Distance(transform.position, _friendlyBasePosition);
+            AddReward(1.0f); // BIG reward for grabbing the enemy flag!
+        }
+
+        private void HandleFlagDropped(Flag flag)
+        {
+            _hasFlag = false; 
+            // Reset enemy flag distance so they can earn rewards for going back to it
+            if (_enemyFlag != null)
+                _previousDistanceToEnemyFlag = Vector3.Distance(transform.position, _enemyFlag.transform.position);
+        }
         private void HandleFlagCaptured(Flag flag) { _hasFlag = false; AddReward(5.0f); EndEpisode(); }
-        private void HandleFlagReturned(Flag flag) { _hasFlag = false; AddReward(2.0f); }
+
+        private void HandleFlagReturned(Flag flag)
+        {
+            _hasFlag = false; AddReward(2.0f); 
+            AddReward(0.5f); // Reward for saving your own flag
+        }
         private void HandleEliminatedEnemy(Trooper e) { AddReward(1.0f); }
-        private void HandleHitEnemy(Trooper e) { AddReward(0.1f); }
+
+        private void HandleHitEnemy(Trooper e)
+        {
+            AddReward(0.2f); // Slightly higher reward for combat success
+        }
         private void HandleEliminatedByEnemy(Trooper e) { AddReward(-1.0f); EndEpisode(); }
     }
 }
