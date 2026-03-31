@@ -7,34 +7,39 @@ using KaijuSolutions.Agents.Sensors;
 using UnityEngine.InputSystem;
 using KaijuSolutions.Agents;
 using System;
+using System.Reflection;
 
 namespace Samples.Kaiju_Agents._1._1._1.Exercise_4___Capture_the_Flag_ML
 {
+    /// <summary>
+    /// Acts as the bridge between Unity ML-Agents and the Kaiju framework's physical Trooper.
+    /// Handles observation collection (using agent-relative coordinates for better learning),
+    /// manual heuristic control, and translating ML actions into physics forces.
+    /// Includes workarounds (Reflection) to handle assembly clashes if different Trooper
+    /// versions exist in the project.
+    /// </summary>
     public class TrooperMLAgent : Agent
     {
+        // Reference to the base component, used when direct casting fails due to assembly clash.
         private Component _trooperComp; 
         private Trooper _trooper;
         private KaijuAgent _kaijuAgent;
         private Rigidbody _rb;
         
-        // Objective References
         private Flag _enemyFlag;
         private Flag _friendlyFlag;
         private Vector3 _friendlyBasePosition;
         
-        // Local Flag Tracking
-        private bool _hasFlag;
-        
-        // Sensors
         private TrooperEnemyVisionSensor _enemySensor;
         private AmmoVisionSensor _ammoSensor;
         private HealthVisionSensor _healthSensor;
         
-        // Rewards Shaping
+        private bool _hasFlag;
+        
+        // Used for anti-wiggling reward shaping.
         private float _previousDistanceToEnemyFlag;
         private float _previousDistanceToFriendlyBase;
         
-        // Normalization Constants
         private const float MaxHealth = 100f; 
         private const float MaxAmmo = 30f;
         private readonly float _maxMapDistance = 150f; 
@@ -45,6 +50,10 @@ namespace Samples.Kaiju_Agents._1._1._1.Exercise_4___Capture_the_Flag_ML
             SetupReferences();
         }
 
+        /// <summary>
+        /// Lazy-loads necessary components. Prevents NullReferenceExceptions during 
+        /// early spawning frames before Unity has finished attaching all scripts.
+        /// </summary>
         private bool SetupReferences()
         {
             if (_kaijuAgent != null && _rb != null && _trooperComp != null) return true;
@@ -53,6 +62,8 @@ namespace Samples.Kaiju_Agents._1._1._1.Exercise_4___Capture_the_Flag_ML
             _rb = GetComponent<Rigidbody>();
             
             // Assembly-Safe lookup for the Trooper script
+            // TODO: Remove this search and just use GetComponent<Trooper>() once 
+            // all Trooper scripts are consolidated into a single assembly/namespace.
             var allScripts = GetComponents<MonoBehaviour>();
             foreach (var s in allScripts)
             {
@@ -67,14 +78,31 @@ namespace Samples.Kaiju_Agents._1._1._1.Exercise_4___Capture_the_Flag_ML
 
             if (_kaijuAgent == null || _rb == null || _trooperComp == null) return false;
 
-            // Grab sensors using the native Kaiju Agent API
+            // // Force old logic off
+            // var oldBrain = GetComponent("TrooperBrain") as MonoBehaviour;
+            // if (oldBrain != null) oldBrain.enabled = false;
+            // var oldController = GetComponent("TrooperController") as MonoBehaviour;
+            // if (oldController != null) oldController.enabled = false;
+
+            // if (_rb != null)
+            // {
+            //     _rb.isKinematic = false; 
+            //     _rb.useGravity = false;
+            //     _rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ | RigidbodyConstraints.FreezePositionY;
+            //     _rb.linearDamping = 0f; 
+            //     _rb.angularDamping = 5f;
+            // }
+            //
+            // _kaijuAgent.MoveSpeed = 10f;
+            // _kaijuAgent.MoveAcceleration = 100f;
+            // _kaijuAgent.AutoRotate = false;
+
             _enemySensor = _kaijuAgent.GetSensor<TrooperEnemyVisionSensor>();
             _ammoSensor = _kaijuAgent.GetSensor<AmmoVisionSensor>();
             _healthSensor = _kaijuAgent.GetSensor<HealthVisionSensor>();
             
             bool isTeamOne = GetTrooperBool("TeamOne", true);
 
-            // Find world objectives
             Flag[] flags = FindObjectsByType<Flag>(FindObjectsInactive.Include, FindObjectsSortMode.None);
             foreach (Flag f in flags)
             {
@@ -89,7 +117,6 @@ namespace Samples.Kaiju_Agents._1._1._1.Exercise_4___Capture_the_Flag_ML
                 }
             }
 
-            // Subscribe to game events
             if (_trooper != null)
             {
                 _trooper.OnFlagPickedUp += HandleFlagPickedUp;
@@ -128,23 +155,32 @@ namespace Samples.Kaiju_Agents._1._1._1.Exercise_4___Capture_the_Flag_ML
         public override void OnEpisodeBegin()
         {
             if (!SetupReferences()) return;
+            
+            // Stop any leftover physics momentum from the previous episode.
             _kaijuAgent.Stop();
             
+            // Baseline the distances so reward shaping only rewards NEW progress.
             if (_enemyFlag != null)
                 _previousDistanceToEnemyFlag = Vector3.Distance(transform.position, _enemyFlag.transform.position);
             
             _previousDistanceToFriendlyBase = Vector3.Distance(transform.position, _friendlyBasePosition);
         }
         
+        /// <summary>
+        /// Total Observation Space: 19 floats.
+        /// Agent-relative coordinates (Quaternion.Inverse) are used so the AI always perceives
+        /// objects relative to where it is facing (e.g., "enemy is to my left"), speeding up learning.
+        /// </summary>
         public override void CollectObservations(VectorSensor sensor)
         {
             if (!SetupReferences())
             {
+                // Pad with zeros to prevent Vector size mismatch errors during early frames.
                 for (int i = 0; i < 19; i++) sensor.AddObservation(0f);
                 return;
             }
 
-            // Clean, assignment-style data grabbing
+            // 1-3. Internal State
             float health = GetTrooperValue("Health", 100f);
             float ammo = GetTrooperValue("Ammo", 30f);
 
@@ -152,15 +188,18 @@ namespace Samples.Kaiju_Agents._1._1._1.Exercise_4___Capture_the_Flag_ML
             sensor.AddObservation(ammo / MaxAmmo);
             sensor.AddObservation(_hasFlag ? 1.0f : 0.0f);
             
+            // 4-6. Enemy Flag Awareness
             if (_enemyFlag != null)
             {
                 sensor.AddObservation(Vector3.Distance(transform.position, _enemyFlag.transform.position) / _maxMapDistance);
+                // Convert world direction to local direction
                 Vector3 dirToFlag = (Quaternion.Inverse(transform.rotation) * (_enemyFlag.transform.position - transform.position)).normalized;
                 sensor.AddObservation(dirToFlag.x);
                 sensor.AddObservation(dirToFlag.z);
             }
             else { sensor.AddObservation(0f); sensor.AddObservation(0f); sensor.AddObservation(0f); }
 
+            // 7-9. Friendly Flag Awareness
             if (_friendlyFlag != null)
             {
                 sensor.AddObservation(Vector3.Distance(transform.position, _friendlyFlag.transform.position) / _maxMapDistance);
@@ -170,8 +209,10 @@ namespace Samples.Kaiju_Agents._1._1._1.Exercise_4___Capture_the_Flag_ML
             }
             else { sensor.AddObservation(0f); sensor.AddObservation(0f); sensor.AddObservation(0f); }
 
+            // 10. Friendly Base Distance
             sensor.AddObservation(Vector3.Distance(transform.position, _friendlyBasePosition) / _maxMapDistance);
 
+            // 11-13. Nearest Enemy (Relative to agent's facing)
             float enemyDist = 1.0f;
             Vector3 enemyDir = Vector3.zero;
             if (_enemySensor != null && _enemySensor.Observed != null)
@@ -193,6 +234,7 @@ namespace Samples.Kaiju_Agents._1._1._1.Exercise_4___Capture_the_Flag_ML
             sensor.AddObservation(enemyDir.x);
             sensor.AddObservation(enemyDir.z);
 
+            // 14-19. Pickups (Health and Ammo)
             AddPickupObs(sensor, _healthSensor);
             AddPickupObs(sensor, _ammoSensor);
         }
@@ -201,15 +243,17 @@ namespace Samples.Kaiju_Agents._1._1._1.Exercise_4___Capture_the_Flag_ML
         {
             if (!SetupReferences()) return;
 
+            // 3 Branches: [Movement(3), Rotation(3), Combat(2)]
             var discreteActions = actions.DiscreteActions;
             
-            // Movement
+            // Branch 0: Movement (0=Idle, 1=Forward, 2=Backward)
             float moveVal = 0;
             if (discreteActions[0] == 1) moveVal = 1f;
             else if (discreteActions[0] == 2) moveVal = -1f;
+            // Override Kaiju control and apply physical velocity directly
             _rb.linearVelocity = transform.forward * moveVal * _kaijuAgent.MoveSpeed;
 
-            // Rotation
+            // Branch 1: Rotation (0=Idle, 1=Right, 2=Left)
             float rotateVal = 0;
             if (discreteActions[1] == 1) rotateVal = 1f;
             else if (discreteActions[1] == 2) rotateVal = -1f;
@@ -218,7 +262,8 @@ namespace Samples.Kaiju_Agents._1._1._1.Exercise_4___Capture_the_Flag_ML
                 transform.Rotate(Vector3.up, rotateVal * _kaijuAgent.LookSpeed * Time.fixedDeltaTime);
             }
 
-            // Combat
+            // Branch 2: Combat (0=Idle, 1=Shoot)
+            // Using SendMessage as a safe fallback in case of assembly mismatch on the Trooper component
             if (discreteActions[2] == 1)
             {
                 _trooperComp.SendMessage("Attack", SendMessageOptions.DontRequireReceiver);
@@ -228,12 +273,14 @@ namespace Samples.Kaiju_Agents._1._1._1.Exercise_4___Capture_the_Flag_ML
                 _trooperComp.SendMessage("StopAttacking", SendMessageOptions.DontRequireReceiver);
             }
             
-            // Reward Shaping (Anti-Wiggle Logic)
-            AddReward(-0.0005f);
+            // --- Reward Shaping ---
+            AddReward(-0.0005f); // Existential penalty to encourage fast completion
+            
+            // Anti-Wiggle Logic: Only reward for breaking NEW records of closeness.
+            // Prevents the agent from stepping back and forth to farm rewards.
             if (!_hasFlag && _enemyFlag != null)
             {
                 float currentDist = Vector3.Distance(transform.position, _enemyFlag.transform.position);
-                // Only reward for breaking NEW records of closeness
                 if (currentDist < _previousDistanceToEnemyFlag) 
                 {
                     AddReward(0.001f);
@@ -243,7 +290,6 @@ namespace Samples.Kaiju_Agents._1._1._1.Exercise_4___Capture_the_Flag_ML
             else if (_hasFlag)
             {
                 float currentDist = Vector3.Distance(transform.position, _friendlyBasePosition);
-                // Only reward for breaking NEW records of closeness to base
                 if (currentDist < _previousDistanceToFriendlyBase) 
                 {
                     AddReward(0.002f);
@@ -269,6 +315,8 @@ namespace Samples.Kaiju_Agents._1._1._1.Exercise_4___Capture_the_Flag_ML
         }
 
         // --- Helper methods to handle Assembly Conflicts (Reflection Fallback) ---
+        // TODO: Remove these when all Trooper scripts exist in the same assembly namespace.
+        
         private float GetTrooperValue(string propName, float fallback)
         {
             if (_trooper != null)
@@ -324,6 +372,8 @@ namespace Samples.Kaiju_Agents._1._1._1.Exercise_4___Capture_the_Flag_ML
             else { sensor.AddObservation(1.0f); sensor.AddObservation(0f); sensor.AddObservation(0f); }
         }
         
+        // Game Objective Rewards
+        // TODO - I think it was bad to have it outside of range [-1f, 1f]?
         private void HandleFlagPickedUp(Flag flag) { _hasFlag = true; }
         private void HandleFlagDropped(Flag flag)  { _hasFlag = false; }
         private void HandleFlagCaptured(Flag flag) { _hasFlag = false; AddReward(5.0f); EndEpisode(); }
