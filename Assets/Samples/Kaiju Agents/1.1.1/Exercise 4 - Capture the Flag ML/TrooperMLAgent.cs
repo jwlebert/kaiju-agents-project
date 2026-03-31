@@ -3,28 +3,42 @@ using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Sensors; 
 using KaijuSolutions.Agents.Exercises.CTF;
+using KaijuSolutions.Agents.Sensors;
+using UnityEngine.InputSystem;
+using KaijuSolutions.Agents;
+using System;
 
-
-public class TrooperMLAgent : Agent
+namespace Samples.Kaiju_Agents._1._1._1.Exercise_4___Capture_the_Flag_ML
 {
-    private Trooper trooper;
-    
-    // Objective References
-    private Flag enemyFlag;
-    private Flag friendlyFlag;
-    private Vector3 friendlyBasePosition;
-    
-    // Local Flag Tracking
-    private bool hasFlag = false;
-    
-    // Reward Shaping
-    private float previousDistanceToEnemyFlag;
-    private float previousDistanceToFriendlyBase;
-    
-    // Normalization constants
-    private const float MAX_HEALTH = 100f; 
-    private const float MAX_AMMO = 30f;
-    private float maxMapDistance = 150f; // Used to normalize distance observations
+    public class TrooperMLAgent : Agent
+    {
+        private Component _trooperComp; 
+        private Trooper _trooper;
+        private KaijuAgent _kaijuAgent;
+        private Rigidbody _rb;
+        
+        // Objective References
+        private Flag _enemyFlag;
+        private Flag _friendlyFlag;
+        private Vector3 _friendlyBasePosition;
+        
+        // Local Flag Tracking
+        private bool _hasFlag;
+        
+        // Sensors
+        private TrooperEnemyVisionSensor _enemySensor;
+        private AmmoVisionSensor _ammoSensor;
+        private HealthVisionSensor _healthSensor;
+        
+        // Rewards Shaping
+        private float _previousDistanceToEnemyFlag;
+        private float _previousDistanceToFriendlyBase;
+        
+        // Normalization Constants
+        private const float MaxHealth = 100f; 
+        private const float MaxAmmo = 30f;
+        private readonly float _maxMapDistance = 150f; 
+        private const float MaxSensorDist = 20f;
 
     public override void Initialize()
     {
@@ -67,6 +81,87 @@ public class TrooperMLAgent : Agent
     {
         base.OnDisable();
         if (trooper == null) return;
+        public override void Initialize()
+        {
+            SetupReferences();
+        }
+
+        private bool SetupReferences()
+        {
+            if (_kaijuAgent != null && _rb != null && _trooperComp != null) return true;
+
+            _kaijuAgent = GetComponent<KaijuAgent>();
+            _rb = GetComponent<Rigidbody>();
+            
+            // Assembly-Safe lookup for the Trooper script
+            var allScripts = GetComponents<MonoBehaviour>();
+            foreach (var s in allScripts)
+            {
+                if (s == null) continue;
+                if (s.GetType().Name == "Trooper")
+                {
+                    _trooperComp = s;
+                    _trooper = s as Trooper; 
+                    break;
+                }
+            }
+
+            if (_kaijuAgent == null || _rb == null || _trooperComp == null) return false;
+
+            // Grab sensors using the native Kaiju Agent API
+            _enemySensor = _kaijuAgent.GetSensor<TrooperEnemyVisionSensor>();
+            _ammoSensor = _kaijuAgent.GetSensor<AmmoVisionSensor>();
+            _healthSensor = _kaijuAgent.GetSensor<HealthVisionSensor>();
+            
+            // Determine Team
+            bool isTeamOne = false;
+            if (_trooper != null) isTeamOne = _trooper.TeamOne;
+            else
+            {
+                var prop = _trooperComp.GetType().GetProperty("TeamOne");
+                if (prop != null) isTeamOne = (bool)prop.GetValue(_trooperComp);
+            }
+
+            // Find world objectives
+            Flag[] flags = FindObjectsByType<Flag>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+            foreach (Flag f in flags)
+            {
+                if (f.TeamOne == isTeamOne)
+                {
+                    _friendlyFlag = f;
+                    _friendlyBasePosition = f.transform.position; 
+                }
+                else
+                {
+                    _enemyFlag = f;
+                }
+            }
+
+            // Subscribe to game events
+            if (_trooper != null)
+            {
+                _trooper.OnFlagPickedUp += HandleFlagPickedUp;
+                _trooper.OnFlagDropped += HandleFlagDropped;
+                _trooper.OnFlagCaptured += HandleFlagCaptured;
+                _trooper.OnFlagReturned += HandleFlagReturned;
+                _trooper.OnEliminatedTrooper += HandleEliminatedEnemy;
+                _trooper.OnEliminatedByTrooper += HandleEliminatedByEnemy;
+                _trooper.OnHitTrooper += HandleHitEnemy;
+            }
+
+            return true;
+        }
+        
+        protected override void OnEnable()
+        {
+            base.OnEnable();
+            SetupReferences();
+        }
+
+        protected override void OnDisable()
+        {
+            base.OnDisable();
+            if (_trooper == null) return;
 
         // Unsubscribe to prevent memory leaks
         trooper.OnFlagCaptured -= HandleFlagCaptured;
@@ -107,6 +202,16 @@ public class TrooperMLAgent : Agent
         {
             // Safe fallbacks if a flag is missing
             sensor.AddObservation(0f); sensor.AddObservation(0f); sensor.AddObservation(0f);
+            // Unsubscribe to prevent memory leaks
+            _trooper.OnFlagPickedUp -= HandleFlagPickedUp;
+            _trooper.OnFlagDropped -= HandleFlagDropped;
+            _trooper.OnFlagCaptured -= HandleFlagCaptured;
+            _trooper.OnFlagReturned -= HandleFlagReturned;
+            _trooper.OnEliminatedTrooper -= HandleEliminatedEnemy;
+            _trooper.OnEliminatedByTrooper -= HandleEliminatedByEnemy;
+            _trooper.OnHitTrooper -= HandleHitEnemy;
+        }
+        
         }
 
         // Distance to Friendly Base
