@@ -23,24 +23,32 @@ behaviors:
     summary_freq: 10000
 
 # For Curriculum training
-  environment_parameters:
-  enemy_count:
+environment_parameters:
+  map_level:
     curriculum:
-      - name: Easy
+      - name: Lesson1_Tutorial
         completion_criteria:
           measure: reward
           behavior: Trooper
           signal_smoothing: true
           min_lesson_length: 100
-          threshold: 0.3  # Advance when average reward hits 0.3
-        value: 1.0        # Start with 1 enemy
-      - name: Medium
+          threshold: 0.5    # When average reward hits 0.5, go to Lesson 2
+        value: 1.0
+      - name: Lesson2_Sprint
         completion_criteria:
           measure: reward
           behavior: Trooper
           signal_smoothing: true
           min_lesson_length: 100
-          threshold: 0.5
-        value: 5.0        # Scale to 5 enemies
-      - name: Hard
-        value: 11.0       # Final stage: all 11 enemies
+          threshold: 0.5    # When average reward hits 0.5, go to Lesson 3
+        value: 2.0
+      - name: Lesson3_Obstacles
+        completion_criteria:
+          measure: reward
+          behavior: Trooper
+          signal_smoothing: true
+          min_lesson_length: 150 # Make them prove it a bit longer with walls
+          threshold: 0.6
+        value: 3.0
+      - name: Lesson4_FullGame
+        value: 4.0          # The final state

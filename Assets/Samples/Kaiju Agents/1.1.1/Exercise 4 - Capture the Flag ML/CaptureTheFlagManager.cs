@@ -1,7 +1,13 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using Unity.MLAgents;
+using UnityEngine.AI; 
+using Unity.AI.Navigation;
+using System.Linq;
+
 #if UNITY_EDITOR
 using UnityEditor;
+
 #endif
 namespace KaijuSolutions.Agents.Exercises.CTF
 {
@@ -13,6 +19,26 @@ namespace KaijuSolutions.Agents.Exercises.CTF
     [AddComponentMenu("Kaiju Solutions/Agents/Exercises/Capture the Flag/Capture the Flag Manager", 31)]
     public class CaptureTheFlagManager : KaijuGlobalController
     {
+        
+        [Header("Curriculum - Map Toggles")]
+        public GameObject innerWalls;
+        public GameObject allPickups; // Drag the parent "Pickups" object here
+        public NavMeshSurface navMeshSurface; // Drag your 'Navigation Mesh' object here
+
+        [Header("Curriculum - Spawns")]
+        public GameObject centerSpawns; // Parent object holding your close spawn points
+        public GameObject baseSpawns;   // Parent object holding your far spawn points
+
+        [Header("Curriculum - Flags")]
+        public Transform teamOneFlag;
+        public Transform teamTwoFlag;
+        
+        [Header("Curriculum - Flag Placeholders")]
+        public Transform teamOneCenterPos;
+        public Transform teamOneBasePos;
+        public Transform teamTwoCenterPos;
+        public Transform teamTwoBasePos;
+        
         /// <summary>
         /// The singleton manager instance.
         /// </summary>
@@ -317,6 +343,119 @@ namespace KaijuSolutions.Agents.Exercises.CTF
         /// Respawn timers for team two.
         /// </summary>
         private readonly List<float> _respawnsTwo = new();
+
+        protected override void OnEnable()
+        {
+            base.OnEnable();
+    
+            // Nothing to do if this is already the singleton.
+            if (_instance == this) return;
+    
+            // If there is a singleton but this is not it, destroy this.
+            if (_instance != null && _instance != this)
+            {
+                Destroy(gameObject);
+                return;
+            }
+    
+            _instance = this;
+
+            // Subscribe to Academy reset for Curriculum Learning
+            Academy.Instance.OnEnvironmentReset += ApplyCurriculum;
+    
+            // Note: We don't call Spawn() in the while loops here anymore. 
+            // ApplyCurriculum() will handle the first spawn immediately when the episode starts!
+        }
+
+        protected override void OnDisable()
+        {
+            base.OnDisable();
+    
+            // Clear out the lists
+            _respawnsOne.Clear();
+            _respawnsTwo.Clear();
+    
+            // Unsubscribe from the ML-Agents Academy to prevent memory leaks
+            if (Academy.IsInitialized)
+            {
+                Academy.Instance.OnEnvironmentReset -= ApplyCurriculum;
+            }
+    
+            if (_instance == this)
+            {
+                _instance = null;
+            }
+        }
+        
+        private void ApplyCurriculum()
+        {
+            // 1. Get the current lesson level from the YAML (Defaults to 4 for playing in Editor)
+            int level = (int)Academy.Instance.EnvironmentParameters.GetWithDefault("map_level", 4f);
+
+            // 2. Destroy any existing troopers to prevent glitches between episodes
+            foreach (var trooper in Trooper.AllOne.ToArray()) { DestroyImmediate(trooper.gameObject); }
+            foreach (var trooper in Trooper.AllTwo.ToArray()) { DestroyImmediate(trooper.gameObject); }
+
+            // 3. Configure the environment based on the 4 levels
+            switch (level)
+            {
+                case 1: // Level 1: 1v1, No Walls, Center Spawns/Flags, No Pickups
+                    size = 1;
+                    innerWalls.SetActive(false);
+                    allPickups.SetActive(false);
+                    centerSpawns.SetActive(true);
+                    baseSpawns.SetActive(false);
+                    teamOneFlag.position = teamOneCenterPos.position;
+                    teamTwoFlag.position = teamTwoCenterPos.position;
+                    break;
+
+                case 2: // Level 2: 5v5, No Walls, Base Spawns/Flags, No Pickups
+                    size = 5;
+                    innerWalls.SetActive(false);
+                    allPickups.SetActive(false);
+                    centerSpawns.SetActive(false);
+                    baseSpawns.SetActive(true);
+                    teamOneFlag.position = teamOneBasePos.position;
+                    teamTwoFlag.position = teamTwoBasePos.position;
+                    break;
+
+                case 3: // Level 3: 5v5, Inner Walls Active, Base Spawns/Flags, No Pickups
+                    size = 5;
+                    innerWalls.SetActive(true);
+                    allPickups.SetActive(false);
+                    centerSpawns.SetActive(false);
+                    baseSpawns.SetActive(true);
+                    teamOneFlag.position = teamOneBasePos.position;
+                    teamTwoFlag.position = teamTwoBasePos.position;
+                    break;
+
+                case 4: // Level 4: 11v11, Inner Walls Active, Base Spawns/Flags, Pickups Active
+                default:
+                    size = 11;
+                    innerWalls.SetActive(true);
+                    allPickups.SetActive(true);
+                    centerSpawns.SetActive(false);
+                    baseSpawns.SetActive(true);
+                    teamOneFlag.position = teamOneBasePos.position;
+                    teamTwoFlag.position = teamTwoBasePos.position;
+                    break;
+            }
+
+            // 4. Rebuild the NavMesh at runtime so paths match the new wall layout!
+            if (navMeshSurface != null)
+            {
+                navMeshSurface.BuildNavMesh();
+            }
+
+            // 5. Respawn the new teams at the newly active spawn points
+            _respawnsOne.Clear();
+            _respawnsTwo.Clear();
+            for (int i = 0; i < size; i++)
+            {
+                Spawn(true);
+                Spawn(false);
+            }
+        }
         
         /// <summary>
         /// Spawn a <see cref="Trooper"/>.
@@ -340,52 +479,6 @@ namespace KaijuSolutions.Agents.Exercises.CTF
             
             point.SpawnOccupy(Trooper.Spawn(prefab, point));
             return true;
-        }
-        
-        /// <summary>
-        /// This function is called when the object becomes enabled and active.
-        /// </summary>
-        protected override void OnEnable()
-        {
-            base.OnEnable();
-            
-            // Nothing to do if this is already the singleton.
-            if (_instance == this)
-            {
-                return;
-            }
-			
-            // If there is a singleton but this is not it, destroy this.
-            if (_instance != null && _instance != this)
-            {
-                Destroy(gameObject);
-                return;
-            }
-			
-            // Otherwise, set this as the singleton.
-            _instance = this;
-            
-            // Spawn both teams in.
-            _respawnsOne.Clear();
-            _respawnsTwo.Clear();
-            while (Spawn(true)) { }
-            while (Spawn(false)) { }
-        }
-        
-        /// <summary>
-        /// This function is called when the behaviour becomes disabled.
-        /// </summary>
-        protected override void OnDisable()
-        {
-            base.OnDisable();
-            
-            _respawnsOne.Clear();
-            _respawnsTwo.Clear();
-            
-            if (_instance == this)
-            {
-                _instance = null;
-            }
         }
         
         /// <summary>

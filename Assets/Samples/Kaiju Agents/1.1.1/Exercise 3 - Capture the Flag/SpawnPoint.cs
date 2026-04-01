@@ -136,6 +136,7 @@ namespace KaijuSolutions.Agents.Exercises.CTF
         /// </summary>
         private void OnEnable()
         {
+            Debug.Log($"Spawn Point Enabled for Team One: {TeamOne}"); // Add this line!
             // Ensure all colliders are triggers.
             if (_colliders == null)
             {

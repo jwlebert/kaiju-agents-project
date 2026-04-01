@@ -5,7 +5,8 @@
         "com.kaijusolutions.agents",
         "com.kaijusolutions.agents.utility",
         "Unity.ML-Agents",
-        "Unity.InputSystem"
+        "Unity.InputSystem",
+        "Unity.AI.Navigation"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
