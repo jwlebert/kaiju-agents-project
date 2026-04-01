@@ -96,78 +96,74 @@ namespace KaijuSolutions.Agents.Exercises.CTF.ML
         /// </summary>
         private bool SetupReferences()
         {
-            if (_kaijuAgent != null && _rb != null && _trooperComp != null) return true;
-
-            _kaijuAgent = GetComponent<KaijuAgent>();
-            _rb = GetComponent<Rigidbody>();
+            if (_kaijuAgent == null) _kaijuAgent = GetComponent<KaijuAgent>();
+            if (_rb == null) _rb = GetComponent<Rigidbody>();
             
-            // Assembly-Safe lookup for the Trooper script
-            // TODO: Remove this search and just use GetComponent<Trooper>() once 
-            // all Trooper scripts are consolidated into a single assembly/namespace.
-            var allScripts = GetComponents<MonoBehaviour>();
-            foreach (var s in allScripts)
+            if (_trooperComp == null)
             {
-                if (s == null) continue;
-                if (s.GetType().Name == "Trooper")
+                var allScripts = GetComponents<MonoBehaviour>();
+                foreach (var s in allScripts)
                 {
-                    _trooperComp = s;
-                    _trooper = s as Trooper; 
-                    break;
+                    if (s == null) continue;
+                    if (s.GetType().Name == "Trooper")
+                    {
+                        _trooperComp = s;
+                        _trooper = s as Trooper; 
+                        break;
+                    }
                 }
             }
 
             if (_kaijuAgent == null || _rb == null || _trooperComp == null) return false;
 
-            // // Force old logic off
-            // var oldBrain = GetComponent("TrooperBrain") as MonoBehaviour;
-            // if (oldBrain != null) oldBrain.enabled = false;
-            // var oldController = GetComponent("TrooperController") as MonoBehaviour;
-            // if (oldController != null) oldController.enabled = false;
-
-            // if (_rb != null)
-            // {
-            //     _rb.isKinematic = false; 
-            //     _rb.useGravity = false;
-            //     _rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ | RigidbodyConstraints.FreezePositionY;
-            //     _rb.linearDamping = 0f; 
-            //     _rb.angularDamping = 5f;
-            // }
-            //
-            // _kaijuAgent.MoveSpeed = 10f;
-            // _kaijuAgent.MoveAcceleration = 100f;
-            // _kaijuAgent.AutoRotate = false;
-
-            _enemySensor = _kaijuAgent.GetSensor<TrooperEnemyVisionSensor>();
-            _ammoSensor = _kaijuAgent.GetSensor<AmmoVisionSensor>();
-            _healthSensor = _kaijuAgent.GetSensor<HealthVisionSensor>();
-            
-            bool isTeamOne = GetTrooperBool("TeamOne", true);
-
-            Flag[] flags = FindObjectsByType<Flag>(FindObjectsInactive.Include, FindObjectsSortMode.None);
-            foreach (Flag f in flags)
+            // Always verify flags are present (they might have been destroyed/recreated during curriculum reset)
+            if (_friendlyFlag == null || _enemyFlag == null)
             {
-                if (f.TeamOne == isTeamOne)
+                bool isTeamOne = GetTrooperBool("TeamOne", true);
+
+                Flag[] flags = FindObjectsByType<Flag>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+                foreach (Flag f in flags)
                 {
-                    _friendlyFlag = f;
-                    _friendlyBasePosition = f.transform.position; 
+                    if (f.TeamOne == isTeamOne)
+                    {
+                        _friendlyFlag = f;
+                        _friendlyBasePosition = f.transform.position; 
+                    }
+                    else
+                    {
+                        _enemyFlag = f;
+                    }
                 }
-                else
+
+                if (_trooper != null)
                 {
-                    _enemyFlag = f;
+                    // Unsubscribe first to avoid double-subscription if we are re-linking
+                    _trooper.OnFlagPickedUp -= HandleFlagPickedUp;
+                    _trooper.OnFlagDropped -= HandleFlagDropped;
+                    _trooper.OnFlagCaptured -= HandleFlagCaptured;
+                    _trooper.OnFlagReturned -= HandleFlagReturned;
+                    _trooper.OnEliminatedTrooper -= HandleEliminatedEnemy;
+                    _trooper.OnEliminatedByTrooper -= HandleEliminatedByEnemy;
+                    _trooper.OnHitTrooper -= HandleHitEnemy;
+                    _trooper.OnHealth -= HandleHealthPickup;
+                    _trooper.OnAmmo -= HandleAmmoPickup;
+
+                    _trooper.OnFlagPickedUp += HandleFlagPickedUp;
+                    _trooper.OnFlagDropped += HandleFlagDropped;
+                    _trooper.OnFlagCaptured += HandleFlagCaptured;
+                    _trooper.OnFlagReturned += HandleFlagReturned;
+                    _trooper.OnEliminatedTrooper += HandleEliminatedEnemy;
+                    _trooper.OnEliminatedByTrooper += HandleEliminatedByEnemy;
+                    _trooper.OnHitTrooper += HandleHitEnemy;
+                    _trooper.OnHealth += HandleHealthPickup;
+                    _trooper.OnAmmo += HandleAmmoPickup;
                 }
             }
 
-            if (_trooper != null)
+            if (_friendlyFlag == null || _enemyFlag == null)
             {
-                _trooper.OnFlagPickedUp += HandleFlagPickedUp;
-                _trooper.OnFlagDropped += HandleFlagDropped;
-                _trooper.OnFlagCaptured += HandleFlagCaptured;
-                _trooper.OnFlagReturned += HandleFlagReturned;
-                _trooper.OnEliminatedTrooper += HandleEliminatedEnemy;
-                _trooper.OnEliminatedByTrooper += HandleEliminatedByEnemy;
-                _trooper.OnHitTrooper += HandleHitEnemy;
-                _trooper.OnHealth += HandleHealthPickup;
-                _trooper.OnAmmo += HandleAmmoPickup;
+                // We'll keep this as a Log to help debug, but return false to skip observation until flags spawn
+                return false;
             }
 
             return true;
@@ -288,14 +284,30 @@ namespace KaijuSolutions.Agents.Exercises.CTF.ML
             AddPickupObs(sensor, _healthSensor);
             AddPickupObs(sensor, _ammoSensor);
             
-            // Give the agent a compass to the objective
-            if (!_hasFlag && _enemyFlag != null)
+            // 20-22. Compass to the current primary objective (Behavior #4 and #5)
+            Vector3 targetPos = Vector3.zero;
+            bool isFriendlyFlagStolen = Vector3.Distance(_friendlyFlag.transform.position, _friendlyBasePosition) > 1.0f;
+
+            if (isFriendlyFlagStolen && !_hasFlag)
             {
-                sensor.AddObservation(_enemyFlag.transform.localPosition);
+                // PRIORITY: If our flag is stolen, go get it back! (Behavior #5)
+                targetPos = _friendlyFlag.transform.position;
             }
-            else if (_hasFlag && _friendlyFlag != null)
+            else if (!_hasFlag && _enemyFlag != null)
             {
-                sensor.AddObservation(_friendlyBasePosition);
+                // GOAL: Go get the enemy flag (Behavior #4)
+                targetPos = _enemyFlag.transform.position;
+            }
+            else if (_hasFlag)
+            {
+                // GOAL: Bring the enemy flag home
+                targetPos = _friendlyBasePosition;
+            }
+
+            if (targetPos != Vector3.zero)
+            {
+                Vector3 localTarget = transform.InverseTransformPoint(targetPos);
+                sensor.AddObservation(localTarget.normalized);
             }
             else
             {
@@ -305,7 +317,13 @@ namespace KaijuSolutions.Agents.Exercises.CTF.ML
 
         public override void OnActionReceived(ActionBuffers actions)
         {
-            if (!SetupReferences()) return;
+            // Essential components check
+            if (_kaijuAgent == null || _rb == null) 
+            {
+                _kaijuAgent = GetComponent<KaijuAgent>();
+                _rb = GetComponent<Rigidbody>();
+                if (_kaijuAgent == null || _rb == null) return;
+            }
 
             // 3 Branches: [Movement(3), Rotation(3), Combat(2)]
             var discreteActions = actions.DiscreteActions;
@@ -314,7 +332,6 @@ namespace KaijuSolutions.Agents.Exercises.CTF.ML
             float moveVal = 0;
             if (discreteActions[0] == 1) moveVal = 1f;
             else if (discreteActions[0] == 2) moveVal = -1f;
-            // Override Kaiju control and apply physical velocity directly
             _rb.linearVelocity = transform.forward * moveVal * _kaijuAgent.MoveSpeed;
 
             // Branch 1: Rotation (0=Idle, 1=Right, 2=Left)
@@ -326,19 +343,22 @@ namespace KaijuSolutions.Agents.Exercises.CTF.ML
                 transform.Rotate(Vector3.up, rotateVal * _kaijuAgent.LookSpeed * Time.fixedDeltaTime);
             }
 
-            // Branch 2: Combat (0=Idle, 1=Shoot)
-            // Using SendMessage as a safe fallback in case of assembly mismatch on the Trooper component
+            // Combat and Reward Shaping require full references (Trooper + Flags)
+            if (!SetupReferences()) return;
+
+            // Branch 2: Combat
             if (discreteActions[2] == 1)
             {
                 _trooperComp.SendMessage("Attack", SendMessageOptions.DontRequireReceiver);
-                AddReward(-0.001f); // Stop them from spamming the walls
+                AddReward(-0.001f); 
             }
             else
             {
                 _trooperComp.SendMessage("StopAttacking", SendMessageOptions.DontRequireReceiver);
             }
             
-            // --- REWARD SHAPING: DELTA DISTANCE ---
+            // --- REWARD SHAPING ---
+            // (Rest of the reward shaping remains the same)
 
             // Only calculate distance rewards if we haven't timed out and aren't dead
             if (!_hasFlag && _enemyFlag != null)

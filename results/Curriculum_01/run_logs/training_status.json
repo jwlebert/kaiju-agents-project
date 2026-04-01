@@ -5,22 +5,31 @@
     "Trooper": {
         "checkpoints": [
             {
-                "steps": 28640,
-                "file_path": "results\\Curriculum_01\\Trooper\\Trooper-28640.onnx",
-                "reward": -2.0000000074505806,
-                "creation_time": 1775075837.9923096,
+                "steps": 49874,
+                "file_path": "results\\Curriculum_01\\Trooper\\Trooper-49874.onnx",
+                "reward": -1.8978364616632462,
+                "creation_time": 1775077678.9098742,
                 "auxillary_file_paths": [
-                    "results\\Curriculum_01\\Trooper\\Trooper-28640.pt"
+                    "results\\Curriculum_01\\Trooper\\Trooper-49874.pt"
+                ]
+            },
+            {
+                "steps": 54651,
+                "file_path": "results\\Curriculum_01\\Trooper\\Trooper-54651.onnx",
+                "reward": -1.988437600492034,
+                "creation_time": 1775077724.0034206,
+                "auxillary_file_paths": [
+                    "results\\Curriculum_01\\Trooper\\Trooper-54651.pt"
                 ]
             }
         ],
         "final_checkpoint": {
-            "steps": 28640,
+            "steps": 54651,
             "file_path": "results\\Curriculum_01\\Trooper.onnx",
-            "reward": -2.0000000074505806,
-            "creation_time": 1775075837.9923096,
+            "reward": -1.988437600492034,
+            "creation_time": 1775077724.0034206,
             "auxillary_file_paths": [
-                "results\\Curriculum_01\\Trooper\\Trooper-28640.pt"
+                "results\\Curriculum_01\\Trooper\\Trooper-54651.pt"
             ]
         }
     },
