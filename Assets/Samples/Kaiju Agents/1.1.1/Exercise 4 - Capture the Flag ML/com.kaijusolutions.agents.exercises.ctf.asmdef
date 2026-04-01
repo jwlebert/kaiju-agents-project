@@ -1,6 +1,6 @@
 {
-    "name": "com.kaijusolutions.agents.exercises.ctf2",
-    "rootNamespace": "",
+    "name": "com.kaijusolutions.agents.exercises.ctf.ml",
+    "rootNamespace": "KaijuSolutions.Agents.Exercises.CTF.ML",
     "references": [
         "com.kaijusolutions.agents",
         "com.kaijusolutions.agents.utility",

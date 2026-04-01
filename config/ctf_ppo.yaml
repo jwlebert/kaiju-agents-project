@@ -3,7 +3,7 @@ behaviors:
     trainer_type: ppo
     hyperparameters:
       batch_size: 1024
-      buffer_size: 10240
+      buffer_size: 20480
       learning_rate: 3.0e-4
       beta: 5.0e-3
       epsilon: 0.2
@@ -11,44 +11,61 @@ behaviors:
       num_epoch: 3
       learning_rate_schedule: linear
     network_settings:
-      normalize: false
+      normalize: true
       hidden_units: 256
       num_layers: 2
     reward_signals:
       extrinsic:
         gamma: 0.99
         strength: 1.0
-    max_steps: 1000000
-    time_horizon: 64
-    summary_freq: 10000
+    max_steps: 10000000
+    time_horizon: 128
+    summary_freq: 2000        # Much more frequent updates in TensorBoard (was 10000)
+    checkpoint_interval: 50000 # Save a model file every 50k steps (was 500k default)
 
-# For Curriculum training
+# Curriculum training for 6 levels (0 to 5)
 environment_parameters:
   map_level:
     curriculum:
+      - name: Lesson0_Ultra_Simple
+        completion_criteria:
+          measure: reward
+          behavior: Trooper
+          signal_smoothing: true
+          min_lesson_length: 100
+          threshold: 0.3
+        value: 0.0
       - name: Lesson1_Tutorial
         completion_criteria:
           measure: reward
           behavior: Trooper
           signal_smoothing: true
           min_lesson_length: 100
-          threshold: 0.5    # When average reward hits 0.5, go to Lesson 2
+          threshold: 0.5
         value: 1.0
-      - name: Lesson2_Sprint
+      - name: Lesson2_Full_Map_1v1
         completion_criteria:
           measure: reward
           behavior: Trooper
           signal_smoothing: true
           min_lesson_length: 100
-          threshold: 0.5    # When average reward hits 0.5, go to Lesson 3
+          threshold: 0.5
         value: 2.0
-      - name: Lesson3_Obstacles
+      - name: Lesson3_Full_Map_5v5
         completion_criteria:
           measure: reward
           behavior: Trooper
           signal_smoothing: true
-          min_lesson_length: 150 # Make them prove it a bit longer with walls
-          threshold: 0.6
+          min_lesson_length: 100
+          threshold: 0.5
         value: 3.0
-      - name: Lesson4_FullGame
-        value: 4.0          # The final state
+      - name: Lesson4_Obstacles_5v5
+        completion_criteria:
+          measure: reward
+          behavior: Trooper
+          signal_smoothing: true
+          min_lesson_length: 150
+          threshold: 0.6
+        value: 4.0
+      - name: Lesson5_Full_Game
+        value: 5.0

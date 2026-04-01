@@ -36,8 +36,8 @@ namespace KaijuSolutions.Agents.Exercises.CTF
                     return _instance;
                 }
                 
-                CaptureTheFlagManager manager = FindAnyObjectByType<CaptureTheFlagManager>();
-                return manager != null ? manager : new GameObject("Capture the Flag Manager") { isStatic = true }.AddComponent<CaptureTheFlagManager>();
+                _instance = FindAnyObjectByType<CaptureTheFlagManager>();
+                return _instance;
             }
         }
 #if UNITY_EDITOR
@@ -96,7 +96,7 @@ namespace KaijuSolutions.Agents.Exercises.CTF
                     return 0;
                 }
 #endif
-                return Instance.health;
+                return Instance != null ? Instance.health : 0;
             }
         }
         
@@ -121,7 +121,7 @@ namespace KaijuSolutions.Agents.Exercises.CTF
                     return 0;
                 }
 #endif
-                return Instance.damage;
+                return Instance != null ? Instance.damage : 0;
             }
         }
         
@@ -146,7 +146,7 @@ namespace KaijuSolutions.Agents.Exercises.CTF
                     return 0;
                 }
 #endif
-                return Instance.ammo;
+                return Instance != null ? Instance.ammo : 0;
             }
         }
         
@@ -171,7 +171,7 @@ namespace KaijuSolutions.Agents.Exercises.CTF
                     return 0;
                 }
 #endif
-                return Instance.cooldown;
+                return Instance != null ? Instance.cooldown : 0f;
             }
         }
         
@@ -196,7 +196,7 @@ namespace KaijuSolutions.Agents.Exercises.CTF
                     return 0;
                 }
 #endif
-                return Instance.captureDistance;
+                return Instance != null ? Instance.captureDistance : 0f;
             }
         }
         
@@ -221,7 +221,7 @@ namespace KaijuSolutions.Agents.Exercises.CTF
                     return 0;
                 }
 #endif
-                return Instance.respawn;
+                return Instance != null ? Instance.respawn : 0f;
             }
         }
         
@@ -247,7 +247,7 @@ namespace KaijuSolutions.Agents.Exercises.CTF
                     return 0;
                 }
 #endif
-                return Instance.size;
+                return Instance != null ? Instance.size : 0;
             }
         }
         
@@ -272,7 +272,7 @@ namespace KaijuSolutions.Agents.Exercises.CTF
                     return Color.red;
                 }
 #endif
-                return Instance.colorOne;
+                return Instance != null ? Instance.colorOne : Color.red;
             }
         }
         
@@ -297,7 +297,7 @@ namespace KaijuSolutions.Agents.Exercises.CTF
                     return Color.blue;
                 }
 #endif
-                return Instance.colorTwo;
+                return Instance != null ? Instance.colorTwo : Color.blue;
             }
         }
         

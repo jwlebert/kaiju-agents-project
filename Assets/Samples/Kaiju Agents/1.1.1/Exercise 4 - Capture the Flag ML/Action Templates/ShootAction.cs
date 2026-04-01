@@ -2,7 +2,7 @@ using JetBrains.Annotations;
 using UnityEngine;
 using KaijuSolutions.Agents.Utility;
 using JetBrains.Annotations;
-using KaijuSolutions.Agents.Exercises.CTF;
+using KaijuSolutions.Agents.Exercises.CTF.ML;
 using KaijuSolutions.Agents.Extensions;
 
 [CreateAssetMenu(fileName = "Shoot Action", menuName = "Scriptable Objects/Assn3/Shoot Action")]

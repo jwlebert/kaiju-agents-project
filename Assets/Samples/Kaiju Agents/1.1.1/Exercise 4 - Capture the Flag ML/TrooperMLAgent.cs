@@ -2,7 +2,7 @@ using UnityEngine;
 using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Sensors; 
-using KaijuSolutions.Agents.Exercises.CTF;
+using KaijuSolutions.Agents.Exercises.CTF.ML;
 using KaijuSolutions.Agents.Sensors;
 using UnityEngine.InputSystem;
 using KaijuSolutions.Agents;
@@ -10,7 +10,7 @@ using System;
 using System.Reflection;
 using UnityEngine.AI;
 
-namespace Samples.Kaiju_Agents._1._1._1.Exercise_4___Capture_the_Flag_ML
+namespace KaijuSolutions.Agents.Exercises.CTF.ML
 {
     /// <summary>
     /// Acts as the bridge between Unity ML-Agents and the Kaiju framework's physical Trooper.
@@ -349,7 +349,7 @@ namespace Samples.Kaiju_Agents._1._1._1.Exercise_4___Capture_the_Flag_ML
                 // ONLY reward positive progress. Remove the penalty for negative progress.
                 if (distanceDelta > 0.01f)
                 {
-                    AddReward(distanceDelta * 0.1f); // Bumped the multiplier slightly
+                    AddReward(distanceDelta * 0.2f); // Increased from 0.1f
                 }
         
                 _previousDistanceToEnemyFlag = currentDist; 
@@ -362,7 +362,7 @@ namespace Samples.Kaiju_Agents._1._1._1.Exercise_4___Capture_the_Flag_ML
                 // ONLY reward positive progress.
                 if (distanceDelta > 0.01f)
                 {
-                    AddReward(distanceDelta * 0.1f);
+                    AddReward(distanceDelta * 0.2f); // Increased from 0.1f
                 }
         
                 _previousDistanceToFriendlyBase = currentDist;

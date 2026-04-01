@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-namespace KaijuSolutions.Agents.Exercises.CTF
+namespace KaijuSolutions.Agents.Exercises.CTF.ML
 {
     /// <summary>
     /// Sensor to get all friendly <see cref="Trooper"/>s.

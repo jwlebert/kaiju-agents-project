@@ -5,7 +5,7 @@ using UnityEngine;
 using Random = System.Random;
 
 
-namespace KaijuSolutions.Agents.Exercises.CTF
+namespace KaijuSolutions.Agents.Exercises.CTF.ML
 {
     public class TrooperBrain : KaijuUtilityBrain
     {

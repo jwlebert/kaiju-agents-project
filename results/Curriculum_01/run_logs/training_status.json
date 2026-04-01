@@ -1,0 +1,32 @@
+{
+    "map_level": {
+        "lesson_num": 0
+    },
+    "Trooper": {
+        "checkpoints": [
+            {
+                "steps": 28640,
+                "file_path": "results\\Curriculum_01\\Trooper\\Trooper-28640.onnx",
+                "reward": -2.0000000074505806,
+                "creation_time": 1775075837.9923096,
+                "auxillary_file_paths": [
+                    "results\\Curriculum_01\\Trooper\\Trooper-28640.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 28640,
+            "file_path": "results\\Curriculum_01\\Trooper.onnx",
+            "reward": -2.0000000074505806,
+            "creation_time": 1775075837.9923096,
+            "auxillary_file_paths": [
+                "results\\Curriculum_01\\Trooper\\Trooper-28640.pt"
+            ]
+        }
+    },
+    "metadata": {
+        "stats_format_version": "0.3.0",
+        "mlagents_version": "1.1.0",
+        "torch_version": "2.1.2+cpu"
+    }
+}

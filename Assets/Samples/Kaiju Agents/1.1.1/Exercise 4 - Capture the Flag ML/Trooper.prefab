@@ -196,7 +196,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 2026237108400773742}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e4c00fbb16b848bdb7decd27bcfe4bc4, type: 3}
+  m_Script: {fileID: 11500000, guid: 603882da1fd5aa1409614a88385fd2b0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: com.kaijusolutions.agents.exercises.ctf::KaijuSolutions.Agents.Exercises.CTF.TrooperTeamVisionSensor
   automatic: 1
@@ -220,7 +220,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 2026237108400773742}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0b10fe6d6aeb4b1897514f9ce93ddf86, type: 3}
+  m_Script: {fileID: 11500000, guid: 2daee7ed2aa20484badae94dc345b7b6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: com.kaijusolutions.agents.exercises.ctf::KaijuSolutions.Agents.Exercises.CTF.TrooperEnemyVisionSensor
   automatic: 1
@@ -244,7 +244,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 2026237108400773742}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 13cd498dac994b699065554fbb1cfd8e, type: 3}
+  m_Script: {fileID: 11500000, guid: 18298d30936229447b52c68c8fd51d25, type: 3}
   m_Name: 
   m_EditorClassIdentifier: com.kaijusolutions.agents.exercises.ctf::KaijuSolutions.Agents.Exercises.CTF.AmmoVisionSensor
   automatic: 1
@@ -268,7 +268,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 2026237108400773742}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 014d40b97c674c4fbbbaec538d62e947, type: 3}
+  m_Script: {fileID: 11500000, guid: 8437382becc6ca94d8ba82efb1fc582a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: com.kaijusolutions.agents.exercises.ctf::KaijuSolutions.Agents.Exercises.CTF.HealthVisionSensor
   automatic: 1
@@ -292,7 +292,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 2026237108400773742}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b810a70392ea43d8ae75ccc52d9f9b0c, type: 3}
+  m_Script: {fileID: 11500000, guid: 6553b815b0993d04bb1563f40c86793c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: com.kaijusolutions.agents.exercises.ctf::KaijuSolutions.Agents.Exercises.CTF.FlagVisionSensor
   automatic: 1
@@ -316,7 +316,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 2026237108400773742}
   m_Enabled: 0
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9a6c5eb6b4954342b3f27b0a20b90f01, type: 3}
+  m_Script: {fileID: 11500000, guid: 71a05c9375fb59c498a4265770d35161, type: 3}
   m_Name: 
   m_EditorClassIdentifier: com.kaijusolutions.agents.exercises.ctf::KaijuSolutions.Agents.Exercises.CTF.TrooperVisionSensor
   automatic: 1
@@ -373,7 +373,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 5806169519610590947}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5459ad8eabd24c1b9be53854c65f3c2a, type: 3}
+  m_Script: {fileID: 11500000, guid: cabdfba414c1332448e474cf01e8208e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: com.kaijusolutions.agents.exercises.ctf::KaijuSolutions.Agents.Exercises.CTF.BlasterActuator
   charge: 0
@@ -545,7 +545,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 7329593620247676017}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 97790a72f6e04de3abbcbacd25859ede, type: 3}
+  m_Script: {fileID: 11500000, guid: 9206b0f3b02036248bb7cd2fdb065b51, type: 3}
   m_Name: 
   m_EditorClassIdentifier: com.kaijusolutions.agents.exercises.ctf::KaijuSolutions.Agents.Exercises.CTF.Trooper
   agent: {fileID: 6190703363887382500}

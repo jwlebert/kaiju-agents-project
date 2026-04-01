@@ -5,7 +5,7 @@ using KaijuSolutions.Agents.Sensors;
 using KaijuSolutions.Agents.Utility;
 using UnityEngine;
 
-namespace KaijuSolutions.Agents.Exercises.CTF
+namespace KaijuSolutions.Agents.Exercises.CTF.ML
 {
     /// <summary>
     /// Basic controller for you to get started with.

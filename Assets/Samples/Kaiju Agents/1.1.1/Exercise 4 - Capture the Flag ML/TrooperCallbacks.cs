@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 
-namespace KaijuSolutions.Agents.Exercises.CTF
+namespace KaijuSolutions.Agents.Exercises.CTF.ML
 {
     /// <summary>
     /// An action for a <see cref="Trooper"/>.

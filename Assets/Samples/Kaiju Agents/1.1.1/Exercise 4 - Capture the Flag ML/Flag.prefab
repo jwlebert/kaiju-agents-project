@@ -157,7 +157,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 3214938872660233332}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e3d2a269d0f64850bd38ccf502cb6504, type: 3}
+  m_Script: {fileID: 11500000, guid: c63ab48c27269fc44b4e024809f395af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: com.kaijusolutions.agents.exercises.ctf::KaijuSolutions.Agents.Exercises.CTF.Flag
   <TeamOne>k__BackingField: 1

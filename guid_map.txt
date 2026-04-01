@@ -1,0 +1,19 @@
+FILENAME | EX3_GUID | EX4_GUID
+AmmoPickup.cs | 02091a76792f4576bbd3592238a78bf5 | 33e45c6bc5e8b5b4d959c6865f1e1d42
+AmmoVisionSensor.cs | 13cd498dac994b699065554fbb1cfd8e | 18298d30936229447b52c68c8fd51d25
+BlasterActuator.cs | 5459ad8eabd24c1b9be53854c65f3c2a | cabdfba414c1332448e474cf01e8208e
+CaptureTheFlagManager.cs | 9a9b55a13cb44950b188e3ecd5153046 | 85576c0ecaec9a940b4e4b1cac79e6b4
+Flag.cs | e3d2a269d0f64850bd38ccf502cb6504 | c63ab48c27269fc44b4e024809f395af
+FlagVisionSensor.cs | b810a70392ea43d8ae75ccc52d9f9b0c | 6553b815b0993d04bb1563f40c86793c
+HealthPickup.cs | 5d572962c4954d97951afb60e21acbbe | b33e33712c314784bad673a488e04b9e
+HealthVisionSensor.cs | 014d40b97c674c4fbbbaec538d62e947 | 8437382becc6ca94d8ba82efb1fc582a
+NumberPickup.cs | 093991a72dfc4e08963a7c5a6a788b86 | de5dc9791720a994d9fd48a38de801c4
+Pickup.cs | 7624de1cfb7b4d00b89a0e5dd2be9f09 | 1c654e7572065614fb13d69d2133cd88
+SpawnPoint.cs | c2680b60c28a4ebca422d8241db351a4 | 80d89ac769c1c4648a65eae43a9ee0b3
+Trooper.cs | 97790a72f6e04de3abbcbacd25859ede | 9206b0f3b02036248bb7cd2fdb065b51
+TrooperBrain.cs | 8e78a5d4e0f71364ba6bfa686f02282b | 2f0770d676313a74ea042c0546ca0777
+TrooperCallbacks.cs | 181ae1d13bad4935a25907a6d22e27b4 | 066a202bec775da4e9a5fbfd49f40fda
+TrooperController.cs | 371cfbc997174245896f438387806615 | d43379cfed3048740be9e4cd764cc9fd
+TrooperEnemyVisionSensor.cs | 0b10fe6d6aeb4b1897514f9ce93ddf86 | 2daee7ed2aa20484badae94dc345b7b6
+TrooperTeamVisionSensor.cs | e4c00fbb16b848bdb7decd27bcfe4bc4 | 603882da1fd5aa1409614a88385fd2b0
+TrooperVisionSensor.cs | 9a6c5eb6b4954342b3f27b0a20b90f01 | 71a05c9375fb59c498a4265770d35161

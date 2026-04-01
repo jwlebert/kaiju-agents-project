@@ -6,7 +6,7 @@ using UnityEngine;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
-namespace KaijuSolutions.Agents.Exercises.CTF
+namespace KaijuSolutions.Agents.Exercises.CTF.ML
 {
     /// <summary>
     /// The flags themselves for <see cref="Trooper"/>s to try and capture.

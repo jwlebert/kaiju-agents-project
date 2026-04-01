@@ -1,7 +1,7 @@
 ﻿using KaijuSolutions.Agents.Actuators;
 using UnityEngine;
 
-namespace KaijuSolutions.Agents.Exercises.CTF
+namespace KaijuSolutions.Agents.Exercises.CTF.ML
 {
     /// <summary>
     /// The blaster for use by <see cref="Trooper"/>s.

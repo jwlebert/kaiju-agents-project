@@ -9,7 +9,7 @@ using System.Linq;
 using UnityEditor;
 
 #endif
-namespace KaijuSolutions.Agents.Exercises.CTF
+namespace KaijuSolutions.Agents.Exercises.CTF.ML
 {
     /// <summary>
     /// Manager for <see cref="Trooper"/>s to play capture the flag.
@@ -22,10 +22,13 @@ namespace KaijuSolutions.Agents.Exercises.CTF
         
         [Header("Curriculum - Map Toggles")]
         public GameObject innerWalls;
+        public GameObject trainingWalls; // Small boundaries for Level 1
+        public GameObject level0Walls;   // New: Even smaller "Tiny" boundaries for Level 0
         public GameObject allPickups; // Drag the parent "Pickups" object here
         public NavMeshSurface navMeshSurface; // Drag your 'Navigation Mesh' object here
 
         [Header("Curriculum - Spawns")]
+        public GameObject level0Spawns; // New: Very close to flag (3m)
         public GameObject centerSpawns; // Parent object holding your close spawn points
         public GameObject baseSpawns;   // Parent object holding your far spawn points
 
@@ -62,8 +65,8 @@ namespace KaijuSolutions.Agents.Exercises.CTF
                     return _instance;
                 }
                 
-                CaptureTheFlagManager manager = FindAnyObjectByType<CaptureTheFlagManager>();
-                return manager != null ? manager : new GameObject("Capture the Flag Manager") { isStatic = true }.AddComponent<CaptureTheFlagManager>();
+                _instance = FindAnyObjectByType<CaptureTheFlagManager>();
+                return _instance;
             }
         }
 #if UNITY_EDITOR
@@ -122,7 +125,7 @@ namespace KaijuSolutions.Agents.Exercises.CTF
                     return 0;
                 }
 #endif
-                return Instance.health;
+                return Instance != null ? Instance.health : 0;
             }
         }
         
@@ -147,7 +150,7 @@ namespace KaijuSolutions.Agents.Exercises.CTF
                     return 0;
                 }
 #endif
-                return Instance.damage;
+                return Instance != null ? Instance.damage : 0;
             }
         }
         
@@ -172,7 +175,7 @@ namespace KaijuSolutions.Agents.Exercises.CTF
                     return 0;
                 }
 #endif
-                return Instance.ammo;
+                return Instance != null ? Instance.ammo : 0;
             }
         }
         
@@ -197,7 +200,7 @@ namespace KaijuSolutions.Agents.Exercises.CTF
                     return 0;
                 }
 #endif
-                return Instance.cooldown;
+                return Instance != null ? Instance.cooldown : 0f;
             }
         }
         
@@ -222,7 +225,7 @@ namespace KaijuSolutions.Agents.Exercises.CTF
                     return 0;
                 }
 #endif
-                return Instance.captureDistance;
+                return Instance != null ? Instance.captureDistance : 0f;
             }
         }
         
@@ -247,7 +250,7 @@ namespace KaijuSolutions.Agents.Exercises.CTF
                     return 0;
                 }
 #endif
-                return Instance.respawn;
+                return Instance != null ? Instance.respawn : 0f;
             }
         }
         
@@ -273,7 +276,7 @@ namespace KaijuSolutions.Agents.Exercises.CTF
                     return 0;
                 }
 #endif
-                return Instance.size;
+                return Instance != null ? Instance.size : 0;
             }
         }
         
@@ -298,7 +301,7 @@ namespace KaijuSolutions.Agents.Exercises.CTF
                     return Color.red;
                 }
 #endif
-                return Instance.colorOne;
+                return Instance != null ? Instance.colorOne : Color.red;
             }
         }
         
@@ -323,7 +326,7 @@ namespace KaijuSolutions.Agents.Exercises.CTF
                     return Color.blue;
                 }
 #endif
-                return Instance.colorTwo;
+                return Instance != null ? Instance.colorTwo : Color.blue;
             }
         }
         
@@ -389,65 +392,84 @@ namespace KaijuSolutions.Agents.Exercises.CTF
         
         private void ApplyCurriculum()
         {
-            // 1. Get the current lesson level from the YAML (Defaults to 4 for playing in Editor)
-            int level = (int)Academy.Instance.EnvironmentParameters.GetWithDefault("map_level", 4f);
+            // 1. Get the current lesson level from the YAML (Defaults to 5 for playing in Editor)
+            int level = (int)Academy.Instance.EnvironmentParameters.GetWithDefault("map_level", 5f);
 
             // 2. Destroy any existing troopers to prevent glitches between episodes
             foreach (var trooper in Trooper.AllOne.ToArray()) { DestroyImmediate(trooper.gameObject); }
             foreach (var trooper in Trooper.AllTwo.ToArray()) { DestroyImmediate(trooper.gameObject); }
 
-            // 3. Configure the environment based on the 4 levels
+            // Default states
+            innerWalls.SetActive(false);
+            if (trainingWalls != null) trainingWalls.SetActive(false);
+            if (level0Walls != null) level0Walls.SetActive(false);
+            allPickups.SetActive(false);
+            level0Spawns.SetActive(false);
+            centerSpawns.SetActive(false);
+            baseSpawns.SetActive(false);
+
+            // 3. Configure the environment based on the new 6 levels
             switch (level)
             {
-                case 1: // Level 1: 1v1, No Walls, Center Spawns/Flags, No Pickups
+                case 0: // Level 0: 1v1, Tiny Map (Level 0 Walls), Spawns 3m from Flag, Unlimited Ammo
                     size = 1;
-                    innerWalls.SetActive(false);
-                    allPickups.SetActive(false);
-                    centerSpawns.SetActive(true);
-                    baseSpawns.SetActive(false);
+                    ammo = 9999; 
+                    if (level0Walls != null) level0Walls.SetActive(true);
+                    level0Spawns.SetActive(true);
                     teamOneFlag.position = teamOneCenterPos.position;
                     teamTwoFlag.position = teamTwoCenterPos.position;
                     break;
 
-                case 2: // Level 2: 5v5, No Walls, Base Spawns/Flags, No Pickups
-                    size = 5;
-                    innerWalls.SetActive(false);
-                    allPickups.SetActive(false);
-                    centerSpawns.SetActive(false);
+                case 1: // Level 1: 1v1, Small Map (Training Walls), Center Spawns, Unlimited Ammo
+                    size = 1;
+                    ammo = 9999;
+                    if (trainingWalls != null) trainingWalls.SetActive(true);
+                    centerSpawns.SetActive(true);
+                    teamOneFlag.position = teamOneCenterPos.position;
+                    teamTwoFlag.position = teamTwoCenterPos.position;
+                    break;
+
+                case 2: // Level 2: 1v1, Full Map (No Walls), Base Spawns, Standard Ammo
+                    size = 1;
+                    ammo = 30;
                     baseSpawns.SetActive(true);
                     teamOneFlag.position = teamOneBasePos.position;
                     teamTwoFlag.position = teamTwoBasePos.position;
                     break;
 
-                case 3: // Level 3: 5v5, Inner Walls Active, Base Spawns/Flags, No Pickups
+                case 3: // Level 3: 5v5, Full Map (No Walls), Base Spawns
+                    size = 5;
+                    baseSpawns.SetActive(true);
+                    teamOneFlag.position = teamOneBasePos.position;
+                    teamTwoFlag.position = teamTwoBasePos.position;
+                    break;
+
+                case 4: // Level 4: 5v5, Inner Walls Active, Base Spawns/Flags
                     size = 5;
                     innerWalls.SetActive(true);
-                    allPickups.SetActive(false);
-                    centerSpawns.SetActive(false);
                     baseSpawns.SetActive(true);
                     teamOneFlag.position = teamOneBasePos.position;
                     teamTwoFlag.position = teamTwoBasePos.position;
                     break;
 
-                case 4: // Level 4: 11v11, Inner Walls Active, Base Spawns/Flags, Pickups Active
+                case 5: // Level 5 (Final): 11v11, Inner Walls Active, Base Spawns, Pickups Active
                 default:
                     size = 11;
                     innerWalls.SetActive(true);
                     allPickups.SetActive(true);
-                    centerSpawns.SetActive(false);
                     baseSpawns.SetActive(true);
                     teamOneFlag.position = teamOneBasePos.position;
                     teamTwoFlag.position = teamTwoBasePos.position;
                     break;
             }
 
-            // 4. Rebuild the NavMesh at runtime so paths match the new wall layout!
+            // 4. Rebuild the NavMesh at runtime
             if (navMeshSurface != null)
             {
                 navMeshSurface.BuildNavMesh();
             }
 
-            // 5. Respawn the new teams at the newly active spawn points
+            // 5. Respawn the new teams
             _respawnsOne.Clear();
             _respawnsTwo.Clear();
             for (int i = 0; i < size; i++)

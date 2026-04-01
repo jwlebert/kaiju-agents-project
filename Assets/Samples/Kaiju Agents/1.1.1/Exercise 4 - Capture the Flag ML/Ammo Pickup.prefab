@@ -78,6 +78,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 6061168887081353127}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 02091a76792f4576bbd3592238a78bf5, type: 3}
+  m_Script: {fileID: 11500000, guid: 33e45c6bc5e8b5b4d959c6865f1e1d42, type: 3}
   m_Name: 
   m_EditorClassIdentifier: com.kaijusolutions.agents.exercises.ctf::KaijuSolutions.Agents.Exercises.CTF.AmmoPickup
