@@ -21,6 +21,8 @@ namespace Samples.Kaiju_Agents._1._1._1.Exercise_4___Capture_the_Flag_ML
     /// </summary>
     public class TrooperMLAgent : Agent
     {
+        private EnvironmentParameters _environment;
+        
         // Reference to the base component, used when direct casting fails due to assembly clash.
         private Component _trooperComp; 
         private Trooper _trooper;
@@ -85,6 +87,7 @@ namespace Samples.Kaiju_Agents._1._1._1.Exercise_4___Capture_the_Flag_ML
         public override void Initialize()
         {
             SetupReferences();
+            _environment = Academy.Instance.EnvironmentParameters;
         }
 
         /// <summary>
@@ -196,6 +199,11 @@ namespace Samples.Kaiju_Agents._1._1._1.Exercise_4___Capture_the_Flag_ML
         public override void OnEpisodeBegin()
         {
             if (!SetupReferences()) return;
+            
+            // 1. Fetch the curriculum parameter (Defaults to 11 if not training)
+            int desiredEnemies = (int)_environment.GetWithDefault("enemy_count", 11f);
+            
+            // TODO: 2. Add logic here to enable/disable enemy troopers based on 'desiredEnemies'
             
             // Stop any leftover physics momentum from the previous episode.
             _kaijuAgent.Stop();

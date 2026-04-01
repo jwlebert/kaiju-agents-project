@@ -18,6 +18,29 @@ behaviors:
       extrinsic:
         gamma: 0.99
         strength: 1.0
-    max_steps: 5000000
+    max_steps: 1000000
     time_horizon: 64
     summary_freq: 10000
+
+# For Curriculum training
+  environment_parameters:
+  enemy_count:
+    curriculum:
+      - name: Easy
+        completion_criteria:
+          measure: reward
+          behavior: Trooper
+          signal_smoothing: true
+          min_lesson_length: 100
+          threshold: 0.3  # Advance when average reward hits 0.3
+        value: 1.0        # Start with 1 enemy
+      - name: Medium
+        completion_criteria:
+          measure: reward
+          behavior: Trooper
+          signal_smoothing: true
+          min_lesson_length: 100
+          threshold: 0.5
+        value: 5.0        # Scale to 5 enemies
+      - name: Hard
+        value: 11.0       # Final stage: all 11 enemies
