@@ -439,7 +439,7 @@ namespace Samples.Kaiju_Agents._1._1._1.Exercise_4___Capture_the_Flag_ML
             _hasFlag = true;
             // Reset base distance so reward shaping starts from the current position
             _previousDistanceToFriendlyBase = Vector3.Distance(transform.position, _friendlyBasePosition);
-            AddReward(1.0f); // BIG reward for grabbing the enemy flag!
+            AddReward(0.3f); // BIG reward for grabbing the enemy flag!
         }
 
         private void HandleFlagDropped(Flag flag)
@@ -448,30 +448,46 @@ namespace Samples.Kaiju_Agents._1._1._1.Exercise_4___Capture_the_Flag_ML
             // Reset enemy flag distance so they can earn rewards for going back to it
             if (_enemyFlag != null)
                 _previousDistanceToEnemyFlag = Vector3.Distance(transform.position, _enemyFlag.transform.position);
+            AddReward(-0.2f);
         }
-        private void HandleFlagCaptured(Flag flag) { _hasFlag = false; AddReward(5.0f); EndEpisode(); }
+
+        private void HandleFlagCaptured(Flag flag)
+        {
+            _hasFlag = false; 
+            AddReward(1.0f); 
+            EndEpisode();
+        }
 
         private void HandleFlagReturned(Flag flag)
         {
-            _hasFlag = false; AddReward(2.0f); 
-            AddReward(0.5f); // Reward for saving your own flag
+            _hasFlag = false; 
+            AddReward(0.3f); // Reward for saving your own flag
         }
-        private void HandleEliminatedEnemy(Trooper e) { AddReward(1.0f); }
+
+        private void HandleEliminatedEnemy(Trooper e)
+        {
+            AddReward(0.2f);
+        }
 
         private void HandleHitEnemy(Trooper e)
         {
-            AddReward(0.2f); // Slightly higher reward for combat success
+            AddReward(0.05f); // Slightly higher reward for combat success
         }
-        private void HandleEliminatedByEnemy(Trooper e) { AddReward(-1.0f); EndEpisode(); }
+
+        private void HandleEliminatedByEnemy(Trooper e)
+        {
+            AddReward(-1.0f); 
+            EndEpisode();
+        }
         
         private void HandleHealthPickup(HealthPickup pickup) 
         { 
-            AddReward(0.5f); // Medium reward for staying alive
+            AddReward(0.1f); // Medium reward for staying alive
         }
 
         private void HandleAmmoPickup(AmmoPickup pickup) 
         { 
-            AddReward(0.5f); // Medium reward for reloading
+            AddReward(0.1f); // Medium reward for reloading
         }
     }
 }
