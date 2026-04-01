@@ -49,6 +49,18 @@ namespace Samples.Kaiju_Agents._1._1._1.Exercise_4___Capture_the_Flag_ML
         private readonly float _maxMapDistance = 150f; 
         private const float MaxSensorDist = 20f;
         
+        public override void WriteDiscreteActionMask(IDiscreteActionMask actionMask)
+        {
+            if (!SetupReferences()) return;
+
+            // RULE 1: Do not allow shooting if the agent has no ammo or is on cooldown
+            if (!_trooper.CanAttack)
+            {
+                // Branch 2 is Combat. Action 1 is "Shoot". Set it to false (disabled).
+                actionMask.SetActionEnabled(2, 1, false); 
+            }
+        }
+        
         private float GetPathDistance(Vector3 start, Vector3 target)
         {
             NavMeshPath path = new NavMeshPath();
