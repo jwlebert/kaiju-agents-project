@@ -39,7 +39,7 @@ namespace KaijuSolutions.Agents.Exercises.CTF.ML
         private bool _hasFlag;
         
         private int _stepCount;
-        private const int MaxStepsAllowed = 5000;
+        public  int MaxStepsAllowed = 500;
         
         // Used for anti-wiggling reward shaping.
         private float _previousDistanceToEnemyFlag;
@@ -62,10 +62,9 @@ namespace KaijuSolutions.Agents.Exercises.CTF.ML
             }
         }
         
+        private NavMeshPath path;
         private float GetPathDistance(Vector3 start, Vector3 target)
         {
-            NavMeshPath path = new NavMeshPath();
-    
             // Calculate the path around the walls
             if (NavMesh.CalculatePath(start, target, NavMesh.AllAreas, path))
             {
@@ -85,8 +84,11 @@ namespace KaijuSolutions.Agents.Exercises.CTF.ML
 
         public override void Initialize()
         {
+            path = new NavMeshPath();
+            
             SetupReferences();
             _environment = Academy.Instance.EnvironmentParameters;
+            _environment.GetWithDefault("map_level", 1f);
         }
 
         /// <summary>
@@ -183,11 +185,13 @@ namespace KaijuSolutions.Agents.Exercises.CTF.ML
         {
             if (!SetupReferences()) return;
             
+            CaptureTheFlagManager.Instance?.NotifyEpisodeBegin(); // ← reads fresh level
+            
             _hasFlag = false; // Reset their brain so they don't think they already have a flag
             if (_friendlyFlag != null) _friendlyBasePosition = _friendlyFlag.transform.position; //Tell them where the NEW base is
             
             // 1. Fetch the curriculum parameter (Defaults to 11 if not training)
-            int desiredEnemies = (int)_environment.GetWithDefault("enemy_count", 11f);
+            // int desiredEnemies = (int)_environment.GetWithDefault("enemy_count", 11f);
             
             // TODO: 2. Add logic here to enable/disable enemy troopers based on 'desiredEnemies'
             
@@ -346,7 +350,16 @@ namespace KaijuSolutions.Agents.Exercises.CTF.ML
             if (discreteActions[2] == 1)
             {
                 _trooper.Attack();
-                AddReward(-0.001f); 
+                
+                // 1. Get current ammo as a percentage (0.0 to 1.0) 
+                float ammoPct = Mathf.Clamp01(_trooper.Ammo / MaxAmmo);
+                
+                // 2. Gently scale the penalty based on the ammo percentage. 
+                // If Ammo is Full (1.0), the penalty is very light (-0.001f) 
+                // If Ammo is Empty (0.0), the penalty is harsher (-0.005f) 
+                float shootPenalty = Mathf.Lerp(-0.005f, -0.001f, ammoPct);
+                
+                AddReward(shootPenalty);
             }
             else
             {
@@ -365,7 +378,7 @@ namespace KaijuSolutions.Agents.Exercises.CTF.ML
                 // ONLY reward positive progress. Remove the penalty for negative progress.
                 if (distanceDelta > 0.01f)
                 {
-                    AddReward(distanceDelta * 0.2f); // Increased from 0.1f
+                    AddReward(distanceDelta * 0.002f); // Increased from 0.1f
                 }
         
                 _previousDistanceToEnemyFlag = currentDist; 
@@ -378,7 +391,7 @@ namespace KaijuSolutions.Agents.Exercises.CTF.ML
                 // ONLY reward positive progress.
                 if (distanceDelta > 0.01f)
                 {
-                    AddReward(distanceDelta * 0.2f); // Increased from 0.1f
+                    AddReward(distanceDelta * 0.002f); // Increased from 0.1f
                 }
         
                 _previousDistanceToFriendlyBase = currentDist;
@@ -387,9 +400,10 @@ namespace KaijuSolutions.Agents.Exercises.CTF.ML
             // Keep the existential penalty so they don't dawdle
             AddReward(-1f / 5000f);
             
-            if (++_stepCount >= MaxStepsAllowed)
+            if (++_stepCount >= (CaptureTheFlagManager.Instance?.MaxStepsForLevel ?? 3000))
             {
-                AddReward(-1.0f); // Penalize for failing the objective
+                // AddReward(-1.0f); // Penalize for failing the objective
+                CaptureTheFlagManager.Instance?.NotifyEpisodeEnd();
                 EndEpisode();
             }
         }
@@ -445,8 +459,8 @@ namespace KaijuSolutions.Agents.Exercises.CTF.ML
         {
             _hasFlag = true;
             // Reset base distance so reward shaping starts from the current position
-            _previousDistanceToFriendlyBase = Vector3.Distance(transform.position, _friendlyBasePosition);
-            AddReward(0.3f); // BIG reward for grabbing the enemy flag!
+            _previousDistanceToFriendlyBase = GetPathDistance(transform.position, _friendlyBasePosition);
+            AddReward(0.1f); // BIG reward for grabbing the enemy flag!
         }
 
         private void HandleFlagDropped(Flag flag)
@@ -454,47 +468,62 @@ namespace KaijuSolutions.Agents.Exercises.CTF.ML
             _hasFlag = false; 
             // Reset enemy flag distance so they can earn rewards for going back to it
             if (_enemyFlag != null)
-                _previousDistanceToEnemyFlag = Vector3.Distance(transform.position, _enemyFlag.transform.position);
-            AddReward(-0.2f);
+                _previousDistanceToEnemyFlag = GetPathDistance(transform.position, _enemyFlag.transform.position);
+            AddReward(-0.1f);
         }
 
         private void HandleFlagCaptured(Flag flag)
         {
             _hasFlag = false; 
             AddReward(1.0f); 
+            CaptureTheFlagManager.Instance?.NotifyEpisodeEnd();
             EndEpisode();
         }
 
         private void HandleFlagReturned(Flag flag)
         {
             _hasFlag = false; 
-            AddReward(0.3f); // Reward for saving your own flag
+            AddReward(0.1f); // Reward for saving your own flag
         }
 
         private void HandleEliminatedEnemy(Trooper e)
         {
-            AddReward(0.2f);
+            AddReward(0.1f);
         }
 
         private void HandleHitEnemy(Trooper e)
         {
-            AddReward(0.05f); // Slightly higher reward for combat success
+            AddReward(0.02f); // Slightly higher reward for combat success
         }
 
         private void HandleEliminatedByEnemy(Trooper e)
         {
-            AddReward(-1.0f); 
+            AddReward(-0.2f); 
+            CaptureTheFlagManager.Instance?.NotifyEpisodeEnd();
             EndEpisode();
         }
-        
         private void HandleHealthPickup(HealthPickup pickup) 
         { 
-            AddReward(0.1f); // Medium reward for staying alive
+            // 1. Calculate how much health we are missing (0.0 = full health, 1.0 = near death)
+            // Note: Use Mathf.Clamp01 just in case the pickup overheals past MaxHealth
+            float missingHealthPct = Mathf.Clamp01(1f - _trooper.Health / MaxHealth);
+            
+            // 2. Linear Scaling: Multiply the max possible reward (e.g., 0.2f) by the missing percentage.
+            // Near dead = +0.20 reward. Full health = +0.00 reward.
+            float dynamicReward = 0.2f * missingHealthPct; 
+            
+            AddReward(dynamicReward);
         }
-
         private void HandleAmmoPickup(AmmoPickup pickup) 
         { 
-            AddReward(0.1f); // Medium reward for reloading
+             float missingAmmoPct = Mathf.Clamp01(1f - _trooper.Ammo / MaxAmmo);
+             
+             // 2. Quadratic (Exponential) Scaling: Squaring the percentage creates a curve.
+             // This strongly discourages hoarding. If you are missing 50% ammo, you only get 25% of the reward. 
+             // You only get the big reward when you are truly running on empty.
+             float dynamicReward = 0.2f * (missingAmmoPct * missingAmmoPct);
+             
+             AddReward(dynamicReward);
         }
     }
 }
