@@ -70,7 +70,7 @@ environment_parameters:
     - value:
         sampler_type: constant
         sampler_parameters:
-          seed: 9036
+          seed: 7740
           value: 0.0
       name: Lesson0_Ultra_Simple
       completion_criteria:
@@ -83,7 +83,7 @@ environment_parameters:
     - value:
         sampler_type: constant
         sampler_parameters:
-          seed: 9037
+          seed: 7741
           value: 1.0
       name: Lesson1_Tutorial
       completion_criteria:
@@ -96,7 +96,7 @@ environment_parameters:
     - value:
         sampler_type: constant
         sampler_parameters:
-          seed: 9038
+          seed: 7742
           value: 2.0
       name: Lesson2_Full_Map_1v1
       completion_criteria:
@@ -109,7 +109,7 @@ environment_parameters:
     - value:
         sampler_type: constant
         sampler_parameters:
-          seed: 9039
+          seed: 7743
           value: 3.0
       name: Lesson3_Full_Map_5v5
       completion_criteria:
@@ -122,7 +122,7 @@ environment_parameters:
     - value:
         sampler_type: constant
         sampler_parameters:
-          seed: 9040
+          seed: 7744
           value: 4.0
       name: Lesson4_Obstacles_5v5
       completion_criteria:
@@ -135,7 +135,7 @@ environment_parameters:
     - value:
         sampler_type: constant
         sampler_parameters:
-          seed: 9041
+          seed: 7745
           value: 5.0
       name: Lesson5_Full_Game
       completion_criteria: null

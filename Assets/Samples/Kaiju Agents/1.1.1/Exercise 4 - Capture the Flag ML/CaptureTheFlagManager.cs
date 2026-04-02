@@ -429,9 +429,9 @@ namespace KaijuSolutions.Agents.Exercises.CTF.ML
                     teamTwoFlag.position = teamTwoCenterPos.position;
                     break;
 
-                case 2: // Level 2: 1v1, Full Map (No Walls), Base Spawns, Standard Ammo
+                case 2: // Level 2: 1v1, Full Map (No Walls), Base Spawns, Unlimited Ammo
                     size = 1;
-                    ammo = 30;
+                    ammo = 9999;
                     baseSpawns.SetActive(true);
                     teamOneFlag.position = teamOneBasePos.position;
                     teamTwoFlag.position = teamTwoBasePos.position;

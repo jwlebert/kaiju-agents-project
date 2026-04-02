@@ -33,7 +33,7 @@ environment_parameters:
           behavior: Trooper
           signal_smoothing: true
           min_lesson_length: 100
-          threshold: 0.3
+          threshold: -0.2
         value: 0.0
       - name: Lesson1_Tutorial
         completion_criteria:
@@ -41,7 +41,7 @@ environment_parameters:
           behavior: Trooper
           signal_smoothing: true
           min_lesson_length: 100
-          threshold: 0.5
+          threshold: 0.2
         value: 1.0
       - name: Lesson2_Full_Map_1v1
         completion_criteria:
@@ -49,7 +49,7 @@ environment_parameters:
           behavior: Trooper
           signal_smoothing: true
           min_lesson_length: 100
-          threshold: 0.5
+          threshold: 0.3
         value: 2.0
       - name: Lesson3_Full_Map_5v5
         completion_criteria:

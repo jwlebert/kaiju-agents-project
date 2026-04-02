@@ -115,6 +115,10 @@ namespace KaijuSolutions.Agents.Exercises.CTF.ML
             }
 
             if (_kaijuAgent == null || _rb == null || _trooperComp == null) return false;
+            
+            if (_enemySensor == null) _enemySensor = _kaijuAgent.GetSensor<TrooperEnemyVisionSensor>();
+            if (_healthSensor == null) _healthSensor = _kaijuAgent.GetSensor<HealthVisionSensor>();
+            if (_ammoSensor == null) _ammoSensor = _kaijuAgent.GetSensor<AmmoVisionSensor>();
 
             // Always verify flags are present (they might have been destroyed/recreated during curriculum reset)
             if (_friendlyFlag == null || _enemyFlag == null)
@@ -160,12 +164,6 @@ namespace KaijuSolutions.Agents.Exercises.CTF.ML
                 }
             }
 
-            if (_friendlyFlag == null || _enemyFlag == null)
-            {
-                // We'll keep this as a Log to help debug, but return false to skip observation until flags spawn
-                return false;
-            }
-
             return true;
         }
         
@@ -195,6 +193,10 @@ namespace KaijuSolutions.Agents.Exercises.CTF.ML
         public override void OnEpisodeBegin()
         {
             if (!SetupReferences()) return;
+            
+            // This ensures that if the Manager moved the flags for a new lesson, 
+            // the agent actually knows where the new home base is!
+            if (_friendlyFlag != null) _friendlyBasePosition = _friendlyFlag.transform.position;
             
             // 1. Fetch the curriculum parameter (Defaults to 11 if not training)
             int desiredEnemies = (int)_environment.GetWithDefault("enemy_count", 11f);
@@ -284,18 +286,24 @@ namespace KaijuSolutions.Agents.Exercises.CTF.ML
             AddPickupObs(sensor, _healthSensor);
             AddPickupObs(sensor, _ammoSensor);
             
-            // 20-22. Compass to the current primary objective (Behavior #4 and #5)
+            // 20-22. Compass to the current primary objective
             Vector3 targetPos = Vector3.zero;
-            bool isFriendlyFlagStolen = Vector3.Distance(_friendlyFlag.transform.position, _friendlyBasePosition) > 1.0f;
+            bool isFriendlyFlagStolen = false;
 
-            if (isFriendlyFlagStolen && !_hasFlag)
+// ONLY check distance if the flag actually exists right now
+            if (_friendlyFlag != null)
             {
-                // PRIORITY: If our flag is stolen, go get it back! (Behavior #5)
+                isFriendlyFlagStolen = Vector3.Distance(_friendlyFlag.transform.position, _friendlyBasePosition) > 1.0f;
+            }
+
+            if (isFriendlyFlagStolen && !_hasFlag && _friendlyFlag != null)
+            {
+                // PRIORITY: If our flag is stolen, go get it back!
                 targetPos = _friendlyFlag.transform.position;
             }
             else if (!_hasFlag && _enemyFlag != null)
             {
-                // GOAL: Go get the enemy flag (Behavior #4)
+                // GOAL: Go get the enemy flag
                 targetPos = _enemyFlag.transform.position;
             }
             else if (_hasFlag)
