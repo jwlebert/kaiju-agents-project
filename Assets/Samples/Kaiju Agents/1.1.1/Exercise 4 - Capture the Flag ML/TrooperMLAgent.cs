@@ -183,6 +183,7 @@ namespace KaijuSolutions.Agents.Exercises.CTF.ML
         
         public override void OnEpisodeBegin()
         {
+            // if (this == null || !gameObject.activeInHierarchy) return; // ← fixes the 151 errors
             if (!SetupReferences()) return;
             
             CaptureTheFlagManager.Instance?.NotifyEpisodeBegin(); // ← reads fresh level
