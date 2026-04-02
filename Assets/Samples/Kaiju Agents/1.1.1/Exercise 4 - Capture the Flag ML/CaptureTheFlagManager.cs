@@ -369,6 +369,8 @@ namespace KaijuSolutions.Agents.Exercises.CTF.ML
             // Note: We don't call Spawn() in the while loops here anymore. 
             // ApplyCurriculum() will handle the first spawn immediately when the episode starts!
         }
+        
+        
 
         protected override void OnDisable()
         {

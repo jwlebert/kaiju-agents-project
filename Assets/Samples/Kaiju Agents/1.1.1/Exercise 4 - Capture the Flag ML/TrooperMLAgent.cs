@@ -24,7 +24,6 @@ namespace KaijuSolutions.Agents.Exercises.CTF.ML
         private EnvironmentParameters _environment;
         
         // Reference to the base component, used when direct casting fails due to assembly clash.
-        private Component _trooperComp; 
         private Trooper _trooper;
         private KaijuAgent _kaijuAgent;
         private Rigidbody _rb;
@@ -99,22 +98,12 @@ namespace KaijuSolutions.Agents.Exercises.CTF.ML
             if (_kaijuAgent == null) _kaijuAgent = GetComponent<KaijuAgent>();
             if (_rb == null) _rb = GetComponent<Rigidbody>();
             
-            if (_trooperComp == null)
+            if (_trooper == null)
             {
-                var allScripts = GetComponents<MonoBehaviour>();
-                foreach (var s in allScripts)
-                {
-                    if (s == null) continue;
-                    if (s.GetType().Name == "Trooper")
-                    {
-                        _trooperComp = s;
-                        _trooper = s as Trooper; 
-                        break;
-                    }
-                }
+                _trooper = GetComponent<KaijuSolutions.Agents.Exercises.CTF.ML.Trooper>();
             }
 
-            if (_kaijuAgent == null || _rb == null || _trooperComp == null) return false;
+            if (_kaijuAgent == null || _rb == null || _trooper == null) return false;
             
             if (_enemySensor == null) _enemySensor = _kaijuAgent.GetSensor<TrooperEnemyVisionSensor>();
             if (_healthSensor == null) _healthSensor = _kaijuAgent.GetSensor<HealthVisionSensor>();
@@ -123,7 +112,7 @@ namespace KaijuSolutions.Agents.Exercises.CTF.ML
             // Always verify flags are present (they might have been destroyed/recreated during curriculum reset)
             if (_friendlyFlag == null || _enemyFlag == null)
             {
-                bool isTeamOne = GetTrooperBool("TeamOne", true);
+                bool isTeamOne = _trooper.TeamOne;
 
                 Flag[] flags = FindObjectsByType<Flag>(FindObjectsInactive.Include, FindObjectsSortMode.None);
                 foreach (Flag f in flags)
@@ -194,9 +183,8 @@ namespace KaijuSolutions.Agents.Exercises.CTF.ML
         {
             if (!SetupReferences()) return;
             
-            // This ensures that if the Manager moved the flags for a new lesson, 
-            // the agent actually knows where the new home base is!
-            if (_friendlyFlag != null) _friendlyBasePosition = _friendlyFlag.transform.position;
+            _hasFlag = false; // Reset their brain so they don't think they already have a flag
+            if (_friendlyFlag != null) _friendlyBasePosition = _friendlyFlag.transform.position; //Tell them where the NEW base is
             
             // 1. Fetch the curriculum parameter (Defaults to 11 if not training)
             int desiredEnemies = (int)_environment.GetWithDefault("enemy_count", 11f);
@@ -229,8 +217,8 @@ namespace KaijuSolutions.Agents.Exercises.CTF.ML
             }
 
             // 1-3. Internal State
-            float health = GetTrooperValue("Health", 100f);
-            float ammo = GetTrooperValue("Ammo", 30f);
+            float health = _trooper.Health;
+            float ammo = _trooper.Ammo;
 
             sensor.AddObservation(health / MaxHealth);
             sensor.AddObservation(ammo / MaxAmmo);
@@ -357,12 +345,12 @@ namespace KaijuSolutions.Agents.Exercises.CTF.ML
             // Branch 2: Combat
             if (discreteActions[2] == 1)
             {
-                _trooperComp.SendMessage("Attack", SendMessageOptions.DontRequireReceiver);
+                _trooper.Attack();
                 AddReward(-0.001f); 
             }
             else
             {
-                _trooperComp.SendMessage("StopAttacking", SendMessageOptions.DontRequireReceiver);
+                _trooper.StopAttacking();
             }
             
             // --- REWARD SHAPING ---
@@ -425,35 +413,6 @@ namespace KaijuSolutions.Agents.Exercises.CTF.ML
         // --- Helper methods to handle Assembly Conflicts (Reflection Fallback) ---
         // TODO: Remove these when all Trooper scripts exist in the same assembly namespace.
         
-        private float GetTrooperValue(string propName, float fallback)
-        {
-            if (_trooper != null)
-            {
-                var p = _trooper.GetType().GetProperty(propName);
-                if (p != null) return Convert.ToSingle(p.GetValue(_trooper));
-            }
-            if (_trooperComp != null)
-            {
-                var p = _trooperComp.GetType().GetProperty(propName);
-                if (p != null) return Convert.ToSingle(p.GetValue(_trooperComp));
-            }
-            return fallback;
-        }
-
-        private bool GetTrooperBool(string propName, bool fallback)
-        {
-            if (_trooper != null)
-            {
-                var p = _trooper.GetType().GetProperty(propName);
-                if (p != null) return (bool)p.GetValue(_trooper);
-            }
-            if (_trooperComp != null)
-            {
-                var p = _trooperComp.GetType().GetProperty(propName);
-                if (p != null) return (bool)p.GetValue(_trooperComp);
-            }
-            return fallback;
-        }
 
         private void AddPickupObs<T>(VectorSensor sensor, KaijuVisionSensor<T> s) where T : Pickup
         {
