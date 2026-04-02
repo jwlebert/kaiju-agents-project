@@ -268,6 +268,15 @@ namespace KaijuSolutions.Agents.Exercises.CTF.ML
         }
         
         /// <summary>
+        /// Updates the cached home position for Curriculum Learning changes.
+        /// </summary>
+        public void UpdateHome()
+        {
+            _position = Position;
+            _rotation = OrientationQuaternion;
+        }
+        
+        /// <summary>
         /// This function is called when the behaviour becomes disabled.
         /// </summary>
         private void OnDisable()

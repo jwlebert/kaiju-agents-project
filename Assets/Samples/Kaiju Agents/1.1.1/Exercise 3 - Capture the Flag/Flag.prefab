@@ -160,7 +160,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c63ab48c27269fc44b4e024809f395af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: com.kaijusolutions.agents.exercises.ctf.ml::KaijuSolutions.Agents.Exercises.CTF.ML.Flag
-  <TeamOne>k__BackingField: 1
+  <TeamOne>k__BackingField: 0
   visual: {fileID: 8892513563825831784}
 --- !u!1 &6345574964722534489
 GameObject:

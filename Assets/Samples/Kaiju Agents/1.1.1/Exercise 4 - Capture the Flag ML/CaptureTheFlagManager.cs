@@ -468,6 +468,10 @@ namespace KaijuSolutions.Agents.Exercises.CTF.ML
                     teamTwoFlag.position = teamTwoBasePos.position;
                     break;
             }
+            
+            // Update flag respawn point
+            teamOneFlag.GetComponent<Flag>().UpdateHome();
+            teamTwoFlag.GetComponent<Flag>().UpdateHome();
 
             // 4. Rebuild the NavMesh at runtime
             if (navMeshSurface != null)

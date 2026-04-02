@@ -6889,6 +6889,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7008575763368793387, guid: 129d7a45ca8cadb45b2bc1a1b0e3019e, type: 3}
+      propertyPath: <TeamOne>k__BackingField
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 1688757865389468678, guid: 129d7a45ca8cadb45b2bc1a1b0e3019e, type: 3}
     m_RemovedGameObjects: []
@@ -20116,6 +20120,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5266877254499886012, guid: 129d7a45ca8cadb45b2bc1a1b0e3019e, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7008575763368793387, guid: 129d7a45ca8cadb45b2bc1a1b0e3019e, type: 3}
+      propertyPath: <TeamOne>k__BackingField
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8892513563825831784, guid: 129d7a45ca8cadb45b2bc1a1b0e3019e, type: 3}
