@@ -1,62 +1,62 @@
 {
     "map_level": {
-        "lesson_num": 3
+        "lesson_num": 5
     },
     "Trooper": {
         "checkpoints": [
             {
-                "steps": 99972,
-                "file_path": "results\\Curriculum_04\\Trooper\\Trooper-99972.onnx",
-                "reward": 39.226390429905486,
-                "creation_time": 1775154981.9597318,
+                "steps": 649950,
+                "file_path": "results\\Curriculum_04\\Trooper\\Trooper-649950.onnx",
+                "reward": null,
+                "creation_time": 1775156186.9933505,
                 "auxillary_file_paths": [
-                    "results\\Curriculum_04\\Trooper\\Trooper-99972.pt"
+                    "results\\Curriculum_04\\Trooper\\Trooper-649950.pt"
                 ]
             },
             {
-                "steps": 149887,
-                "file_path": "results\\Curriculum_04\\Trooper\\Trooper-149887.onnx",
-                "reward": 41.4638920832764,
-                "creation_time": 1775155203.276013,
+                "steps": 699950,
+                "file_path": "results\\Curriculum_04\\Trooper\\Trooper-699950.onnx",
+                "reward": null,
+                "creation_time": 1775156249.5337775,
                 "auxillary_file_paths": [
-                    "results\\Curriculum_04\\Trooper\\Trooper-149887.pt"
+                    "results\\Curriculum_04\\Trooper\\Trooper-699950.pt"
                 ]
             },
             {
-                "steps": 153737,
-                "file_path": "results\\Curriculum_04\\Trooper\\Trooper-153737.onnx",
-                "reward": 41.59629532056196,
-                "creation_time": 1775155219.4395912,
+                "steps": 749966,
+                "file_path": "results\\Curriculum_04\\Trooper\\Trooper-749966.onnx",
+                "reward": null,
+                "creation_time": 1775156303.115091,
                 "auxillary_file_paths": [
-                    "results\\Curriculum_04\\Trooper\\Trooper-153737.pt"
+                    "results\\Curriculum_04\\Trooper\\Trooper-749966.pt"
                 ]
             },
             {
-                "steps": 199939,
-                "file_path": "results\\Curriculum_04\\Trooper\\Trooper-199939.onnx",
-                "reward": 56.25331351906061,
-                "creation_time": 1775155444.065334,
+                "steps": 799982,
+                "file_path": "results\\Curriculum_04\\Trooper\\Trooper-799982.onnx",
+                "reward": null,
+                "creation_time": 1775156359.5322585,
                 "auxillary_file_paths": [
-                    "results\\Curriculum_04\\Trooper\\Trooper-199939.pt"
+                    "results\\Curriculum_04\\Trooper\\Trooper-799982.pt"
                 ]
             },
             {
-                "steps": 222899,
-                "file_path": "results\\Curriculum_04\\Trooper\\Trooper-222899.onnx",
-                "reward": 66.35139000415802,
-                "creation_time": 1775155543.0135343,
+                "steps": 829646,
+                "file_path": "results\\Curriculum_04\\Trooper\\Trooper-829646.onnx",
+                "reward": null,
+                "creation_time": 1775156397.9993157,
                 "auxillary_file_paths": [
-                    "results\\Curriculum_04\\Trooper\\Trooper-222899.pt"
+                    "results\\Curriculum_04\\Trooper\\Trooper-829646.pt"
                 ]
             }
         ],
         "final_checkpoint": {
-            "steps": 222899,
+            "steps": 829646,
             "file_path": "results\\Curriculum_04\\Trooper.onnx",
-            "reward": 66.35139000415802,
-            "creation_time": 1775155543.0135343,
+            "reward": null,
+            "creation_time": 1775156397.9993157,
             "auxillary_file_paths": [
-                "results\\Curriculum_04\\Trooper\\Trooper-222899.pt"
+                "results\\Curriculum_04\\Trooper\\Trooper-829646.pt"
             ]
         }
     },
