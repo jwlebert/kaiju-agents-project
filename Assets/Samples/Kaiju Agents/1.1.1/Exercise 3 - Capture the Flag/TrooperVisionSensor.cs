@@ -6,16 +6,16 @@ using UnityEngine;
 namespace KaijuSolutions.Agents.Exercises.CTF
 {
     /// <summary>
-    /// Sensor to get all <see cref="Trooper"/>s.
+    /// Sensor to get all <see cref="TrooperOld"/>s.
     /// </summary>
     [AddComponentMenu("Kaiju Solutions/Agents/Exercises/Capture the Flag/Trooper Vision Sensor", 27)]
     [HelpURL("https://agents.kaijusolutions.ca/manual/capture-the-flag.html#trooper-vision-sensor")]
-    public class TrooperVisionSensor : KaijuVisionSensor<Trooper>
+    public class TrooperVisionSensor : KaijuVisionSensor<TrooperOld>
     {
         /// <summary>
-        /// The <see cref="Trooper"/> this is attached to.
+        /// The <see cref="TrooperOld"/> this is attached to.
         /// </summary>
-        protected Trooper Attached;
+        protected TrooperOld Attached;
         
         /// <summary>
         /// This function is called when the object becomes enabled and active.
@@ -29,7 +29,7 @@ namespace KaijuSolutions.Agents.Exercises.CTF
                 return;
             }
             
-            Attached = Agent.GetComponent<Trooper>();
+            Attached = Agent.GetComponent<TrooperOld>();
             if (Attached == null)
             {
                 Debug.LogError($"Trooper Vision Sensor - No trooper component attached to the agent \"{Agent.name}\".", this);
@@ -39,11 +39,11 @@ namespace KaijuSolutions.Agents.Exercises.CTF
         /// <summary>
         /// If there are no explicitly defined observable objects, define how to query for default observables.
         /// </summary>
-        /// <returns>All active <see cref="Trooper"/>s.</returns>
-        protected override IEnumerable<Trooper> DefaultObservables()
+        /// <returns>All active <see cref="TrooperOld"/>s.</returns>
+        protected override IEnumerable<TrooperOld> DefaultObservables()
         {
             // Don't detect ourselves.
-            return Trooper.All.Where(x => x.transform != transform && x.transform != Agent.transform);
+            return TrooperOld.All.Where(x => x.transform != transform && x.transform != Agent.transform);
         }
     }
 }

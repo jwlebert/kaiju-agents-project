@@ -9,7 +9,7 @@ namespace KaijuSolutions.Agents.Exercises.CTF
 {
     public class TrooperBrain : KaijuUtilityBrain
     {
-        [SerializeField] private Trooper trooper;
+        [SerializeField] private TrooperOld trooperOld;
         
         // true = attacker, false = defender
         [SerializeField] public bool attacker;
@@ -19,15 +19,15 @@ namespace KaijuSolutions.Agents.Exercises.CTF
         [SerializeField] public AmmoPickup ammoPickup;
 
         // Use transform; keep track of last position (not actual flag)
-        [SerializeField] public Flag friendlyFlag;
-        [SerializeField] public Flag enemyFlag;
+        [SerializeField] public FlagOld friendlyFlagOld;
+        [SerializeField] public FlagOld enemyFlagOld;
 
-        [SerializeField] public Trooper nearestEnemy;
+        [SerializeField] public TrooperOld nearestEnemy;
         
         public override void Awake()
         {
             base.Awake();
-            trooper = GetComponent<Trooper>();
+            trooperOld = GetComponent<TrooperOld>();
 
             // Randomly assign troopers as attackers or defenders, 50/50.
             Random random = new Random();
@@ -60,15 +60,15 @@ namespace KaijuSolutions.Agents.Exercises.CTF
         {
             // Set health to [0, 1], scaled along the scale [0, max health]
             // Get max health from CaptureTheFlagManager, started at 100.
-            SetScaled("StatusHealth", trooper.Health, 0f, CaptureTheFlagManager.Health);
+            SetScaled("StatusHealth", trooperOld.Health, 0f, CaptureTheFlagManager.Health);
             
             // Set ammo to [0, 1], scaled along the scale [0, max ammo]
             // Get max ammo from CaptureTheFlagManager, started at 30.
-            SetScaled("StatusAmmo", trooper.Ammo, 0f, CaptureTheFlagManager.Ammo);
+            SetScaled("StatusAmmo", trooperOld.Ammo, 0f, CaptureTheFlagManager.Ammo);
             
             // Check if empty, since checking if full doesn't work.
-            SetBool("HasAmmo", trooper.HasAmmo);
-            SetBool("TrooperCanShoot", trooper.CanAttack);
+            SetBool("HasAmmo", trooperOld.HasAmmo);
+            SetBool("TrooperCanShoot", trooperOld.CanAttack);
         }
 
         /// <summary>
@@ -97,7 +97,7 @@ namespace KaijuSolutions.Agents.Exercises.CTF
             Set("HealthPickup", healthPickup);
             
             // Flag is trooper is already at full health 
-            SetBool("HealthFull", trooper.Health == CaptureTheFlagManager.Health);
+            SetBool("HealthFull", trooperOld.Health == CaptureTheFlagManager.Health);
             
             // Calculate and normalize the distance to health pickup 
             SetScaled("HealthPickupDistance", healthPickup != null
@@ -116,22 +116,22 @@ namespace KaijuSolutions.Agents.Exercises.CTF
         private void SetFlags()
         {
             // Determine which flag belongs to which team
-            Flag teamFlag = trooper.TeamOne ? Flag.TeamOneFlag : Flag.TeamTwoFlag;
-            Flag otherFlag = trooper.TeamOne ? Flag.TeamTwoFlag : Flag.TeamOneFlag;
+            FlagOld teamFlagOld = trooperOld.TeamOne ? FlagOld.TeamOneFlagOld : FlagOld.TeamTwoFlagOld;
+            FlagOld otherFlagOld = trooperOld.TeamOne ? FlagOld.TeamTwoFlagOld : FlagOld.TeamOneFlagOld;
             
             // Store reference to team's flag
-            Set("FriendlyFlag", teamFlag);
+            Set("FriendlyFlag", teamFlagOld);
             // Check if friendly flag is at base
-            Set("FriendlyFlagMissing", teamFlag.transform.position != Flag.Base3(trooper.TeamOne));
+            Set("FriendlyFlagMissing", teamFlagOld.transform.position != FlagOld.Base3(trooperOld.TeamOne));
             // Set the base location where trooper needs to bring the enemy flag
-            Set("CapturePoint", trooper.TeamOne ? Flag.TeamOneBase3 :  Flag.TeamTwoBase3);
+            Set("CapturePoint", trooperOld.TeamOne ? FlagOld.TeamOneBase3 :  FlagOld.TeamTwoBase3);
             
             // Store reference to enemy flag
-            Set("EnemyFlag", otherFlag);
+            Set("EnemyFlag", otherFlagOld);
             // Check if the enemy flag is being carried or if dropped
-            Set("EnemyFlagCarried", otherFlag.Parent != null && otherFlag.Parent.name != "Flags");
+            Set("EnemyFlagCarried", otherFlagOld.Parent != null && otherFlagOld.Parent.name != "Flags");
             // Calculate and normalize the distance to the enemy flag, feeds into the CaptureDesire consideration
-            SetScaled("EnemyFlagDistance", Agent.transform.Distance(otherFlag.transform.position), 0f, 100f);
+            SetScaled("EnemyFlagDistance", Agent.transform.Distance(otherFlagOld.transform.position), 0f, 100f);
         }
 
         /// <summary>
@@ -159,7 +159,7 @@ namespace KaijuSolutions.Agents.Exercises.CTF
             SetScaled("NearestEnemyDistance", nearestEnemy != null
                 ? Agent.transform.Distance(nearestEnemy.transform.position) : MaxDistance, 0f, MaxDistance);
             // Check to see if there is a clear path to the enemy
-            SetBool("NearestEnemyLineOfSight", nearestEnemy != null && CheckLineOfSight(trooper.transform, nearestEnemy.transform));
+            SetBool("NearestEnemyLineOfSight", nearestEnemy != null && CheckLineOfSight(trooperOld.transform, nearestEnemy.transform));
         }
 
         /// <summary>

@@ -100,7 +100,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5266877254499886012}
   - component: {fileID: 8384945612191898824}
-  - component: {fileID: 1688757865389468678}
+  - component: {fileID: 7008575763368793387}
   m_Layer: 0
   m_Name: Flag
   m_TagString: Finish
@@ -148,7 +148,7 @@ CapsuleCollider:
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0, y: 1, z: 0}
---- !u!114 &1688757865389468678
+--- !u!114 &7008575763368793387
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -157,9 +157,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 3214938872660233332}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e3d2a269d0f64850bd38ccf502cb6504, type: 3}
+  m_Script: {fileID: 11500000, guid: c63ab48c27269fc44b4e024809f395af, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: com.kaijusolutions.agents.exercises.ctf::KaijuSolutions.Agents.Exercises.CTF.Flag
+  m_EditorClassIdentifier: com.kaijusolutions.agents.exercises.ctf.ml::KaijuSolutions.Agents.Exercises.CTF.ML.Flag
   <TeamOne>k__BackingField: 1
   visual: {fileID: 8892513563825831784}
 --- !u!1 &6345574964722534489

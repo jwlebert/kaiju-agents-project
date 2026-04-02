@@ -3,17 +3,17 @@
 namespace KaijuSolutions.Agents.Exercises.CTF
 {
     /// <summary>
-    /// An action for a <see cref="Trooper"/>.
+    /// An action for a <see cref="TrooperOld"/>.
     /// </summary>
-    /// <param name="trooper">The <see cref="Trooper"/>.</param>
-    public delegate void TrooperAction([NotNull] Trooper trooper);
+    /// <param name="trooper">The <see cref="TrooperOld"/>.</param>
+    public delegate void TrooperAction([NotNull] TrooperOld trooperOld);
     
     /// <summary>
-    /// An action for two <see cref="Trooper"/>s.
+    /// An action for two <see cref="TrooperOld"/>s.
     /// </summary>
-    /// <param name="a">The first <see cref="Trooper"/>.</param>
-    /// <param name="b">The second <see cref="Trooper"/>.</param>
-    public delegate void MultiTrooperAction([NotNull] Trooper a, [NotNull] Trooper b);
+    /// <param name="a">The first <see cref="TrooperOld"/>.</param>
+    /// <param name="b">The second <see cref="TrooperOld"/>.</param>
+    public delegate void MultiTrooperAction([NotNull] TrooperOld a, [NotNull] TrooperOld b);
     
     /// <summary>
     /// An action for a <see cref="HealthPickup"/>s.
@@ -22,11 +22,11 @@ namespace KaijuSolutions.Agents.Exercises.CTF
     public delegate void HealthAction([NotNull] HealthPickup health);
     
     /// <summary>
-    /// An action for a <see cref="Trooper"/> and a <see cref="HealthPickup"/>s.
+    /// An action for a <see cref="TrooperOld"/> and a <see cref="HealthPickup"/>s.
     /// </summary>
-    /// <param name="trooper">The <see cref="Trooper"/>.</param>
+    /// <param name="trooper">The <see cref="TrooperOld"/>.</param>
     /// <param name="health">The <see cref="HealthPickup"/>.</param>
-    public delegate void TrooperHealthAction([NotNull] Trooper trooper, [NotNull] HealthPickup health);
+    public delegate void TrooperHealthAction([NotNull] TrooperOld trooperOld, [NotNull] HealthPickup health);
     
     /// <summary>
     /// An action for a <see cref="AmmoPickup"/>s.
@@ -35,22 +35,22 @@ namespace KaijuSolutions.Agents.Exercises.CTF
     public delegate void AmmoAction([NotNull] AmmoPickup ammo);
     
     /// <summary>
-    /// An action for a <see cref="Trooper"/> and a <see cref="AmmoPickup"/>s.
+    /// An action for a <see cref="TrooperOld"/> and a <see cref="AmmoPickup"/>s.
     /// </summary>
-    /// <param name="trooper">The <see cref="Trooper"/>.</param>
+    /// <param name="trooper">The <see cref="TrooperOld"/>.</param>
     /// <param name="ammo">The <see cref="AmmoPickup"/>.</param>
-    public delegate void TrooperAmmoAction([NotNull] Trooper trooper, [NotNull] AmmoPickup ammo);
+    public delegate void TrooperAmmoAction([NotNull] TrooperOld trooperOld, [NotNull] AmmoPickup ammo);
     
     /// <summary>
-    /// An action for a <see cref="Flag"/>s.
+    /// An action for a <see cref="FlagOld"/>s.
     /// </summary>
-    /// <param name="flag">The <see cref="Flag"/>.</param>
-    public delegate void FlagAction([NotNull] Flag flag);
+    /// <param name="flagOld">The <see cref="FlagOld"/>.</param>
+    public delegate void FlagAction([NotNull] FlagOld flagOld);
     
     /// <summary>
-    /// An action for a <see cref="Trooper"/> and a <see cref="Flag"/>s.
+    /// An action for a <see cref="TrooperOld"/> and a <see cref="FlagOld"/>s.
     /// </summary>
-    /// <param name="trooper">The <see cref="Trooper"/>.</param>
-    /// <param name="flag">The <see cref="Flag"/>.</param>
-    public delegate void TrooperFlagAction([NotNull] Trooper trooper, [NotNull] Flag flag);
+    /// <param name="trooper">The <see cref="TrooperOld"/>.</param>
+    /// <param name="flagOld">The <see cref="FlagOld"/>.</param>
+    public delegate void TrooperFlagAction([NotNull] TrooperOld trooperOld, [NotNull] FlagOld flagOld);
 }

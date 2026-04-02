@@ -6,7 +6,7 @@ using UnityEditor;
 namespace KaijuSolutions.Agents.Exercises.CTF
 {
     /// <summary>
-    /// Manager for <see cref="Trooper"/>s to play capture the flag.
+    /// Manager for <see cref="TrooperOld"/>s to play capture the flag.
     /// </summary>
     [DisallowMultipleComponent]
     [HelpURL("https://agents.kaijusolutions.ca/manual/capture-the-flag.html#capture-the-flag-manager")]
@@ -76,7 +76,7 @@ namespace KaijuSolutions.Agents.Exercises.CTF
         }
 #endif
         /// <summary>
-        /// The prefab for <see cref="Trooper"/>s.
+        /// The prefab for <see cref="TrooperOld"/>s.
         /// </summary>
         [Header("Troopers")]
         [Tooltip("The prefab for troopers.")]
@@ -84,7 +84,7 @@ namespace KaijuSolutions.Agents.Exercises.CTF
         private KaijuAgent prefab;
         
         /// <summary>
-        /// The maximum and starting <see cref="Trooper.Health"/> of <see cref="Trooper"/>s.
+        /// The maximum and starting <see cref="TrooperOld.Health"/> of <see cref="TrooperOld"/>s.
         /// </summary>
         public static int Health
         {
@@ -101,7 +101,7 @@ namespace KaijuSolutions.Agents.Exercises.CTF
         }
         
         /// <summary>
-        /// The maximum and starting <see cref="Trooper.Health"/> of <see cref="Trooper"/>s.
+        /// The maximum and starting <see cref="TrooperOld.Health"/> of <see cref="TrooperOld"/>s.
         /// </summary>
         [Tooltip("The maximum and starting health of troopers.")]
         [Min(1)]
@@ -109,7 +109,7 @@ namespace KaijuSolutions.Agents.Exercises.CTF
         private int health = 100;
         
         /// <summary>
-        /// The damage the <see cref="BlasterActuator"/>s deal to <see cref="Trooper"/>s.
+        /// The damage the <see cref="BlasterActuator"/>s deal to <see cref="TrooperOld"/>s.
         /// </summary>
         public static int Damage
         {
@@ -126,7 +126,7 @@ namespace KaijuSolutions.Agents.Exercises.CTF
         }
         
         /// <summary>
-        /// The damage the <see cref="BlasterActuator"/>s deal to <see cref="Trooper"/>s.
+        /// The damage the <see cref="BlasterActuator"/>s deal to <see cref="TrooperOld"/>s.
         /// </summary>
         [Tooltip("The damage the blasters deals to troopers.")]
         [Min(1)]
@@ -134,7 +134,7 @@ namespace KaijuSolutions.Agents.Exercises.CTF
         private int damage = 10;
         
         /// <summary>
-        /// The maximum and starting <see cref="Trooper.Ammo"/> of <see cref="Trooper"/>s for their blaster.
+        /// The maximum and starting <see cref="TrooperOld.Ammo"/> of <see cref="TrooperOld"/>s for their blaster.
         /// </summary>
         public static int Ammo
         {
@@ -151,7 +151,7 @@ namespace KaijuSolutions.Agents.Exercises.CTF
         }
         
         /// <summary>
-        /// The maximum and starting <see cref="Trooper.Ammo"/> of <see cref="Trooper"/>s for their blaster.
+        /// The maximum and starting <see cref="TrooperOld.Ammo"/> of <see cref="TrooperOld"/>s for their blaster.
         /// </summary>
         [Tooltip("The maximum and starting ammo of troopers for their blaster.")]
         [Min(1)]
@@ -184,7 +184,7 @@ namespace KaijuSolutions.Agents.Exercises.CTF
         private float cooldown = 10;
         
         /// <summary>
-        /// How close to a <see cref="Trooper"/>'s own base to capture a <see cref="Flag"/> they are carrying.
+        /// How close to a <see cref="TrooperOld"/>'s own base to capture a <see cref="FlagOld"/> they are carrying.
         /// </summary>
         public static float CaptureDistance
         {
@@ -201,7 +201,7 @@ namespace KaijuSolutions.Agents.Exercises.CTF
         }
         
         /// <summary>
-        /// How close to a <see cref="Trooper"/>'s own base to capture a <see cref="Flag"/> they are carrying.
+        /// How close to a <see cref="TrooperOld"/>'s own base to capture a <see cref="FlagOld"/> they are carrying.
         /// </summary>
         [Tooltip("How close to a trooper's own base to capture a flag they are carrying.")]
         [Min(float.Epsilon)]
@@ -209,7 +209,7 @@ namespace KaijuSolutions.Agents.Exercises.CTF
         private float captureDistance = 1f;
         
         /// <summary>
-        /// The time in seconds for <see cref="Trooper"/>s to respawn.
+        /// The time in seconds for <see cref="TrooperOld"/>s to respawn.
         /// </summary>
         public static float Respawn
         {
@@ -226,7 +226,7 @@ namespace KaijuSolutions.Agents.Exercises.CTF
         }
         
         /// <summary>
-        /// The time in seconds for <see cref="Trooper"/>s to respawn.
+        /// The time in seconds for <see cref="TrooperOld"/>s to respawn.
         /// </summary>
         [Header("Spawning")]
         [Tooltip("The time in seconds for troopers to respawn.")]
@@ -235,7 +235,7 @@ namespace KaijuSolutions.Agents.Exercises.CTF
         private float respawn = 5;
         
         /// <summary>
-        /// The number of <see cref="Trooper"/>s per team.
+        /// The number of <see cref="TrooperOld"/>s per team.
         /// </summary>
         public static int Size
         {
@@ -252,7 +252,7 @@ namespace KaijuSolutions.Agents.Exercises.CTF
         }
         
         /// <summary>
-        /// The number of <see cref="Trooper"/>s per team.
+        /// The number of <see cref="TrooperOld"/>s per team.
         /// </summary>
         [Tooltip("The number of troopers per team.")]
         [Min(1)]
@@ -319,13 +319,13 @@ namespace KaijuSolutions.Agents.Exercises.CTF
         private readonly List<float> _respawnsTwo = new();
         
         /// <summary>
-        /// Spawn a <see cref="Trooper"/>.
+        /// Spawn a <see cref="TrooperOld"/>.
         /// </summary>
-        /// <param name="teamOne">The team to spawn the <see cref="Trooper"/> for.</param>
+        /// <param name="teamOne">The team to spawn the <see cref="TrooperOld"/> for.</param>
         private bool Spawn(bool teamOne)
         {
             // Don't spawn if the teams are full.
-            if ((teamOne ? Trooper.AllOne.Count : Trooper.AllTwo.Count) >= size)
+            if ((teamOne ? TrooperOld.AllOne.Count : TrooperOld.AllTwo.Count) >= size)
             {
                 return false;
             }
@@ -338,7 +338,7 @@ namespace KaijuSolutions.Agents.Exercises.CTF
                 return false;
             }
             
-            point.SpawnOccupy(Trooper.Spawn(prefab, point));
+            point.SpawnOccupy(TrooperOld.Spawn(prefab, point));
             return true;
         }
         
@@ -395,7 +395,7 @@ namespace KaijuSolutions.Agents.Exercises.CTF
         protected override void OnAgentDisabled(KaijuAgent agent)
         {
             // Whenever a trooper is eliminated, start a respawn timer.
-            if (agent.TryGetComponent(out Trooper trooper))
+            if (agent.TryGetComponent(out TrooperOld trooper))
             {
                 (trooper.TeamOne ? _respawnsOne : _respawnsTwo).Add(respawn);
             }

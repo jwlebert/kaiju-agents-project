@@ -9,11 +9,11 @@ using UnityEditor;
 namespace KaijuSolutions.Agents.Exercises.CTF
 {
     /// <summary>
-    /// The flags themselves for <see cref="Trooper"/>s to try and capture.
+    /// The flags themselves for <see cref="TrooperOld"/>s to try and capture.
     /// </summary>
     [HelpURL("https://agents.kaijusolutions.ca/manual/capture-the-flag.html#flag")]
     [AddComponentMenu("Kaiju Solutions/Agents/Exercises/Capture the Flag/Flag", 35)]
-    public class Flag : Pickup
+    public class FlagOld : Pickup
     {
         /// <summary>
         /// Get the location of a team's base, being where their flag spawns and where to return captured flags to.
@@ -77,7 +77,7 @@ namespace KaijuSolutions.Agents.Exercises.CTF
                     return Vector2.zero;
                 }
 #endif
-                return TeamOneFlag != null ? TeamOneFlag._position : Vector2.zero;
+                return TeamOneFlagOld != null ? TeamOneFlagOld._position : Vector2.zero;
             }
         }
 
@@ -111,21 +111,21 @@ namespace KaijuSolutions.Agents.Exercises.CTF
                     return Vector2.zero;
                 }
 #endif
-                return TeamTwoFlag != null ? TeamTwoFlag._position : Vector2.zero;
+                return TeamTwoFlagOld != null ? TeamTwoFlagOld._position : Vector2.zero;
             }
         }
 
         /// <summary>
         /// Both flags for easy access.
         /// </summary>
-        public static IReadOnlyCollection<Flag> Flags
+        public static IReadOnlyCollection<FlagOld> Flags
         {
             get
             {
 #if UNITY_EDITOR
                 if (!Application.isPlaying)
                 {
-                    return Array.Empty<Flag>();
+                    return Array.Empty<FlagOld>();
                 }
 #endif
                 return Both;
@@ -135,17 +135,17 @@ namespace KaijuSolutions.Agents.Exercises.CTF
         /// <summary>
         /// Store both flags for easy access.
         /// </summary>
-        private static readonly HashSet<Flag> Both = new();
+        private static readonly HashSet<FlagOld> Both = new();
         
         /// <summary>
         /// Team one's flag.
         /// </summary>
-        public static Flag TeamOneFlag;
+        public static FlagOld TeamOneFlagOld;
         
         /// <summary>
         /// Team two's flag.
         /// </summary>
-        public static Flag TeamTwoFlag;
+        public static FlagOld TeamTwoFlagOld;
 #if UNITY_EDITOR
         /// <summary>
         /// Handle manually resetting the domain.
@@ -178,8 +178,8 @@ namespace KaijuSolutions.Agents.Exercises.CTF
         /// </summary>
         private static void Domain()
         {
-            TeamOneFlag = null;
-            TeamTwoFlag = null;
+            TeamOneFlagOld = null;
+            TeamTwoFlagOld = null;
             Both.Clear();
         }
 #endif
@@ -229,38 +229,38 @@ namespace KaijuSolutions.Agents.Exercises.CTF
         {
             if (TeamOne)
             {
-                if (TeamTwoFlag == this)
+                if (TeamTwoFlagOld == this)
                 {
-                    TeamTwoFlag = null;
+                    TeamTwoFlagOld = null;
                 }
                 
-                if (TeamOneFlag != null && TeamOneFlag != this)
+                if (TeamOneFlagOld != null && TeamOneFlagOld != this)
                 {
                     Both.Remove(this);
                     Destroy(gameObject);
                 }
                 else
                 {
-                    TeamOneFlag = this;
+                    TeamOneFlagOld = this;
                     Both.Add(this);
                     visual.material = KaijuAgents.GetMaterial(CaptureTheFlagManager.ColorOne);
                 }
             }
             else
             {
-                if (TeamOneFlag == this)
+                if (TeamOneFlagOld == this)
                 {
                     Both.Remove(this);
-                    TeamOneFlag = null;
+                    TeamOneFlagOld = null;
                 }
                 
-                if (TeamTwoFlag != null && TeamTwoFlag != this)
+                if (TeamTwoFlagOld != null && TeamTwoFlagOld != this)
                 {
                     Destroy(gameObject);
                 }
                 else
                 {
-                    TeamTwoFlag = this;
+                    TeamTwoFlagOld = this;
                     Both.Add(this);
                     visual.material = KaijuAgents.GetMaterial(CaptureTheFlagManager.ColorTwo);
                 }
@@ -273,28 +273,28 @@ namespace KaijuSolutions.Agents.Exercises.CTF
         private void OnDisable()
         {
             Both.Remove(this);
-            if (TeamOneFlag == this)
+            if (TeamOneFlagOld == this)
             {
-                TeamOneFlag = null;
+                TeamOneFlagOld = null;
             }
             
-            if (TeamTwoFlag == this)
+            if (TeamTwoFlagOld == this)
             {
-                TeamTwoFlag = null;
+                TeamTwoFlagOld = null;
             }
         }
         
         /// <summary>
         /// What to do when interacted with.
         /// </summary>
-        /// <param name="trooper">The <see cref="Trooper"/> interracting with this.</param>
+        /// <param name="trooperOld">The <see cref="TrooperOld"/> interracting with this.</param>
         /// <returns>If the interaction was successful or not.</returns>
-        public override bool Interact([NotNull] Trooper trooper)
+        public override bool Interact([NotNull] TrooperOld trooperOld)
         {
             Transform t = transform;
             
             // If this is the same team, the flag is being returned.
-            if (trooper.TeamOne == TeamOne)
+            if (trooperOld.TeamOne == TeamOne)
             {
                 // Nothing to return if already at the correct base.
                 if (_position == Position)
@@ -307,7 +307,7 @@ namespace KaijuSolutions.Agents.Exercises.CTF
             else
             {
                 // Otherwise, it is being picked up.
-                t.parent = trooper.FlagPosition;
+                t.parent = trooperOld.FlagPosition;
                 t.localPosition = Vector3.zero;
                 t.localRotation = Quaternion.identity;
                 

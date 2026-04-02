@@ -9,7 +9,7 @@ using UnityEditor;
 namespace KaijuSolutions.Agents.Exercises.CTF
 {
     /// <summary>
-    /// Points which <see cref="Trooper"/>s can spawn at.
+    /// Points which <see cref="TrooperOld"/>s can spawn at.
     /// </summary>
     [RequireComponent(typeof(Collider))]
     [DefaultExecutionOrder(int.MinValue)]
@@ -117,14 +117,14 @@ namespace KaijuSolutions.Agents.Exercises.CTF
         public bool TeamOne { get; private set; } = true;
         
         /// <summary>
-        /// If this is currently occupied by any <see cref="Trooper"/>s.
+        /// If this is currently occupied by any <see cref="TrooperOld"/>s.
         /// </summary>
         public bool Occupied => _within.Count > 0;
         
         /// <summary>
-        /// Keep track of how many <see cref="Trooper"/>s are in this.
+        /// Keep track of how many <see cref="TrooperOld"/>s are in this.
         /// </summary>
-        private readonly HashSet<Trooper> _within = new();
+        private readonly HashSet<TrooperOld> _within = new();
         
         /// <summary>
         /// All colliders attached to this.
@@ -264,7 +264,7 @@ namespace KaijuSolutions.Agents.Exercises.CTF
         /// <param name="within">If this was a within event or an exiting event.</param>
         private void HandleContacts(Transform other, bool within)
         {
-            if (!other.TryGetComponent(out Trooper trooper))
+            if (!other.TryGetComponent(out TrooperOld trooper))
             {
                 return;
             }
@@ -313,10 +313,10 @@ namespace KaijuSolutions.Agents.Exercises.CTF
         /// <summary>
         /// Manually occupy this on a spawn as physics collisions won't pick it up right away.
         /// </summary>
-        /// <param name="trooper"></param>
-        public void SpawnOccupy(Trooper trooper)
+        /// <param name="trooperOld"></param>
+        public void SpawnOccupy(TrooperOld trooperOld)
         {
-            _within.Add(trooper);
+            _within.Add(trooperOld);
             OpenOneCache.Remove(this);
             OpenTwoCache.Remove(this);
             

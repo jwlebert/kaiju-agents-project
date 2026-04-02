@@ -370,7 +370,11 @@ namespace KaijuSolutions.Agents.Exercises.CTF.ML
             // ApplyCurriculum() will handle the first spawn immediately when the episode starts!
         }
         
-        
+        private void Start()
+        {
+            // Forces the first spawn so agents exist before ML-Agents connects!
+            ApplyCurriculum();
+        }
 
         protected override void OnDisable()
         {

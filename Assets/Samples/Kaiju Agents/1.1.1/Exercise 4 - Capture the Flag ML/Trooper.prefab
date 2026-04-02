@@ -549,7 +549,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: com.kaijusolutions.agents.exercises.ctf::KaijuSolutions.Agents.Exercises.CTF.Trooper
   agent: {fileID: 6190703363887382500}
-  <Health>k__BackingField: 0
+  <Health>k__BackingField: 100
   <FlagPosition>k__BackingField: {fileID: 7447423002306824928}
 --- !u!114 &6190703363887382500
 MonoBehaviour:
@@ -567,7 +567,7 @@ MonoBehaviour:
   moveAcceleration: 50
   lookSpeed: 360
   autoRotate: 1
-  configuration: {fileID: 11400000, guid: 2101d885a9eb9a447b12b330776a1e39, type: 2}
+  configuration: {fileID: 11400000, guid: 61bbd3fc418126b4aa05b3ce0b65e082, type: 2}
   identifiers: 
   radius: 0.5
   body: {fileID: 9114223757832726476}

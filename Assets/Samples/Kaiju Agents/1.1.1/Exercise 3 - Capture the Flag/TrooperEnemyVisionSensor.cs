@@ -4,7 +4,7 @@ using UnityEngine;
 namespace KaijuSolutions.Agents.Exercises.CTF
 {
     /// <summary>
-    /// Sensor to get all enemy <see cref="Trooper"/>s.
+    /// Sensor to get all enemy <see cref="TrooperOld"/>s.
     /// </summary>
     [AddComponentMenu("Kaiju Solutions/Agents/Exercises/Capture the Flag/Trooper Enemy Vision Sensor", 28)]
     [HelpURL("https://agents.kaijusolutions.ca/manual/capture-the-flag.html#trooper-enemy-vision-sensor")]
@@ -13,10 +13,10 @@ namespace KaijuSolutions.Agents.Exercises.CTF
         /// <summary>
         /// If there are no explicitly defined observable objects, define how to query for default observables.
         /// </summary>
-        /// <returns>All active <see cref="Trooper"/>s on the other team.</returns>
-        protected override IEnumerable<Trooper> DefaultObservables()
+        /// <returns>All active <see cref="TrooperOld"/>s on the other team.</returns>
+        protected override IEnumerable<TrooperOld> DefaultObservables()
         {
-            return Attached == null ? base.DefaultObservables() : Attached.TeamOne ? Trooper.AllTwo : Trooper.AllOne;
+            return Attached == null ? base.DefaultObservables() : Attached.TeamOne ? TrooperOld.AllTwo : TrooperOld.AllOne;
         }
     }
 }

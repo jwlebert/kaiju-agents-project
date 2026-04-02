@@ -19,7 +19,7 @@ namespace KaijuSolutions.Agents.Exercises.CTF
     [RequireComponent(typeof(KaijuRigidbodyAgent))]
     [AddComponentMenu("Kaiju Solutions/Agents/Exercises/Capture the Flag/Trooper", 25)]
     [HelpURL("https://agents.kaijusolutions.ca/manual/capture-the-flag.html#trooper")]
-    public class Trooper : KaijuController
+    public class TrooperOld : KaijuController
     {
         /// <summary>
         /// Callback for hitting another trooper.
@@ -52,42 +52,42 @@ namespace KaijuSolutions.Agents.Exercises.CTF
         public static event MultiTrooperAction OnTrooperEliminatedGlobal;
         
         /// <summary>
-        /// Callback for when this agent dropped the <see cref="Flag"/>.
+        /// Callback for when this agent dropped the <see cref="FlagOld"/>.
         /// </summary>
         public event FlagAction OnFlagDropped;
         
         /// <summary>
-        /// Global callback for when this agent dropped the <see cref="Flag"/>.
+        /// Global callback for when this agent dropped the <see cref="FlagOld"/>.
         /// </summary>
         public event TrooperFlagAction OnFlagDroppedGlobal;
         
         /// <summary>
-        /// Callback for when this agent picking up the <see cref="Flag"/>.
+        /// Callback for when this agent picking up the <see cref="FlagOld"/>.
         /// </summary>
         public event FlagAction OnFlagPickedUp;
         
         /// <summary>
-        /// Global callback for when this agent picking up the <see cref="Flag"/>.
+        /// Global callback for when this agent picking up the <see cref="FlagOld"/>.
         /// </summary>
         public event TrooperFlagAction OnFlagPickedUpGlobal;
         
         /// <summary>
-        /// Callback for when this agent returned the <see cref="Flag"/>.
+        /// Callback for when this agent returned the <see cref="FlagOld"/>.
         /// </summary>
         public event FlagAction OnFlagReturned;
         
         /// <summary>
-        /// Global callback for when this agent returned the <see cref="Flag"/>.
+        /// Global callback for when this agent returned the <see cref="FlagOld"/>.
         /// </summary>
         public event TrooperFlagAction OnFlagReturnedGlobal;
         
         /// <summary>
-        /// Callback for when this agent captured the <see cref="Flag"/>.
+        /// Callback for when this agent captured the <see cref="FlagOld"/>.
         /// </summary>
         public event FlagAction OnFlagCaptured;
         
         /// <summary>
-        /// Global callback for when this agent captured the <see cref="Flag"/>.
+        /// Global callback for when this agent captured the <see cref="FlagOld"/>.
         /// </summary>
         public event TrooperFlagAction OnFlagCapturedGlobal;
         
@@ -114,14 +114,14 @@ namespace KaijuSolutions.Agents.Exercises.CTF
         /// <summary>
         /// All troopers currently active.
         /// </summary>
-        public static IReadOnlyCollection<Trooper> All
+        public static IReadOnlyCollection<TrooperOld> All
         {
             get
             {
 #if UNITY_EDITOR
                 if (!Application.isPlaying)
                 {
-                    return Array.Empty<Trooper>();
+                    return Array.Empty<TrooperOld>();
                 }
 #endif
                 return Active;
@@ -131,19 +131,19 @@ namespace KaijuSolutions.Agents.Exercises.CTF
         /// <summary>
         /// All active troopers.
         /// </summary>
-        private static readonly HashSet<Trooper> Active = new();
+        private static readonly HashSet<TrooperOld> Active = new();
         
         /// <summary>
         /// All troopers currently active for team one.
         /// </summary>
-        public static IReadOnlyCollection<Trooper> AllOne
+        public static IReadOnlyCollection<TrooperOld> AllOne
         {
             get
             {
 #if UNITY_EDITOR
                 if (!Application.isPlaying)
                 {
-                    return Array.Empty<Trooper>();
+                    return Array.Empty<TrooperOld>();
                 }
 #endif
                 return ActiveOne;
@@ -153,19 +153,19 @@ namespace KaijuSolutions.Agents.Exercises.CTF
         /// <summary>
         /// The active troopers for team one.
         /// </summary>
-        private static readonly HashSet<Trooper> ActiveOne = new();
+        private static readonly HashSet<TrooperOld> ActiveOne = new();
         
         /// <summary>
         /// All troopers currently active for team two.
         /// </summary>
-        public static IReadOnlyCollection<Trooper> AllTwo
+        public static IReadOnlyCollection<TrooperOld> AllTwo
         {
             get
             {
 #if UNITY_EDITOR
                 if (!Application.isPlaying)
                 {
-                    return Array.Empty<Trooper>();
+                    return Array.Empty<TrooperOld>();
                 }
 #endif
                 return ActiveTwo;
@@ -175,7 +175,7 @@ namespace KaijuSolutions.Agents.Exercises.CTF
         /// <summary>
         /// The active troopers for team two.
         /// </summary>
-        private static readonly HashSet<Trooper> ActiveTwo = new();
+        private static readonly HashSet<TrooperOld> ActiveTwo = new();
 #if UNITY_EDITOR
         /// <summary>
         /// Handle manually resetting the domain.
@@ -227,22 +227,22 @@ namespace KaijuSolutions.Agents.Exercises.CTF
         /// <summary>
         /// Get the location of this trooper's own base.
         /// </summary>
-        public Vector2 OwnBase => Flag.Base(TeamOne);
+        public Vector2 OwnBase => FlagOld.Base(TeamOne);
         
         /// <summary>
         /// Get the location of this trooper's  own base.
         /// </summary>
-        public Vector3 OwnBase3 => Flag.Base3(TeamOne);
+        public Vector3 OwnBase3 => FlagOld.Base3(TeamOne);
         
         /// <summary>
         /// Get the location of the other team's base.
         /// </summary>
-        public Vector2 EnemyBase => Flag.Base(!TeamOne);
+        public Vector2 EnemyBase => FlagOld.Base(!TeamOne);
         
         /// <summary>
         /// Get the location of the other team's base.
         /// </summary>
-        public Vector3 EnemyBase3 => Flag.Base3(!TeamOne);
+        public Vector3 EnemyBase3 => FlagOld.Base3(!TeamOne);
         
         /// <summary>
         /// The <see cref="BlasterActuator"/> of the trooper.
@@ -252,10 +252,10 @@ namespace KaijuSolutions.Agents.Exercises.CTF
         /// <summary>
         /// The flag being carried.
         /// </summary>
-        private Flag _flag;
+        private FlagOld _flagOld;
         
         /// <summary>
-        /// The ammo for this <see cref="Trooper"/>'s <see cref="BlasterActuator"/>.
+        /// The ammo for this <see cref="TrooperOld"/>'s <see cref="BlasterActuator"/>.
         /// </summary>
         public int Ammo
         {
@@ -292,7 +292,7 @@ namespace KaijuSolutions.Agents.Exercises.CTF
         /// <param name="trooperPrefab">The trooper prefab to spawn.</param>
         /// <param name="spawnPoint">The <see cref="SpawnPoint"/> to spawn the trooper at.</param>
         /// <returns>The spawned trooper.</returns>
-        public static Trooper Spawn([NotNull] KaijuAgent trooperPrefab, [NotNull] SpawnPoint spawnPoint)
+        public static TrooperOld Spawn([NotNull] KaijuAgent trooperPrefab, [NotNull] SpawnPoint spawnPoint)
         {
 #if UNITY_EDITOR
             if (!Application.isPlaying)
@@ -318,9 +318,9 @@ namespace KaijuSolutions.Agents.Exercises.CTF
             Transform t = spawnPoint.transform;
             string[] components = { "Trooper" };
             KaijuAgent agent = KaijuAgents.Spawn(KaijuAgentType.Rigidbody, t.position, t.rotation, true, trooperPrefab, $"Trooper {team}", color, Color.black, components);
-            if (!agent.TryGetComponent(out Trooper trooper))
+            if (!agent.TryGetComponent(out TrooperOld trooper))
             {
-                trooper = agent.gameObject.AddComponent<Trooper>();
+                trooper = agent.gameObject.AddComponent<TrooperOld>();
             }
             
             // Assign to the correct team.
@@ -348,7 +348,7 @@ namespace KaijuSolutions.Agents.Exercises.CTF
         /// Take damage from another trooper.
         /// </summary>
         /// <param name="attacker">The trooper that dealt the damage.</param>
-        public void TakeDamage([NotNull] Trooper attacker)
+        public void TakeDamage([NotNull] TrooperOld attacker)
         {
             // Lower the health.
             Health -= CaptureTheFlagManager.Damage;
@@ -432,15 +432,15 @@ namespace KaijuSolutions.Agents.Exercises.CTF
             Ammo = 0;
             
             // Drop the flag if this trooper is carrying it.
-            if (_flag == null)
+            if (_flagOld == null)
             {
                 return;
             }
             
-            _flag.Drop();
-            OnFlagDropped?.Invoke(_flag);
-            OnFlagDroppedGlobal?.Invoke(this, _flag);
-            _flag = null;
+            _flagOld.Drop();
+            OnFlagDropped?.Invoke(_flagOld);
+            OnFlagDroppedGlobal?.Invoke(this, _flagOld);
+            _flagOld = null;
         }
         
         /// <summary>
@@ -539,21 +539,21 @@ namespace KaijuSolutions.Agents.Exercises.CTF
             }
             
             // The last option is this being a flag.
-            if (pickup is not Flag flag || !flag.Interact(this))
+            if (pickup is not FlagOld flag || !flag.Interact(this))
             {
                 return;
             }
             
             if (TeamOne == flag.TeamOne)
             {
-                OnFlagReturned?.Invoke(_flag);
-                OnFlagReturnedGlobal?.Invoke(this, _flag);
+                OnFlagReturned?.Invoke(_flagOld);
+                OnFlagReturnedGlobal?.Invoke(this, _flagOld);
                 return;
             }
             
-            _flag = flag;
-            OnFlagPickedUp?.Invoke(_flag);
-            OnFlagPickedUpGlobal?.Invoke(this, _flag);
+            _flagOld = flag;
+            OnFlagPickedUp?.Invoke(_flagOld);
+            OnFlagPickedUpGlobal?.Invoke(this, _flagOld);
         }
         
         /// <summary>
@@ -562,15 +562,15 @@ namespace KaijuSolutions.Agents.Exercises.CTF
         private void FixedUpdate()
         {
             // Try to capture the flag.
-            if (_flag == null || Position.Distance(OwnBase) > CaptureTheFlagManager.CaptureDistance)
+            if (_flagOld == null || Position.Distance(OwnBase) > CaptureTheFlagManager.CaptureDistance)
             {
                 return;
             }
             
-            _flag.Return();
-            OnFlagCaptured?.Invoke(_flag);
-            OnFlagCapturedGlobal?.Invoke(this, _flag);
-            _flag = null;
+            _flagOld.Return();
+            OnFlagCaptured?.Invoke(_flagOld);
+            OnFlagCapturedGlobal?.Invoke(this, _flagOld);
+            _flagOld = null;
         }
     }
 }

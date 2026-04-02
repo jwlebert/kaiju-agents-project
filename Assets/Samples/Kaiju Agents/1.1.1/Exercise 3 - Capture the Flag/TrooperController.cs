@@ -10,17 +10,17 @@ namespace KaijuSolutions.Agents.Exercises.CTF
     /// <summary>
     /// Basic controller for you to get started with.
     /// </summary>
-    [RequireComponent(typeof(Trooper))]
+    [RequireComponent(typeof(TrooperOld))]
     [AddComponentMenu("Kaiju Solutions/Agents/Exercises/Capture the Flag/Trooper Controller", 24)]
     [HelpURL("https://agents.kaijusolutions.ca/manual/capture-the-flag.html#trooper-controller")]
     public class TrooperController : KaijuController
     {
         /// <summary>
-        /// The <see cref="Trooper"/> this is controlling.
+        /// The <see cref="TrooperOld"/> this is controlling.
         /// </summary>
         [Tooltip("The trooper this is controlling.")]
         [HideInInspector]
-        [SerializeField] private Trooper trooper;
+        [SerializeField] private TrooperOld trooperOld;
         
         /// <summary>
         /// The <see cref="KaijuUtilityBrain"/> for this trooper.
@@ -30,38 +30,38 @@ namespace KaijuSolutions.Agents.Exercises.CTF
         [SerializeField] private TrooperBrain brain;
 
         /// <summary>
-        /// Callback for this <see cref="trooper"/> hitting another <see cref="Trooper"/>.
+        /// Callback for this <see cref="trooperOld"/> hitting another <see cref="TrooperOld"/>.
         /// </summary>
-        /// <param name="hit">The <see cref="Trooper"/> which was hit.</param>
-        private void OnHitTrooper(Trooper hit)
+        /// <param name="hit">The <see cref="TrooperOld"/> which was hit.</param>
+        private void HitTrooperOld(TrooperOld hit)
         {
             brain.nearestEnemy = null;
         }
 
         /// <summary>
-        /// Callback for this <see cref="trooper"/> getting hit by another <see cref="Trooper"/>.
+        /// Callback for this <see cref="trooperOld"/> getting hit by another <see cref="TrooperOld"/>.
         /// </summary>
-        /// <param name="hitBy">The <see cref="Trooper"/> which hit the <see cref="trooper"/>.</param>
-        private void OnHitByTrooper(Trooper hitBy)
+        /// <param name="hitBy">The <see cref="TrooperOld"/> which hit the <see cref="trooperOld"/>.</param>
+        private void HitByTrooperOld(TrooperOld hitBy)
         {
             brain.nearestEnemy = null;
         }
 
         /// <summary>
-        /// Callback for this <see cref="trooper"/> eliminating another <see cref="Trooper"/>.
+        /// Callback for this <see cref="trooperOld"/> eliminating another <see cref="TrooperOld"/>.
         /// </summary>
-        /// <param name="eliminated">The <see cref="Trooper"/> which was eliminated.</param>
-        private void OnEliminatedTrooper(Trooper eliminated)
+        /// <param name="eliminated">The <see cref="TrooperOld"/> which was eliminated.</param>
+        private void EliminatedTrooperOld(TrooperOld eliminated)
         {
             // So it stops shooting after kills/dies.
             brain.nearestEnemy = null;
         }
 
         /// <summary>
-        /// Callback for this <see cref="trooper"/> getting eliminated by another <see cref="Trooper"/>.
+        /// Callback for this <see cref="trooperOld"/> getting eliminated by another <see cref="TrooperOld"/>.
         /// </summary>
-        /// <param name="eliminatedBy">The <see cref="Trooper"/> which eliminated the <see cref="trooper"/>.</param>
-        private void OnEliminatedByTrooper(Trooper eliminatedBy)
+        /// <param name="eliminatedBy">The <see cref="TrooperOld"/> which eliminated the <see cref="trooperOld"/>.</param>
+        private void EliminatedByTrooperOld(TrooperOld eliminatedBy)
         {
             // So it stops shooting after kills/dies.
             brain.nearestEnemy = null;
@@ -69,39 +69,39 @@ namespace KaijuSolutions.Agents.Exercises.CTF
         }
 
         /// <summary>
-        /// Callback for the <see cref="trooper"/> picking up the <see cref="Flag"/>.
+        /// Callback for the <see cref="trooperOld"/> picking up the <see cref="FlagOld"/>.
         /// </summary>
-        /// <param name="flag">The <see cref="Flag"/>.</param>
-        private void OnFlagPickedUp(Flag flag)
+        /// <param name="flagOld">The <see cref="FlagOld"/>.</param>
+        private void OnFlagPickedUp(FlagOld flagOld)
         {
             brain.SetHoldingFlag(true);
         }
 
         /// <summary>
-        /// Callback for the <see cref="trooper"/> capturing the <see cref="Flag"/>.
+        /// Callback for the <see cref="trooperOld"/> capturing the <see cref="FlagOld"/>.
         /// </summary>
-        /// <param name="flag">The <see cref="Flag"/>.</param>
-        private void OnFlagCaptured(Flag flag)
+        /// <param name="flagOld">The <see cref="FlagOld"/>.</param>
+        private void OnFlagCaptured(FlagOld flagOld)
         {
             brain.SetHoldingFlag(false);
             
         }
 
         /// <summary>
-        /// Callback for the <see cref="trooper"/> returning their <see cref="Flag"/>.
+        /// Callback for the <see cref="trooperOld"/> returning their <see cref="FlagOld"/>.
         /// </summary>
-        /// <param name="flag">The <see cref="Flag"/>.</param>
-        private void OnFlagReturned(Flag flag)
+        /// <param name="flagOld">The <see cref="FlagOld"/>.</param>
+        private void OnFlagReturned(FlagOld flagOld)
         {
             brain.SetHoldingFlag(false);
             
         }
 
         /// <summary>
-        /// Callback for the <see cref="trooper"/> dropping the <see cref="Flag"/>.
+        /// Callback for the <see cref="trooperOld"/> dropping the <see cref="FlagOld"/>.
         /// </summary>
-        /// <param name="flag">The <see cref="Flag"/>.</param>
-        private void OnFlagDropped(Flag flag)
+        /// <param name="flagOld">The <see cref="FlagOld"/>.</param>
+        private void OnFlagDropped(FlagOld flagOld)
         {
             brain.SetHoldingFlag(true);
         }
@@ -116,7 +116,7 @@ namespace KaijuSolutions.Agents.Exercises.CTF
             if (!sensor || !sensor.Observed.Any()) return;
 
             // Combine visible pickups with the currently tracked ammo pickup.
-            IEnumerable<Trooper> enemies = sensor.Observed
+            IEnumerable<TrooperOld> enemies = sensor.Observed
                 .Append(brain.nearestEnemy)
                 .Where(t => t);
 
@@ -135,7 +135,7 @@ namespace KaijuSolutions.Agents.Exercises.CTF
         }
         
         /// <summary>
-        /// Callback for sensing all <see cref="Trooper"/>s.
+        /// Callback for sensing all <see cref="TrooperOld"/>s.
         /// </summary>
         /// <param name="sensor">The <see cref="TrooperTeamVisionSensor"/>.</param>
         private void OnSenseTroopers(TrooperVisionSensor sensor)
@@ -186,7 +186,7 @@ namespace KaijuSolutions.Agents.Exercises.CTF
         }
         
         /// <summary>
-        /// Callback for sensing <see cref="Flag"/>s.
+        /// Callback for sensing <see cref="FlagOld"/>s.
         /// </summary>
         /// <param name="sensor">The <see cref="FlagVisionSensor"/>.</param>
         private void OnSenseFlag(FlagVisionSensor sensor)
@@ -202,10 +202,10 @@ namespace KaijuSolutions.Agents.Exercises.CTF
                 // Tracks enemy/friendly flags when observed.
                 // Currently unused; we decided to treat troopers as omniscient with respect to flags.
                 // Just pretend they have walkie talkies.
-                if (flag.TeamOne == trooper.TeamOne)
-                    brain.friendlyFlag = flag;
+                if (flag.TeamOne == trooperOld.TeamOne)
+                    brain.friendlyFlagOld = flag;
                 else
-                    brain.enemyFlag = flag;
+                    brain.enemyFlagOld = flag;
             }
         }
         
@@ -259,9 +259,9 @@ namespace KaijuSolutions.Agents.Exercises.CTF
             base.OnValidate();
             
             // The trooper must on this object.
-            if (trooper == null || trooper.transform != transform)
+            if (trooperOld == null || trooperOld.transform != transform)
             {
-                trooper = GetComponent<Trooper>();
+                trooperOld = GetComponent<TrooperOld>();
             }
         }
         
@@ -270,10 +270,10 @@ namespace KaijuSolutions.Agents.Exercises.CTF
         /// </summary>
         protected override void OnEnable()
         {
-            if (trooper == null)
+            if (trooperOld == null)
             {
-                trooper = GetComponent<Trooper>();
-                if (trooper == null)
+                trooperOld = GetComponent<TrooperOld>();
+                if (trooperOld == null)
                 {
                     Debug.LogError("Trooper Controller - No trooper on this GameObject.", this);
                 }
@@ -289,16 +289,16 @@ namespace KaijuSolutions.Agents.Exercises.CTF
                 }
             }
             
-            if (trooper != null)
+            if (trooperOld != null)
             {
-                trooper.OnHitTrooper += OnHitTrooper;
-                trooper.OnHitByTrooper += OnHitByTrooper;
-                trooper.OnEliminatedTrooper += OnEliminatedTrooper;
-                trooper.OnEliminatedByTrooper += OnEliminatedByTrooper;
-                trooper.OnFlagPickedUp += OnFlagPickedUp;
-                trooper.OnFlagCaptured += OnFlagCaptured;
-                trooper.OnFlagReturned += OnFlagReturned;
-                trooper.OnFlagDropped += OnFlagDropped;
+                trooperOld.OnHitTrooper += HitTrooperOld;
+                trooperOld.OnHitByTrooper += HitByTrooperOld;
+                trooperOld.OnEliminatedTrooper += EliminatedTrooperOld;
+                trooperOld.OnEliminatedByTrooper += EliminatedByTrooperOld;
+                trooperOld.OnFlagPickedUp += OnFlagPickedUp;
+                trooperOld.OnFlagCaptured += OnFlagCaptured;
+                trooperOld.OnFlagReturned += OnFlagReturned;
+                trooperOld.OnFlagDropped += OnFlagDropped;
             }
             
             base.OnEnable();
@@ -311,19 +311,19 @@ namespace KaijuSolutions.Agents.Exercises.CTF
         {
             base.OnDisable();
             
-            if (trooper == null)
+            if (trooperOld == null)
             {
                 return;
             }
             
-            trooper.OnHitTrooper -= OnHitTrooper;
-            trooper.OnHitByTrooper -= OnHitByTrooper;
-            trooper.OnEliminatedTrooper -= OnEliminatedTrooper;
-            trooper.OnEliminatedByTrooper -= OnEliminatedByTrooper;
-            trooper.OnFlagPickedUp -= OnFlagPickedUp;
-            trooper.OnFlagCaptured -= OnFlagCaptured;
-            trooper.OnFlagReturned -= OnFlagReturned;
-            trooper.OnFlagDropped -= OnFlagDropped;
+            trooperOld.OnHitTrooper -= HitTrooperOld;
+            trooperOld.OnHitByTrooper -= HitByTrooperOld;
+            trooperOld.OnEliminatedTrooper -= EliminatedTrooperOld;
+            trooperOld.OnEliminatedByTrooper -= EliminatedByTrooperOld;
+            trooperOld.OnFlagPickedUp -= OnFlagPickedUp;
+            trooperOld.OnFlagCaptured -= OnFlagCaptured;
+            trooperOld.OnFlagReturned -= OnFlagReturned;
+            trooperOld.OnFlagDropped -= OnFlagDropped;
         }
     }
 }
