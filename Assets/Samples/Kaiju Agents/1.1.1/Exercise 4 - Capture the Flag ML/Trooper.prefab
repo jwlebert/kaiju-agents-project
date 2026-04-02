@@ -643,7 +643,7 @@ MonoBehaviour:
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
     hasUpgradedBrainParametersWithActionSpec: 1
-  m_Model: {fileID: 5022602860645237092, guid: 3d2b5d16a6cda5e43b4f660527dc268f, type: 3}
+  m_Model: {fileID: 5022602860645237092, guid: 2f6285e8dec3677429eddda15ca7e336, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: Trooper
