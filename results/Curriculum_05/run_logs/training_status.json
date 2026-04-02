@@ -1,0 +1,50 @@
+{
+    "map_level": {
+        "lesson_num": 0
+    },
+    "Trooper": {
+        "checkpoints": [
+            {
+                "steps": 49919,
+                "file_path": "results\\Curriculum_05\\Trooper\\Trooper-49919.onnx",
+                "reward": -0.5621538005769253,
+                "creation_time": 1775159237.2572083,
+                "auxillary_file_paths": [
+                    "results\\Curriculum_05\\Trooper\\Trooper-49919.pt"
+                ]
+            },
+            {
+                "steps": 99952,
+                "file_path": "results\\Curriculum_05\\Trooper\\Trooper-99952.onnx",
+                "reward": -0.5663286551988373,
+                "creation_time": 1775159465.4200575,
+                "auxillary_file_paths": [
+                    "results\\Curriculum_05\\Trooper\\Trooper-99952.pt"
+                ]
+            },
+            {
+                "steps": 104926,
+                "file_path": "results\\Curriculum_05\\Trooper\\Trooper-104926.onnx",
+                "reward": -1.0425167065113783,
+                "creation_time": 1775159492.4038005,
+                "auxillary_file_paths": [
+                    "results\\Curriculum_05\\Trooper\\Trooper-104926.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 104926,
+            "file_path": "results\\Curriculum_05\\Trooper.onnx",
+            "reward": -1.0425167065113783,
+            "creation_time": 1775159492.4038005,
+            "auxillary_file_paths": [
+                "results\\Curriculum_05\\Trooper\\Trooper-104926.pt"
+            ]
+        }
+    },
+    "metadata": {
+        "stats_format_version": "0.3.0",
+        "mlagents_version": "1.1.0",
+        "torch_version": "1.13.1+cpu"
+    }
+}

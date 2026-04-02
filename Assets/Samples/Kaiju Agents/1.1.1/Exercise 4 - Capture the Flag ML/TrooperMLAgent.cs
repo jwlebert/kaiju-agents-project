@@ -42,8 +42,8 @@ namespace KaijuSolutions.Agents.Exercises.CTF.ML
         private const int MaxStepsAllowed = 5000;
         
         // Used for anti-wiggling reward shaping.
-        private float _previousDistanceToEnemyFlag;
-        private float _previousDistanceToFriendlyBase;
+        private float _closestDistanceToEnemyFlag;
+        private float _closestDistanceToFriendlyBase;
         
         private const float MaxHealth = 100f; 
         private const float MaxAmmo = 30f;
@@ -137,7 +137,7 @@ namespace KaijuSolutions.Agents.Exercises.CTF.ML
                     _trooper.OnFlagReturned -= HandleFlagReturned;
                     _trooper.OnEliminatedTrooper -= HandleEliminatedEnemy;
                     _trooper.OnEliminatedByTrooper -= HandleEliminatedByEnemy;
-                    _trooper.OnHitTrooper -= HandleHitEnemy;
+                    //_trooper.OnHitTrooper -= HandleHitEnemy;
                     _trooper.OnHealth -= HandleHealthPickup;
                     _trooper.OnAmmo -= HandleAmmoPickup;
 
@@ -147,7 +147,7 @@ namespace KaijuSolutions.Agents.Exercises.CTF.ML
                     _trooper.OnFlagReturned += HandleFlagReturned;
                     _trooper.OnEliminatedTrooper += HandleEliminatedEnemy;
                     _trooper.OnEliminatedByTrooper += HandleEliminatedByEnemy;
-                    _trooper.OnHitTrooper += HandleHitEnemy;
+                    //_trooper.OnHitTrooper += HandleHitEnemy;
                     _trooper.OnHealth += HandleHealthPickup;
                     _trooper.OnAmmo += HandleAmmoPickup;
                 }
@@ -174,7 +174,7 @@ namespace KaijuSolutions.Agents.Exercises.CTF.ML
             _trooper.OnFlagReturned -= HandleFlagReturned;
             _trooper.OnEliminatedTrooper -= HandleEliminatedEnemy;
             _trooper.OnEliminatedByTrooper -= HandleEliminatedByEnemy;
-            _trooper.OnHitTrooper -= HandleHitEnemy;
+            //_trooper.OnHitTrooper -= HandleHitEnemy;
             _trooper.OnHealth -= HandleHealthPickup;
             _trooper.OnAmmo -= HandleAmmoPickup;
         }
@@ -197,9 +197,9 @@ namespace KaijuSolutions.Agents.Exercises.CTF.ML
             
             // Baseline the distances so reward shaping only rewards NEW progress.
             if (_enemyFlag != null)
-                _previousDistanceToEnemyFlag = GetPathDistance(transform.position, _enemyFlag.transform.position);
+                _closestDistanceToEnemyFlag = GetPathDistance(transform.position, _enemyFlag.transform.position);
 
-            _previousDistanceToFriendlyBase = GetPathDistance(transform.position, _friendlyBasePosition);
+            _closestDistanceToFriendlyBase = GetPathDistance(transform.position, _friendlyBasePosition);
         }
         
         /// <summary>
@@ -360,28 +360,26 @@ namespace KaijuSolutions.Agents.Exercises.CTF.ML
             if (!_hasFlag && _enemyFlag != null)
             {
                 float currentDist = GetPathDistance(transform.position, _enemyFlag.transform.position);
-                float distanceDelta = _previousDistanceToEnemyFlag - currentDist;
         
-                // ONLY reward positive progress. Remove the penalty for negative progress.
-                if (distanceDelta > 0.01f)
+                // ONLY reward if they broke their previous record!
+                if (currentDist < _closestDistanceToEnemyFlag) 
                 {
-                    AddReward(distanceDelta * 0.2f); // Increased from 0.1f
-                }
-        
-                _previousDistanceToEnemyFlag = currentDist; 
+                    float distanceDelta = _closestDistanceToEnemyFlag - currentDist;
+                    AddReward(distanceDelta * 0.2f); 
+                    _closestDistanceToEnemyFlag = currentDist; // Lock in the new record
+                } 
             }
             else if (_hasFlag && _friendlyFlag != null)
             {
                 float currentDist = GetPathDistance(transform.position, _friendlyBasePosition);
-                float distanceDelta = _previousDistanceToFriendlyBase - currentDist;
         
-                // ONLY reward positive progress.
-                if (distanceDelta > 0.01f)
+                // ONLY reward if they broke their previous record!
+                if (currentDist < _closestDistanceToFriendlyBase)
                 {
-                    AddReward(distanceDelta * 0.2f); // Increased from 0.1f
+                    float distanceDelta = _closestDistanceToFriendlyBase - currentDist;
+                    AddReward(distanceDelta * 0.2f);
+                    _closestDistanceToFriendlyBase = currentDist; // Lock in the new record
                 }
-        
-                _previousDistanceToFriendlyBase = currentDist;
             }
 
             // Keep the existential penalty so they don't dawdle
@@ -444,8 +442,9 @@ namespace KaijuSolutions.Agents.Exercises.CTF.ML
         private void HandleFlagPickedUp(Flag flag)
         {
             _hasFlag = true;
-            // Reset base distance so reward shaping starts from the current position
-            _previousDistanceToFriendlyBase = Vector3.Distance(transform.position, _friendlyBasePosition);
+            /// Reset the 'closest distance' tracker for the journey home!
+            // We use GetPathDistance so the AI accounts for walls instead of just straight lines.
+            _closestDistanceToFriendlyBase = GetPathDistance(transform.position, _friendlyBasePosition);
             AddReward(0.3f); // BIG reward for grabbing the enemy flag!
         }
 
@@ -454,7 +453,7 @@ namespace KaijuSolutions.Agents.Exercises.CTF.ML
             _hasFlag = false; 
             // Reset enemy flag distance so they can earn rewards for going back to it
             if (_enemyFlag != null)
-                _previousDistanceToEnemyFlag = Vector3.Distance(transform.position, _enemyFlag.transform.position);
+                _closestDistanceToEnemyFlag = GetPathDistance(transform.position, _enemyFlag.transform.position);
             AddReward(-0.2f);
         }
 
@@ -473,17 +472,17 @@ namespace KaijuSolutions.Agents.Exercises.CTF.ML
 
         private void HandleEliminatedEnemy(Trooper e)
         {
-            AddReward(0.2f);
+            AddReward(0.1f);
         }
 
-        private void HandleHitEnemy(Trooper e)
-        {
-            AddReward(0.05f); // Slightly higher reward for combat success
-        }
+        // private void HandleHitEnemy(Trooper e)
+        // {
+        //     AddReward(0.05f); // Slightly higher reward for combat success
+        // }
 
         private void HandleEliminatedByEnemy(Trooper e)
         {
-            AddReward(-1.0f); 
+            AddReward(-0.5f); 
             EndEpisode();
         }
         
