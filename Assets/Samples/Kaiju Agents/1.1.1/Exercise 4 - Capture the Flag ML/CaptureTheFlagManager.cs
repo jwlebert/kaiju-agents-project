@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine;
 using Unity.MLAgents;
 using UnityEngine.AI; 
@@ -19,27 +19,78 @@ namespace KaijuSolutions.Agents.Exercises.CTF.ML
     [AddComponentMenu("Kaiju Solutions/Agents/Exercises/Capture the Flag/Capture the Flag Manager", 31)]
     public class CaptureTheFlagManager : KaijuGlobalController
     {
-        
+        /// <summary>
+        /// Inner walls of the arena.
+        /// </summary>
         [Header("Curriculum - Map Toggles")]
         public GameObject innerWalls;
-        public GameObject trainingWalls; // Small boundaries for Level 1
-        public GameObject level0Walls;   // New: Even smaller "Tiny" boundaries for Level 0
-        public GameObject allPickups; // Drag the parent "Pickups" object here
-        public NavMeshSurface navMeshSurface; // Drag your 'Navigation Mesh' object here
+        
+        /// <summary>
+        /// Small boundaries for training levels.
+        /// </summary>
+        public GameObject trainingWalls;
+        
+        /// <summary>
+        /// Tiny boundaries for initial training levels.
+        /// </summary>
+        public GameObject level0Walls;
+        
+        /// <summary>
+        /// Parent object containing all pickups.
+        /// </summary>
+        public GameObject allPickups;
+        
+        /// <summary>
+        /// Navigation mesh surface for the arena.
+        /// </summary>
+        public NavMeshSurface navMeshSurface;
 
+        /// <summary>
+        /// Spawn points close to the flag.
+        /// </summary>
         [Header("Curriculum - Spawns")]
-        public GameObject level0Spawns; // New: Very close to flag (3m)
-        public GameObject centerSpawns; // Parent object holding your close spawn points
-        public GameObject baseSpawns;   // Parent object holding your far spawn points
+        public GameObject level0Spawns;
+        
+        /// <summary>
+        /// Spawn points located in the center.
+        /// </summary>
+        public GameObject centerSpawns;
+        
+        /// <summary>
+        /// Spawn points located at the base.
+        /// </summary>
+        public GameObject baseSpawns;
 
+        /// <summary>
+        /// Transform of team one's flag.
+        /// </summary>
         [Header("Curriculum - Flags")]
         public Transform teamOneFlag;
+        
+        /// <summary>
+        /// Transform of team two's flag.
+        /// </summary>
         public Transform teamTwoFlag;
         
+        /// <summary>
+        /// Center placement position for team one's flag.
+        /// </summary>
         [Header("Curriculum - Flag Placeholders")]
         public Transform teamOneCenterPos;
+        
+        /// <summary>
+        /// Base placement position for team one's flag.
+        /// </summary>
         public Transform teamOneBasePos;
+        
+        /// <summary>
+        /// Center placement position for team two's flag.
+        /// </summary>
         public Transform teamTwoCenterPos;
+        
+        /// <summary>
+        /// Base placement position for team two's flag.
+        /// </summary>
         public Transform teamTwoBasePos;
         
         /// <summary>
@@ -347,14 +398,18 @@ namespace KaijuSolutions.Agents.Exercises.CTF.ML
         /// </summary>
         private readonly List<float> _respawnsTwo = new();
 
+        /// <summary>
+        /// Handles domain enabling and sets up singleton instance.
+        /// </summary>
         protected override void OnEnable()
         {
             base.OnEnable();
     
-            // Nothing to do if this is already the singleton.
-            if (_instance == this) return;
+            if (_instance == this)
+            {
+                return;
+            }
     
-            // If there is a singleton but this is not it, destroy this.
             if (_instance != null && _instance != this)
             {
                 Destroy(gameObject);
@@ -362,33 +417,25 @@ namespace KaijuSolutions.Agents.Exercises.CTF.ML
             }
     
             _instance = this;
-
-            // Subscribe to Academy reset for Curriculum Learning
-            // Academy.Instance.OnEnvironmentReset += ApplyCurriculum;
-    
-            // Note: We don't call Spawn() in the while loops here anymore. 
-            // ApplyCurriculum() will handle the first spawn immediately when the episode starts!
         }
         
+        /// <summary>
+        /// Initialize the curriculum when the component starts.
+        /// </summary>
         private void Start()
         {
-            // Forces the first spawn so agents exist before ML-Agents connects!
             ApplyCurriculum();
         }
 
+        /// <summary>
+        /// Handles domain disabling and clears singleton instance.
+        /// </summary>
         protected override void OnDisable()
         {
             base.OnDisable();
     
-            // Clear out the lists
             _respawnsOne.Clear();
             _respawnsTwo.Clear();
-    
-            // Unsubscribe from the ML-Agents Academy to prevent memory leaks
-            // if (Academy.IsInitialized)
-            // {
-            //     Academy.Instance.OnEnvironmentReset -= ApplyCurriculum;
-            // }
     
             if (_instance == this)
             {
@@ -396,69 +443,118 @@ namespace KaijuSolutions.Agents.Exercises.CTF.ML
             }
         }
 
+        /// <summary>
+        /// Tracks the current curriculum level.
+        /// </summary>
         private int _currentLevel = 0;
+        
+        /// <summary>
+        /// Tracks whether episode setup has completed.
+        /// </summary>
         private bool _episodeSetupDone = false;
 
+        /// <summary>
+        /// Notifies the manager that an episode has begun to setup curriculum level.
+        /// </summary>
         public void NotifyEpisodeBegin()
         {
-            if (_episodeSetupDone) return;
+            if (_episodeSetupDone)
+            {
+                return;
+            }
+            
             _episodeSetupDone = true;
 
             int newLevel = (int)Academy.Instance.EnvironmentParameters.GetWithDefault("map_level", 5f);
-                _currentLevel = newLevel;
-                ApplyCurriculum(); // Full rebuild — destroys/respawns everything
-            
+            _currentLevel = newLevel;
+            ApplyCurriculum();
         }
 
+        /// <summary>
+        /// Notifies the manager that an episode has ended.
+        /// </summary>
         public void NotifyEpisodeEnd()
         {
             _episodeSetupDone = false;
         }
         
+        /// <summary>
+        /// The current home position of team one's flag.
+        /// </summary>
         private Vector3 _currentFlagOneHome;
+        
+        /// <summary>
+        /// The current home position of team two's flag.
+        /// </summary>
         private Vector3 _currentFlagTwoHome;
+        
+        /// <summary>
+        /// Maximum allowed steps based on the current curriculum level.
+        /// </summary>
         public int MaxStepsForLevel => 500 + 500 * _currentLevel;
+        
+        /// <summary>
+        /// Rebuilds the scene based on the current curriculum level.
+        /// </summary>
         private void ApplyCurriculum()
         {
-            // 1. Get the current lesson level from the YAML (Defaults to 5 for playing in Editor)
             int level = (int)Academy.Instance.EnvironmentParameters.GetWithDefault("map_level", 5f);
-            _currentLevel = level; // Always keep this in sync!
+            _currentLevel = level;
 
-            // 2. Destroy any existing troopers to prevent glitches between episodes
-            foreach (var trooper in Trooper.AllOne.ToArray()) { DestroyImmediate(trooper.gameObject); }
-            foreach (var trooper in Trooper.AllTwo.ToArray()) { DestroyImmediate(trooper.gameObject); }
+            foreach (var trooper in Trooper.AllOne.ToArray()) 
+            { 
+                DestroyImmediate(trooper.gameObject); 
+            }
+            
+            foreach (var trooper in Trooper.AllTwo.ToArray()) 
+            { 
+                DestroyImmediate(trooper.gameObject); 
+            }
 
-            // Default states
             innerWalls.SetActive(false);
-            if (trainingWalls != null) trainingWalls.SetActive(false);
-            if (level0Walls != null) level0Walls.SetActive(false);
+            
+            if (trainingWalls != null)
+            {
+                trainingWalls.SetActive(false);
+            }
+            
+            if (level0Walls != null)
+            {
+                level0Walls.SetActive(false);
+            }
+            
             allPickups.SetActive(false);
             level0Spawns.SetActive(false);
             centerSpawns.SetActive(false);
             baseSpawns.SetActive(false);
 
-            // 3. Configure the environment based on the new 6 levels
             switch (level)
             {
-                case 0: // Level 0: 1v1, Tiny Map (Level 0 Walls), Spawns 3m from Flag, Unlimited Ammo
+                case 0:
                     size = 1;
                     ammo = 9999; 
-                    if (level0Walls != null) level0Walls.SetActive(true);
+                    if (level0Walls != null)
+                    {
+                        level0Walls.SetActive(true);
+                    }
                     level0Spawns.SetActive(true);
                     teamOneFlag.position = teamOneCenterPos.position;
                     teamTwoFlag.position = teamTwoCenterPos.position;
                     break;
 
-                case 1: // Level 1: 1v1, Small Map (Training Walls), Center Spawns, Unlimited Ammo
+                case 1:
                     size = 1;
                     ammo = 9999;
-                    if (trainingWalls != null) trainingWalls.SetActive(true);
+                    if (trainingWalls != null)
+                    {
+                        trainingWalls.SetActive(true);
+                    }
                     centerSpawns.SetActive(true);
                     teamOneFlag.position = teamOneCenterPos.position;
                     teamTwoFlag.position = teamTwoCenterPos.position;
                     break;
 
-                case 2: // Level 2: 1v1, Full Map (No Walls), Base Spawns, Unlimited Ammo
+                case 2:
                     size = 1;
                     ammo = 9999;
                     baseSpawns.SetActive(true);
@@ -466,14 +562,14 @@ namespace KaijuSolutions.Agents.Exercises.CTF.ML
                     teamTwoFlag.position = teamTwoBasePos.position;
                     break;
 
-                case 3: // Level 3: 5v5, Full Map (No Walls), Base Spawns
+                case 3:
                     size = 5;
                     baseSpawns.SetActive(true);
                     teamOneFlag.position = teamOneBasePos.position;
                     teamTwoFlag.position = teamTwoBasePos.position;
                     break;
 
-                case 4: // Level 4: 5v5, Inner Walls Active, Base Spawns/Flags
+                case 4:
                     size = 5;
                     innerWalls.SetActive(true);
                     baseSpawns.SetActive(true);
@@ -481,7 +577,7 @@ namespace KaijuSolutions.Agents.Exercises.CTF.ML
                     teamTwoFlag.position = teamTwoBasePos.position;
                     break;
 
-                case 5: // Level 5 (Final): 11v11, Inner Walls Active, Base Spawns, Pickups Active
+                case 5:
                 default:
                     size = 11;
                     innerWalls.SetActive(true);
@@ -492,19 +588,17 @@ namespace KaijuSolutions.Agents.Exercises.CTF.ML
                     break;
             }
             
-            // Update flag respawn point
             teamOneFlag.GetComponent<Flag>().UpdateHome();
             teamTwoFlag.GetComponent<Flag>().UpdateHome();
 
-            // 4. Rebuild the NavMesh at runtime
             if (navMeshSurface != null)
             {
                 navMeshSurface.BuildNavMesh();
             }
 
-            // 5. Respawn the new teams
             _respawnsOne.Clear();
             _respawnsTwo.Clear();
+            
             for (int i = 0; i < size; i++)
             {
                 Spawn(true);
@@ -521,13 +615,11 @@ namespace KaijuSolutions.Agents.Exercises.CTF.ML
         /// <param name="teamOne">The team to spawn the <see cref="Trooper"/> for.</param>
         private bool Spawn(bool teamOne)
         {
-            // Don't spawn if the teams are full.
             if ((teamOne ? Trooper.AllOne.Count : Trooper.AllTwo.Count) >= size)
             {
                 return false;
             }
             
-            // There needs to be a point to spawn them.
             SpawnPoint point = SpawnPoint.NextSpawnPoint(teamOne);
             if (point == null)
             {
@@ -545,7 +637,6 @@ namespace KaijuSolutions.Agents.Exercises.CTF.ML
         /// <param name="agent">The <see cref="KaijuAgent"/>.</param>
         protected override void OnAgentDisabled(KaijuAgent agent)
         {
-            // Whenever a trooper is eliminated, start a respawn timer.
             if (agent.TryGetComponent(out Trooper trooper))
             {
                 (trooper.TeamOne ? _respawnsOne : _respawnsTwo).Add(respawn);
@@ -557,7 +648,6 @@ namespace KaijuSolutions.Agents.Exercises.CTF.ML
         /// </summary>
         private void FixedUpdate()
         {
-            // Respawn any troopers.
             float delta = Time.deltaTime;
             HandleRespawn(_respawnsOne, true, delta);
             HandleRespawn(_respawnsTwo, false, delta);
