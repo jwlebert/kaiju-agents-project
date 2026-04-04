@@ -183,10 +183,11 @@ namespace KaijuSolutions.Agents.Exercises.CTF.ML
         
         public override void OnEpisodeBegin()
         {
-            // if (this == null || !gameObject.activeInHierarchy) return; // ← fixes the 151 errors
+            if (this == null || !gameObject.activeInHierarchy) return; // ← fixes the 151 errors
             if (!SetupReferences()) return;
             
             CaptureTheFlagManager.Instance?.NotifyEpisodeBegin(); // ← reads fresh level
+            if (this == null) return; // Abort if this agent was destroyed by the level rebuild
             
             _hasFlag = false; // Reset their brain so they don't think they already have a flag
             if (_friendlyFlag != null) _friendlyBasePosition = _friendlyFlag.transform.position; //Tell them where the NEW base is
