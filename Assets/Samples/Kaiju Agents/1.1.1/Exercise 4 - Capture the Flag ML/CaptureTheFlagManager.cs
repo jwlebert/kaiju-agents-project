@@ -364,7 +364,7 @@ namespace KaijuSolutions.Agents.Exercises.CTF.ML
             _instance = this;
 
             // Subscribe to Academy reset for Curriculum Learning
-            Academy.Instance.OnEnvironmentReset += ApplyCurriculum;
+            // Academy.Instance.OnEnvironmentReset += ApplyCurriculum;
     
             // Note: We don't call Spawn() in the while loops here anymore. 
             // ApplyCurriculum() will handle the first spawn immediately when the episode starts!
@@ -385,21 +385,44 @@ namespace KaijuSolutions.Agents.Exercises.CTF.ML
             _respawnsTwo.Clear();
     
             // Unsubscribe from the ML-Agents Academy to prevent memory leaks
-            if (Academy.IsInitialized)
-            {
-                Academy.Instance.OnEnvironmentReset -= ApplyCurriculum;
-            }
+            // if (Academy.IsInitialized)
+            // {
+            //     Academy.Instance.OnEnvironmentReset -= ApplyCurriculum;
+            // }
     
             if (_instance == this)
             {
                 _instance = null;
             }
         }
+
+        private int _currentLevel = 0;
+        private bool _episodeSetupDone = false;
+
+        public void NotifyEpisodeBegin()
+        {
+            if (_episodeSetupDone) return;
+            _episodeSetupDone = true;
+
+            int newLevel = (int)Academy.Instance.EnvironmentParameters.GetWithDefault("map_level", 5f);
+                _currentLevel = newLevel;
+                ApplyCurriculum(); // Full rebuild — destroys/respawns everything
+            
+        }
+
+        public void NotifyEpisodeEnd()
+        {
+            _episodeSetupDone = false;
+        }
         
+        private Vector3 _currentFlagOneHome;
+        private Vector3 _currentFlagTwoHome;
+        public int MaxStepsForLevel => 500 + 500 * _currentLevel;
         private void ApplyCurriculum()
         {
             // 1. Get the current lesson level from the YAML (Defaults to 5 for playing in Editor)
             int level = (int)Academy.Instance.EnvironmentParameters.GetWithDefault("map_level", 5f);
+            _currentLevel = level; // Always keep this in sync!
 
             // 2. Destroy any existing troopers to prevent glitches between episodes
             foreach (var trooper in Trooper.AllOne.ToArray()) { DestroyImmediate(trooper.gameObject); }
@@ -487,6 +510,9 @@ namespace KaijuSolutions.Agents.Exercises.CTF.ML
                 Spawn(true);
                 Spawn(false);
             }
+            
+            _currentFlagOneHome = teamOneFlag.position;
+            _currentFlagTwoHome = teamTwoFlag.position;
         }
         
         /// <summary>

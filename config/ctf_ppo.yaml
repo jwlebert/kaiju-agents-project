@@ -18,10 +18,10 @@ behaviors:
       extrinsic:
         gamma: 0.99
         strength: 1.0
-    max_steps: 10000000
-    time_horizon: 128
-    summary_freq: 2000        # Much more frequent updates in TensorBoard (was 10000)
-    checkpoint_interval: 50000 # Save a model file every 50k steps (was 500k default)
+    max_steps: 2000000
+    time_horizon: 256
+    summary_freq: 1000        # Much more frequent updates in TensorBoard (was 10000)
+    checkpoint_interval: 20000 # Save a model file every 50k steps (was 500k default)
 
 # Curriculum training for 6 levels (0 to 5)
 environment_parameters:
@@ -33,7 +33,7 @@ environment_parameters:
           behavior: Trooper
           signal_smoothing: true
           min_lesson_length: 100
-          threshold: -0.2
+          threshold: 0.1
         value: 0.0
       - name: Lesson1_Tutorial
         completion_criteria:
@@ -41,31 +41,31 @@ environment_parameters:
           behavior: Trooper
           signal_smoothing: true
           min_lesson_length: 100
-          threshold: 0.2
+          threshold: 0.6
         value: 1.0
       - name: Lesson2_Full_Map_1v1
         completion_criteria:
           measure: reward
           behavior: Trooper
           signal_smoothing: true
-          min_lesson_length: 100
-          threshold: 0.3
+          min_lesson_length: 150
+          threshold: 0.5
         value: 2.0
       - name: Lesson3_Full_Map_5v5
         completion_criteria:
           measure: reward
           behavior: Trooper
           signal_smoothing: true
-          min_lesson_length: 100
-          threshold: 0.5
+          min_lesson_length: 200
+          threshold: 0.3
         value: 3.0
       - name: Lesson4_Obstacles_5v5
         completion_criteria:
           measure: reward
           behavior: Trooper
           signal_smoothing: true
-          min_lesson_length: 150
-          threshold: 0.6
+          min_lesson_length: 250
+          threshold: 0.3
         value: 4.0
       - name: Lesson5_Full_Game
         value: 5.0
