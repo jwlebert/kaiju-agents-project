@@ -378,10 +378,10 @@ namespace KaijuSolutions.Agents.Exercises.CTF.ML
                 // ONLY reward if they broke their previous record!
                 if (currentDist < _closestDistanceToEnemyFlag) 
                 {
+                    float distanceDelta = _closestDistanceToEnemyFlag - currentDist;
                     AddReward(distanceDelta * 0.002f); // Increased from 0.1f
+                    _closestDistanceToEnemyFlag = currentDist; 
                 }
-        
-                _previousDistanceToEnemyFlag = currentDist; 
             }
             else if (_hasFlag && _friendlyFlag != null)
             {
@@ -390,7 +390,9 @@ namespace KaijuSolutions.Agents.Exercises.CTF.ML
                 // ONLY reward if they broke their previous record!
                 if (currentDist < _closestDistanceToFriendlyBase)
                 {
+                    float distanceDelta = _closestDistanceToFriendlyBase - currentDist;
                     AddReward(distanceDelta * 0.002f); // Increased from 0.1f
+                    _closestDistanceToFriendlyBase = currentDist;
                 }
             }
 
@@ -456,7 +458,7 @@ namespace KaijuSolutions.Agents.Exercises.CTF.ML
         {
             _hasFlag = true;
             // Reset base distance so reward shaping starts from the current position
-            _previousDistanceToFriendlyBase = GetPathDistance(transform.position, _friendlyBasePosition);
+            _closestDistanceToFriendlyBase = GetPathDistance(transform.position, _friendlyBasePosition);
             AddReward(0.1f); // BIG reward for grabbing the enemy flag!
         }
 
@@ -465,7 +467,7 @@ namespace KaijuSolutions.Agents.Exercises.CTF.ML
             _hasFlag = false; 
             // Reset enemy flag distance so they can earn rewards for going back to it
             if (_enemyFlag != null)
-                _previousDistanceToEnemyFlag = GetPathDistance(transform.position, _enemyFlag.transform.position);
+                _closestDistanceToEnemyFlag = GetPathDistance(transform.position, _enemyFlag.transform.position);
             AddReward(-0.1f);
         }
 
