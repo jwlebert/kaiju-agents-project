@@ -42,8 +42,8 @@ namespace KaijuSolutions.Agents.Exercises.CTF.ML
         public  int MaxStepsAllowed = 500;
         
         // Used for anti-wiggling reward shaping.
-        private float _previousDistanceToEnemyFlag;
-        private float _previousDistanceToFriendlyBase;
+        private float _closestDistanceToEnemyFlag;
+        private float _closestDistanceToFriendlyBase;
         
         private const float MaxHealth = 100f; 
         private const float MaxAmmo = 30f;
@@ -139,7 +139,7 @@ namespace KaijuSolutions.Agents.Exercises.CTF.ML
                     _trooper.OnFlagReturned -= HandleFlagReturned;
                     _trooper.OnEliminatedTrooper -= HandleEliminatedEnemy;
                     _trooper.OnEliminatedByTrooper -= HandleEliminatedByEnemy;
-                    _trooper.OnHitTrooper -= HandleHitEnemy;
+                    //_trooper.OnHitTrooper -= HandleHitEnemy;
                     _trooper.OnHealth -= HandleHealthPickup;
                     _trooper.OnAmmo -= HandleAmmoPickup;
 
@@ -149,7 +149,7 @@ namespace KaijuSolutions.Agents.Exercises.CTF.ML
                     _trooper.OnFlagReturned += HandleFlagReturned;
                     _trooper.OnEliminatedTrooper += HandleEliminatedEnemy;
                     _trooper.OnEliminatedByTrooper += HandleEliminatedByEnemy;
-                    _trooper.OnHitTrooper += HandleHitEnemy;
+                    //_trooper.OnHitTrooper += HandleHitEnemy;
                     _trooper.OnHealth += HandleHealthPickup;
                     _trooper.OnAmmo += HandleAmmoPickup;
                 }
@@ -176,7 +176,7 @@ namespace KaijuSolutions.Agents.Exercises.CTF.ML
             _trooper.OnFlagReturned -= HandleFlagReturned;
             _trooper.OnEliminatedTrooper -= HandleEliminatedEnemy;
             _trooper.OnEliminatedByTrooper -= HandleEliminatedByEnemy;
-            _trooper.OnHitTrooper -= HandleHitEnemy;
+            //_trooper.OnHitTrooper -= HandleHitEnemy;
             _trooper.OnHealth -= HandleHealthPickup;
             _trooper.OnAmmo -= HandleAmmoPickup;
         }
@@ -202,9 +202,9 @@ namespace KaijuSolutions.Agents.Exercises.CTF.ML
             
             // Baseline the distances so reward shaping only rewards NEW progress.
             if (_enemyFlag != null)
-                _previousDistanceToEnemyFlag = GetPathDistance(transform.position, _enemyFlag.transform.position);
+                _closestDistanceToEnemyFlag = GetPathDistance(transform.position, _enemyFlag.transform.position);
 
-            _previousDistanceToFriendlyBase = GetPathDistance(transform.position, _friendlyBasePosition);
+            _closestDistanceToFriendlyBase = GetPathDistance(transform.position, _friendlyBasePosition);
         }
         
         /// <summary>
@@ -374,10 +374,9 @@ namespace KaijuSolutions.Agents.Exercises.CTF.ML
             if (!_hasFlag && _enemyFlag != null)
             {
                 float currentDist = GetPathDistance(transform.position, _enemyFlag.transform.position);
-                float distanceDelta = _previousDistanceToEnemyFlag - currentDist;
         
-                // ONLY reward positive progress. Remove the penalty for negative progress.
-                if (distanceDelta > 0.01f)
+                // ONLY reward if they broke their previous record!
+                if (currentDist < _closestDistanceToEnemyFlag) 
                 {
                     AddReward(distanceDelta * 0.002f); // Increased from 0.1f
                 }
@@ -387,15 +386,12 @@ namespace KaijuSolutions.Agents.Exercises.CTF.ML
             else if (_hasFlag && _friendlyFlag != null)
             {
                 float currentDist = GetPathDistance(transform.position, _friendlyBasePosition);
-                float distanceDelta = _previousDistanceToFriendlyBase - currentDist;
         
-                // ONLY reward positive progress.
-                if (distanceDelta > 0.01f)
+                // ONLY reward if they broke their previous record!
+                if (currentDist < _closestDistanceToFriendlyBase)
                 {
                     AddReward(distanceDelta * 0.002f); // Increased from 0.1f
                 }
-        
-                _previousDistanceToFriendlyBase = currentDist;
             }
 
             // Keep the existential penalty so they don't dawdle
