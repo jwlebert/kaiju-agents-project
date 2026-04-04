@@ -295,8 +295,10 @@ namespace KaijuSolutions.Agents.Exercises.CTF.ML
                 return;
             }
             
-            CaptureTheFlagManager.Instance?.NotifyEpisodeBegin(); // ← reads fresh level
-            if (this == null) return; // Abort if this agent was destroyed by the level rebuild
+            if (!SetupReferences())
+            {
+                return;
+            }
             
             CaptureTheFlagManager.Instance?.NotifyEpisodeBegin();
             
@@ -306,13 +308,16 @@ namespace KaijuSolutions.Agents.Exercises.CTF.ML
             }
             
             _hasFlag = false;
-            if (_friendlyFlag != null) _friendlyBasePosition = _friendlyFlag.transform.position;
             
-            // Stop any leftover physics momentum from the previous episode.
+            if (_friendlyFlag != null)
+            {
+                _friendlyBasePosition = _friendlyFlag.transform.position;
+            }
+            
             _kaijuAgent.Stop();
             _stepCount = 0;
             
-            // Baseline the distances so reward shaping only rewards NEW progress.
+            // Establish baseline distances for continuous reward shaping throughout the episode.
             if (_enemyFlag != null)
             {
                 _closestDistanceToEnemyFlag = GetPathDistance(transform.position, _enemyFlag.transform.position);
@@ -322,7 +327,7 @@ namespace KaijuSolutions.Agents.Exercises.CTF.ML
         }
         
         /// <summary>
-        /// Collects vector observations from the environment.
+        /// Collects the 22 vector observations from the environment.
         /// </summary>
         /// <param name="sensor">The vector sensor provided by ML-Agents.</param>
         public override void CollectObservations(VectorSensor sensor)
@@ -336,7 +341,7 @@ namespace KaijuSolutions.Agents.Exercises.CTF.ML
                 return;
             }
 
-            // 1-3. Internal State
+            // 1-3. Include internal resource status as normalized values.
             float health = _trooper.Health;
             float ammo = _trooper.Ammo;
 
@@ -344,11 +349,10 @@ namespace KaijuSolutions.Agents.Exercises.CTF.ML
             sensor.AddObservation(ammo / MaxAmmo);
             sensor.AddObservation(_hasFlag ? 1.0f : 0.0f);
             
-            // 4-6. Enemy Flag Awareness
+            // 4-6. Include enemy flag bearing and distance tracking.
             if (_enemyFlag != null)
             {
                 sensor.AddObservation(Vector3.Distance(transform.position, _enemyFlag.transform.position) / _maxMapDistance);
-                // Convert world direction to local direction
                 Vector3 dirToFlag = (Quaternion.Inverse(transform.rotation) * (_enemyFlag.transform.position - transform.position)).normalized;
                 sensor.AddObservation(dirToFlag.x);
                 sensor.AddObservation(dirToFlag.z);
@@ -360,7 +364,7 @@ namespace KaijuSolutions.Agents.Exercises.CTF.ML
                 sensor.AddObservation(0f); 
             }
 
-            // 7-9. Friendly Flag Awareness
+            // 7-9. Include friendly flag bearing and distance tracking.
             if (_friendlyFlag != null)
             {
                 sensor.AddObservation(Vector3.Distance(transform.position, _friendlyFlag.transform.position) / _maxMapDistance);
@@ -375,10 +379,10 @@ namespace KaijuSolutions.Agents.Exercises.CTF.ML
                 sensor.AddObservation(0f); 
             }
 
-            // 10. Friendly Base Distance
+            // 10. Provide spatial awareness towards the friendly base.
             sensor.AddObservation(Vector3.Distance(transform.position, _friendlyBasePosition) / _maxMapDistance);
 
-            // 11-13. Nearest Enemy (Relative to agent's facing)
+            // 11-13. Calculate metrics for the closest visual enemy contact.
             float enemyDist = 1.0f;
             Vector3 enemyDir = Vector3.zero;
             
@@ -409,15 +413,14 @@ namespace KaijuSolutions.Agents.Exercises.CTF.ML
             sensor.AddObservation(enemyDir.x);
             sensor.AddObservation(enemyDir.z);
 
-            // 14-19. Pickups (Health and Ammo)
+            // 14-19. Supply sensor data related to nearby health and ammo resources.
             AddPickupObs(sensor, _healthSensor);
             AddPickupObs(sensor, _ammoSensor);
             
-            // 20-22. Compass to the current primary objective
+            // 20-22. Calculate a unified objective vector directing the agent towards its current primary goal.
             Vector3 targetPos = Vector3.zero;
             bool isFriendlyFlagStolen = false;
 
-            // ONLY check distance if the flag actually exists right now
             if (_friendlyFlag != null)
             {
                 isFriendlyFlagStolen = Vector3.Distance(_friendlyFlag.transform.position, _friendlyBasePosition) > 1.0f;
@@ -425,17 +428,14 @@ namespace KaijuSolutions.Agents.Exercises.CTF.ML
 
             if (isFriendlyFlagStolen && !_hasFlag && _friendlyFlag != null)
             {
-                // PRIORITY: If our flag is stolen, go get it back!
                 targetPos = _friendlyFlag.transform.position;
             }
             else if (!_hasFlag && _enemyFlag != null)
             {
-                // GOAL: Go get the enemy flag
                 targetPos = _enemyFlag.transform.position;
             }
             else if (_hasFlag)
             {
-                // GOAL: Bring the enemy flag home
                 targetPos = _friendlyBasePosition;
             }
 
@@ -468,6 +468,7 @@ namespace KaijuSolutions.Agents.Exercises.CTF.ML
 
             var discreteActions = actions.DiscreteActions;
             
+            // Apply forward or backward velocity based on the movement action branch.
             float moveVal = 0;
             if (discreteActions[0] == 1)
             {
@@ -480,6 +481,7 @@ namespace KaijuSolutions.Agents.Exercises.CTF.ML
             
             _rb.linearVelocity = transform.forward * moveVal * _kaijuAgent.MoveSpeed;
 
+            // Apply rotational adjustments based on the turn action branch.
             float rotateVal = 0;
             if (discreteActions[1] == 1)
             {
@@ -500,16 +502,12 @@ namespace KaijuSolutions.Agents.Exercises.CTF.ML
                 return;
             }
 
+            // Handle offensive actions and apply strategic penalties to encourage ammo conservation.
             if (discreteActions[2] == 1)
             {
                 _trooper.Attack();
                 
-                // 1. Get current ammo as a percentage (0.0 to 1.0) 
                 float ammoPct = Mathf.Clamp01(_trooper.Ammo / MaxAmmo);
-                
-                // 2. Gently scale the penalty based on the ammo percentage. 
-                // If Ammo is Full (1.0), the penalty is very light (-0.001f) 
-                // If Ammo is Empty (0.0), the penalty is harsher (-0.005f) 
                 float shootPenalty = Mathf.Lerp(-0.005f, -0.001f, ammoPct);
                 
                 AddReward(shootPenalty);
@@ -519,19 +517,15 @@ namespace KaijuSolutions.Agents.Exercises.CTF.ML
                 _trooper.StopAttacking();
             }
             
-            // --- REWARD SHAPING ---
-            // (Rest of the reward shaping remains the same)
-
-            // Only calculate distance rewards if we haven't timed out and aren't dead
+            // Reward the agent for making continuous spatial progress toward its active objective.
             if (!_hasFlag && _enemyFlag != null)
             {
                 float currentDist = GetPathDistance(transform.position, _enemyFlag.transform.position);
         
-                // ONLY reward if they broke their previous record!
                 if (currentDist < _closestDistanceToEnemyFlag) 
                 {
                     float distanceDelta = _closestDistanceToEnemyFlag - currentDist;
-                    AddReward(distanceDelta * 0.002f); // Increased from 0.1f
+                    AddReward(distanceDelta * 0.002f);
                     _closestDistanceToEnemyFlag = currentDist; 
                 }
             }
@@ -539,16 +533,15 @@ namespace KaijuSolutions.Agents.Exercises.CTF.ML
             {
                 float currentDist = GetPathDistance(transform.position, _friendlyBasePosition);
         
-                // ONLY reward if they broke their previous record!
                 if (currentDist < _closestDistanceToFriendlyBase)
                 {
                     float distanceDelta = _closestDistanceToFriendlyBase - currentDist;
-                    AddReward(distanceDelta * 0.002f); // Increased from 0.1f
+                    AddReward(distanceDelta * 0.002f);
                     _closestDistanceToFriendlyBase = currentDist;
                 }
             }
 
-            // Keep the existential penalty so they don't dawdle
+            // Apply a small existential penalty to encourage completing the episode quickly.
             AddReward(-1f / 5000f);
             
             if (++_stepCount >= (CaptureTheFlagManager.Instance?.MaxStepsForLevel ?? 3000))
@@ -741,12 +734,8 @@ namespace KaijuSolutions.Agents.Exercises.CTF.ML
         /// <param name="pickup">The health pickup instance collected.</param>
         private void HandleHealthPickup(HealthPickup pickup) 
         { 
-            // 1. Calculate how much health we are missing (0.0 = full health, 1.0 = near death)
-            // Note: Use Mathf.Clamp01 just in case the pickup overheals past MaxHealth
+            // Scale the reward dynamically to prioritize healing when health is critically low.
             float missingHealthPct = Mathf.Clamp01(1f - _trooper.Health / MaxHealth);
-            
-            // 2. Linear Scaling: Multiply the max possible reward (e.g., 0.2f) by the missing percentage.
-            // Near dead = +0.20 reward. Full health = +0.00 reward.
             float dynamicReward = 0.2f * missingHealthPct; 
             AddReward(dynamicReward);
         }
@@ -757,12 +746,8 @@ namespace KaijuSolutions.Agents.Exercises.CTF.ML
         /// <param name="pickup">The ammo pickup instance collected.</param>
         private void HandleAmmoPickup(AmmoPickup pickup) 
         { 
-            // 1. Calculate how much ammo we are missing (0.0 = full ammo, 1.0 - empty ammo)
+             // Scale the reward exponentially to strongly discourage hoarding while ammo is high.
              float missingAmmoPct = Mathf.Clamp01(1f - _trooper.Ammo / MaxAmmo);
-             
-             // 2. Quadratic (Exponential) Scaling: Squaring the percentage creates a curve.
-             // This strongly discourages hoarding. If you are missing 50% ammo, you only get 25% of the reward. 
-             // You only get the big reward when you are truly running on empty.
              float dynamicReward = 0.2f * (missingAmmoPct * missingAmmoPct);
              AddReward(dynamicReward);
         }

@@ -501,6 +501,7 @@ namespace KaijuSolutions.Agents.Exercises.CTF.ML
             int level = (int)Academy.Instance.EnvironmentParameters.GetWithDefault("map_level", 5f);
             _currentLevel = level;
 
+            // Remove existing troopers to establish a clean state for the new episode.
             foreach (var trooper in Trooper.AllOne.ToArray()) 
             { 
                 DestroyImmediate(trooper.gameObject); 
@@ -511,6 +512,7 @@ namespace KaijuSolutions.Agents.Exercises.CTF.ML
                 DestroyImmediate(trooper.gameObject); 
             }
 
+            // Reset environmental features to default states before applying specific level configurations.
             innerWalls.SetActive(false);
             
             if (trainingWalls != null)
@@ -528,9 +530,11 @@ namespace KaijuSolutions.Agents.Exercises.CTF.ML
             centerSpawns.SetActive(false);
             baseSpawns.SetActive(false);
 
+            // Apply environment bounds, spawn points, and rules for the specified curriculum level.
             switch (level)
             {
                 case 0:
+                    // 1v1 training layout with highly restricted movement and close proximity.
                     size = 1;
                     ammo = 9999; 
                     if (level0Walls != null)
@@ -543,6 +547,7 @@ namespace KaijuSolutions.Agents.Exercises.CTF.ML
                     break;
 
                 case 1:
+                    // 1v1 setup with slightly expanded boundaries and center map spawning.
                     size = 1;
                     ammo = 9999;
                     if (trainingWalls != null)
@@ -555,6 +560,7 @@ namespace KaijuSolutions.Agents.Exercises.CTF.ML
                     break;
 
                 case 2:
+                    // 1v1 configuration utilizing the full map size with unlimited resources.
                     size = 1;
                     ammo = 9999;
                     baseSpawns.SetActive(true);
@@ -563,6 +569,7 @@ namespace KaijuSolutions.Agents.Exercises.CTF.ML
                     break;
 
                 case 3:
+                    // 5v5 introductory team scenario without internal map obstacles.
                     size = 5;
                     baseSpawns.SetActive(true);
                     teamOneFlag.position = teamOneBasePos.position;
@@ -570,6 +577,7 @@ namespace KaijuSolutions.Agents.Exercises.CTF.ML
                     break;
 
                 case 4:
+                    // 5v5 mid-tier scenario introducing navigational challenges via inner walls.
                     size = 5;
                     innerWalls.SetActive(true);
                     baseSpawns.SetActive(true);
@@ -579,6 +587,7 @@ namespace KaijuSolutions.Agents.Exercises.CTF.ML
 
                 case 5:
                 default:
+                    // Complete 11v11 match environment incorporating all mechanics including pickups.
                     size = 11;
                     innerWalls.SetActive(true);
                     allPickups.SetActive(true);
@@ -591,6 +600,7 @@ namespace KaijuSolutions.Agents.Exercises.CTF.ML
             teamOneFlag.GetComponent<Flag>().UpdateHome();
             teamTwoFlag.GetComponent<Flag>().UpdateHome();
 
+            // Rebuild pathfinding data to ensure agents navigate the updated layout correctly.
             if (navMeshSurface != null)
             {
                 navMeshSurface.BuildNavMesh();
@@ -599,6 +609,7 @@ namespace KaijuSolutions.Agents.Exercises.CTF.ML
             _respawnsOne.Clear();
             _respawnsTwo.Clear();
             
+            // Populate both teams based on the configured size.
             for (int i = 0; i < size; i++)
             {
                 Spawn(true);
@@ -615,6 +626,7 @@ namespace KaijuSolutions.Agents.Exercises.CTF.ML
         /// <param name="teamOne">The team to spawn the <see cref="Trooper"/> for.</param>
         private bool Spawn(bool teamOne)
         {
+            // Abort spawning if the respective team has already reached its maximum capacity.
             if ((teamOne ? Trooper.AllOne.Count : Trooper.AllTwo.Count) >= size)
             {
                 return false;
@@ -648,6 +660,7 @@ namespace KaijuSolutions.Agents.Exercises.CTF.ML
         /// </summary>
         private void FixedUpdate()
         {
+            // Process independent respawn queues for each team.
             float delta = Time.deltaTime;
             HandleRespawn(_respawnsOne, true, delta);
             HandleRespawn(_respawnsTwo, false, delta);
