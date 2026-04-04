@@ -1,0 +1,47 @@
+{
+    "name": "root",
+    "metadata": {
+        "timer_format_version": "0.1.0",
+        "start_time_seconds": "1775107014",
+        "python_version": "3.10.11 (tags/v3.10.11:7d4cc5a, Apr  5 2023, 00:38:17) [MSC v.1929 64 bit (AMD64)]",
+        "command_line_arguments": "C:\\Users\\Julia\\kaiju-agents-project\\ml-env\\Scripts\\mlagents-learn config/ctf_ppo.yaml --run-id=old_01",
+        "mlagents_version": "1.1.0",
+        "mlagents_envs_version": "1.1.0",
+        "communication_protocol_version": "1.5.0",
+        "pytorch_version": "1.13.1+cpu",
+        "numpy_version": "1.23.5",
+        "end_time_seconds": "1775107031"
+    },
+    "total": 16.781648700125515,
+    "count": 1,
+    "self": 0.02104400028474629,
+    "children": {
+        "run_training.setup": {
+            "total": 0.13374329986982048,
+            "count": 1,
+            "self": 0.13374329986982048
+        },
+        "TrainerController.start_learning": {
+            "total": 16.62686139997095,
+            "count": 1,
+            "self": 0.00033870013430714607,
+            "children": {
+                "TrainerController._reset_env": {
+                    "total": 16.62651400011964,
+                    "count": 1,
+                    "self": 16.62651400011964
+                },
+                "trainer_threads": {
+                    "total": 7.997732609510422e-07,
+                    "count": 1,
+                    "self": 7.997732609510422e-07
+                },
+                "TrainerController._save_models": {
+                    "total": 7.899943739175797e-06,
+                    "count": 1,
+                    "self": 7.899943739175797e-06
+                }
+            }
+        }
+    }
+}

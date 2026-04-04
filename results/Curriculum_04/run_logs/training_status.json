@@ -1,0 +1,68 @@
+{
+    "map_level": {
+        "lesson_num": 5
+    },
+    "Trooper": {
+        "checkpoints": [
+            {
+                "steps": 649950,
+                "file_path": "results\\Curriculum_04\\Trooper\\Trooper-649950.onnx",
+                "reward": null,
+                "creation_time": 1775156186.9933505,
+                "auxillary_file_paths": [
+                    "results\\Curriculum_04\\Trooper\\Trooper-649950.pt"
+                ]
+            },
+            {
+                "steps": 699950,
+                "file_path": "results\\Curriculum_04\\Trooper\\Trooper-699950.onnx",
+                "reward": null,
+                "creation_time": 1775156249.5337775,
+                "auxillary_file_paths": [
+                    "results\\Curriculum_04\\Trooper\\Trooper-699950.pt"
+                ]
+            },
+            {
+                "steps": 749966,
+                "file_path": "results\\Curriculum_04\\Trooper\\Trooper-749966.onnx",
+                "reward": null,
+                "creation_time": 1775156303.115091,
+                "auxillary_file_paths": [
+                    "results\\Curriculum_04\\Trooper\\Trooper-749966.pt"
+                ]
+            },
+            {
+                "steps": 799982,
+                "file_path": "results\\Curriculum_04\\Trooper\\Trooper-799982.onnx",
+                "reward": null,
+                "creation_time": 1775156359.5322585,
+                "auxillary_file_paths": [
+                    "results\\Curriculum_04\\Trooper\\Trooper-799982.pt"
+                ]
+            },
+            {
+                "steps": 829646,
+                "file_path": "results\\Curriculum_04\\Trooper\\Trooper-829646.onnx",
+                "reward": null,
+                "creation_time": 1775156397.9993157,
+                "auxillary_file_paths": [
+                    "results\\Curriculum_04\\Trooper\\Trooper-829646.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 829646,
+            "file_path": "results\\Curriculum_04\\Trooper.onnx",
+            "reward": null,
+            "creation_time": 1775156397.9993157,
+            "auxillary_file_paths": [
+                "results\\Curriculum_04\\Trooper\\Trooper-829646.pt"
+            ]
+        }
+    },
+    "metadata": {
+        "stats_format_version": "0.3.0",
+        "mlagents_version": "1.1.0",
+        "torch_version": "1.13.1+cpu"
+    }
+}

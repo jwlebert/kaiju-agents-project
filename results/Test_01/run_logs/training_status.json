@@ -1,0 +1,38 @@
+{
+    "Trooper": {
+        "checkpoints": [
+            {
+                "steps": 499942,
+                "file_path": "results\\Test_01\\Trooper\\Trooper-499942.onnx",
+                "reward": null,
+                "creation_time": 1774986174.759929,
+                "auxillary_file_paths": [
+                    "results\\Test_01\\Trooper\\Trooper-499942.pt"
+                ]
+            },
+            {
+                "steps": 779478,
+                "file_path": "results\\Test_01\\Trooper\\Trooper-779478.onnx",
+                "reward": null,
+                "creation_time": 1774987171.982176,
+                "auxillary_file_paths": [
+                    "results\\Test_01\\Trooper\\Trooper-779478.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 779478,
+            "file_path": "results\\Test_01\\Trooper.onnx",
+            "reward": null,
+            "creation_time": 1774987171.982176,
+            "auxillary_file_paths": [
+                "results\\Test_01\\Trooper\\Trooper-779478.pt"
+            ]
+        }
+    },
+    "metadata": {
+        "stats_format_version": "0.3.0",
+        "mlagents_version": "1.1.0",
+        "torch_version": "2.1.2+cpu"
+    }
+}

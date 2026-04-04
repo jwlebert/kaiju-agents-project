@@ -1,0 +1,20 @@
+{
+    "name": "com.kaijusolutions.agents.exercises.ctf.ml",
+    "rootNamespace": "KaijuSolutions.Agents.Exercises.CTF.ML",
+    "references": [
+        "com.kaijusolutions.agents",
+        "com.kaijusolutions.agents.utility",
+        "Unity.ML-Agents",
+        "Unity.InputSystem",
+        "Unity.AI.Navigation"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

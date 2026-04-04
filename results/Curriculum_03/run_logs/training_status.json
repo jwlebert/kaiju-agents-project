@@ -1,0 +1,68 @@
+{
+    "map_level": {
+        "lesson_num": 2
+    },
+    "Trooper": {
+        "checkpoints": [
+            {
+                "steps": 599987,
+                "file_path": "results\\Curriculum_03\\Trooper\\Trooper-599987.onnx",
+                "reward": -2.0500001360972724,
+                "creation_time": 1775115341.5429425,
+                "auxillary_file_paths": [
+                    "results\\Curriculum_03\\Trooper\\Trooper-599987.pt"
+                ]
+            },
+            {
+                "steps": 608115,
+                "file_path": "results\\Curriculum_03\\Trooper\\Trooper-608115.onnx",
+                "reward": -2.021428706390517,
+                "creation_time": 1775115499.7150326,
+                "auxillary_file_paths": [
+                    "results\\Curriculum_03\\Trooper\\Trooper-608115.pt"
+                ]
+            },
+            {
+                "steps": 649949,
+                "file_path": "results\\Curriculum_03\\Trooper\\Trooper-649949.onnx",
+                "reward": -0.43219997244887054,
+                "creation_time": 1775115960.0585318,
+                "auxillary_file_paths": [
+                    "results\\Curriculum_03\\Trooper\\Trooper-649949.pt"
+                ]
+            },
+            {
+                "steps": 699933,
+                "file_path": "results\\Curriculum_03\\Trooper\\Trooper-699933.onnx",
+                "reward": -1.6688890001840062,
+                "creation_time": 1775116217.3402333,
+                "auxillary_file_paths": [
+                    "results\\Curriculum_03\\Trooper\\Trooper-699933.pt"
+                ]
+            },
+            {
+                "steps": 702052,
+                "file_path": "results\\Curriculum_03\\Trooper\\Trooper-702052.onnx",
+                "reward": -1.6170154917412078,
+                "creation_time": 1775116227.2736685,
+                "auxillary_file_paths": [
+                    "results\\Curriculum_03\\Trooper\\Trooper-702052.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 702052,
+            "file_path": "results\\Curriculum_03\\Trooper.onnx",
+            "reward": -1.6170154917412078,
+            "creation_time": 1775116227.2736685,
+            "auxillary_file_paths": [
+                "results\\Curriculum_03\\Trooper\\Trooper-702052.pt"
+            ]
+        }
+    },
+    "metadata": {
+        "stats_format_version": "0.3.0",
+        "mlagents_version": "1.1.0",
+        "torch_version": "1.13.1+cpu"
+    }
+}

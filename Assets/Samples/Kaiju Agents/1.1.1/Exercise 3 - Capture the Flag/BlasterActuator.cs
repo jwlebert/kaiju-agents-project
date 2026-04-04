@@ -4,7 +4,7 @@ using UnityEngine;
 namespace KaijuSolutions.Agents.Exercises.CTF
 {
     /// <summary>
-    /// The blaster for use by <see cref="Trooper"/>s.
+    /// The blaster for use by <see cref="TrooperOld"/>s.
     /// </summary>
     [HelpURL("https://agents.kaijusolutions.ca/manual/capture-the-flag.html#blaster-actuator")]
     [AddComponentMenu("Kaiju Solutions/Agents/Exercises/Capture the Flag/Blaster Actuator", 26)]
@@ -26,9 +26,9 @@ namespace KaijuSolutions.Agents.Exercises.CTF
         private int _ammo;
         
         /// <summary>
-        /// The <see cref="Trooper"/> this is attached to.
+        /// The <see cref="TrooperOld"/> this is attached to.
         /// </summary>
-        private Trooper _trooper;
+        private TrooperOld _trooperOld;
         
         /// <summary>
         /// This function is called when the object becomes enabled and active.
@@ -42,8 +42,8 @@ namespace KaijuSolutions.Agents.Exercises.CTF
                 return;
             }
             
-            _trooper = Agent.GetComponent<Trooper>();
-            if (_trooper == null)
+            _trooperOld = Agent.GetComponent<TrooperOld>();
+            if (_trooperOld == null)
             {
                 Debug.LogError($"Blaster - No trooper component attached to the agent \"{Agent.name}\".", this);
                 return;
@@ -54,7 +54,7 @@ namespace KaijuSolutions.Agents.Exercises.CTF
             // Make the weapon colors match the team.
             if (lineRenderer)
             {
-                lineRenderer.startColor = lineRenderer.endColor = _trooper.TeamOne ? CaptureTheFlagManager.ColorOne : CaptureTheFlagManager.ColorTwo;
+                lineRenderer.startColor = lineRenderer.endColor = _trooperOld.TeamOne ? CaptureTheFlagManager.ColorOne : CaptureTheFlagManager.ColorTwo;
             }
         }
         
@@ -64,7 +64,7 @@ namespace KaijuSolutions.Agents.Exercises.CTF
         protected override void OnDisable()
         {
             base.OnDisable();
-            _trooper = null;
+            _trooperOld = null;
             _ammo = 0;
         }
 
@@ -96,12 +96,12 @@ namespace KaijuSolutions.Agents.Exercises.CTF
         protected override bool HandleHit(RaycastHit hit, Transform t)
         {
             // Only care about hitting other troopers.
-            if (!t.TryGetComponent(out Trooper trooper))
+            if (!t.TryGetComponent(out TrooperOld trooper))
             {
                 return false;
             }
             
-            trooper.TakeDamage(_trooper);
+            trooper.TakeDamage(_trooperOld);
             return true;
         }
     }

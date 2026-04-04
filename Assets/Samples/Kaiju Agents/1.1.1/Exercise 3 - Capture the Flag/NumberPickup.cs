@@ -43,9 +43,9 @@ namespace KaijuSolutions.Agents.Exercises.CTF
         /// <summary>
         /// What to do when interacted with.
         /// </summary>
-        /// <param name="trooper">The <see cref="Trooper"/> interracting with this.</param>
+        /// <param name="trooperOld">The <see cref="TrooperOld"/> interracting with this.</param>
         /// <returns>If the interaction was successful or not.</returns>
-        public override bool Interact([NotNull] Trooper trooper)
+        public override bool Interact([NotNull] TrooperOld trooperOld)
         {
             // Can't interact if cooling down.
             if (OnCooldown)

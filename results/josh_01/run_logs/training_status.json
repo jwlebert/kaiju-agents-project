@@ -1,0 +1,68 @@
+{
+    "map_level": {
+        "lesson_num": 5
+    },
+    "Trooper": {
+        "checkpoints": [
+            {
+                "steps": 1939967,
+                "file_path": "results/josh_01/Trooper/Trooper-1939967.onnx",
+                "reward": 3.0071681600064037,
+                "creation_time": 1775163132.375405,
+                "auxillary_file_paths": [
+                    "results/josh_01/Trooper/Trooper-1939967.pt"
+                ]
+            },
+            {
+                "steps": 1959925,
+                "file_path": "results/josh_01/Trooper/Trooper-1959925.onnx",
+                "reward": 1.2721084358575019,
+                "creation_time": 1775163152.5659688,
+                "auxillary_file_paths": [
+                    "results/josh_01/Trooper/Trooper-1959925.pt"
+                ]
+            },
+            {
+                "steps": 1979933,
+                "file_path": "results/josh_01/Trooper/Trooper-1979933.onnx",
+                "reward": 12.031235604946103,
+                "creation_time": 1775163170.6043637,
+                "auxillary_file_paths": [
+                    "results/josh_01/Trooper/Trooper-1979933.pt"
+                ]
+            },
+            {
+                "steps": 1999848,
+                "file_path": "results/josh_01/Trooper/Trooper-1999848.onnx",
+                "reward": 3.3943875098368155,
+                "creation_time": 1775163184.1985233,
+                "auxillary_file_paths": [
+                    "results/josh_01/Trooper/Trooper-1999848.pt"
+                ]
+            },
+            {
+                "steps": 2002408,
+                "file_path": "results/josh_01/Trooper/Trooper-2002408.onnx",
+                "reward": 3.3943875098368155,
+                "creation_time": 1775163185.181679,
+                "auxillary_file_paths": [
+                    "results/josh_01/Trooper/Trooper-2002408.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 2002408,
+            "file_path": "results/josh_01/Trooper.onnx",
+            "reward": 3.3943875098368155,
+            "creation_time": 1775163185.181679,
+            "auxillary_file_paths": [
+                "results/josh_01/Trooper/Trooper-2002408.pt"
+            ]
+        }
+    },
+    "metadata": {
+        "stats_format_version": "0.3.0",
+        "mlagents_version": "1.1.0",
+        "torch_version": "2.1.2+cpu"
+    }
+}

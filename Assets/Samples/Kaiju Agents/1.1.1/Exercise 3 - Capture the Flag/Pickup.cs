@@ -5,7 +5,7 @@ using UnityEngine;
 namespace KaijuSolutions.Agents.Exercises.CTF
 {
     /// <summary>
-    /// Base pickup class for <see cref="Trooper"/>s to pickup.
+    /// Base pickup class for <see cref="TrooperOld"/>s to pickup.
     /// </summary>
     [DefaultExecutionOrder(int.MinValue)]
     [DisallowMultipleComponent]
@@ -16,9 +16,9 @@ namespace KaijuSolutions.Agents.Exercises.CTF
         /// <summary>
         /// What to do when interacted with.
         /// </summary>
-        /// <param name="trooper">The <see cref="Trooper"/> interracting with this.</param>
+        /// <param name="trooperOld">The <see cref="TrooperOld"/> interracting with this.</param>
         /// <returns>If the interaction was successful or not.</returns>
-        public abstract bool Interact([NotNull] Trooper trooper);
+        public abstract bool Interact([NotNull] TrooperOld trooperOld);
         
         /// <summary>
         /// All colliders attached to this.

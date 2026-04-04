@@ -7,7 +7,7 @@ using UnityEditor;
 namespace KaijuSolutions.Agents.Exercises.CTF
 {
     /// <summary>
-    /// <see cref="Pickup"/> to restore <see cref="Trooper.Health"/>.
+    /// <see cref="Pickup"/> to restore <see cref="TrooperOld.Health"/>.
     /// </summary>
     [HelpURL("https://agents.kaijusolutions.ca/manual/capture-the-flag.html#health-pickup")]
     [AddComponentMenu("Kaiju Solutions/Agents/Exercises/Capture the Flag/Health Pickup", 34)]
