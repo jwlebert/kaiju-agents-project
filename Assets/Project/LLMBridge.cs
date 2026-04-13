@@ -5,28 +5,52 @@ using Project;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using KaijuSolutions.Agents;
+using UnityEngine.AI;
+using TMPro;
 
 public class LLMBridge : MonoBehaviour
+    
 {
     [Header("Settings")] 
     [SerializeField] private string apiKey;
     private string mainModel = "gemini-3.1-flash-lite-preview"; 
     private string fallbackModel = "gemini-2.5-flash";
     
+    [Header("UI Setup")]
+    public TMP_InputField chatInput;
+
+    [Header("Game Objects")]
+    // reference to ghost
+    public NavMeshAgent ghostAgent;
+    
+    // This is the specific function our physical button will press
+    public void OnSendButtonClicked()
+    {
+        if (chatInput != null && !string.IsNullOrEmpty(chatInput.text))
+        {
+            RequestAction(chatInput.text); // Send the text to the LLM
+            chatInput.text = "";           // Clear the text box so it's ready for the next command
+        }
+    }
+    
     void Awake()
     {
         apiKey = APIKeys.GeminiKey;
     }
     
-    // Prompt that forces the AI to behave as a bridge
-    private string systemPrompt = "You are a helpful assistant. Keep your response to exactly one sentence. User says: ";
+    // Prompt forces AI to output JSON
+    private string systemPrompt = "You are a ghost in a haunted house. " +
+                                  "The available rooms are: Kitchen, Library, and Hallway. " +
+                                  "You must respond ONLY with a JSON object in this exact format: {\"room\": \"RoomName\"}. " +
+                                  "User command: ";
         
     // Start() runs automatically when you hit Play in Unity
     void Start()
     {
-        Debug.Log("🚀 Sending test request to Gemini...");
-        // Hardcode a test question here
-        RequestAction("What is the best thing about C#?"); 
+        // Debug.Log("🚀 Sending test request to Gemini...");
+        // // Hardcode a test question here
+        // RequestAction("What is the best thing about C#?"); 
     }
         
     // This is the function the UI Button calls
@@ -95,15 +119,28 @@ public class LLMBridge : MonoBehaviour
         }
     }
     
-    // The parser
+    // The parser: extracts JSON and triggers game logic
     void ProcessResponse(string rawResponse)
     {
         GeminiResponse responseData = JsonUtility.FromJson<GeminiResponse>(rawResponse);
         
         if (responseData?.candidates != null && responseData.candidates.Count > 0)
         {
+            // Extract the text that the AI generated
             string aiText = responseData.candidates[0].content.parts[0].text;
-            Debug.Log("<color=green>AI Says:</color> " + aiText);
+            
+            // Clean it 
+            aiText = aiText.Replace("```json", "").Replace("```", "").Trim();
+            Debug.Log("<color=green>Cleaned JSON from LLM:</color> " + aiText);
+            
+            // Parse the AI's JSON into  GhostCommand 
+            GhostCommand cmd = JsonUtility.FromJson<GhostCommand>(aiText);
+            
+            // If it parsed successfully and the room isn't empty, trigger the Ghost!
+            if (cmd != null && !string.IsNullOrEmpty(cmd.room))
+            {
+                MoveGhost(cmd.room);
+            }
         }
         else
         {
@@ -112,9 +149,31 @@ public class LLMBridge : MonoBehaviour
     }
     
     // The game logic
+    void MoveGhost(string targetRoom)
+    {
+        Debug.Log("COMMAND RECEIVED: Move to " + targetRoom);
+        
+        // Find the marker gameobject
+        GameObject waypoint = GameObject.Find("POI_" + targetRoom);
+        
+        if (waypoint != null)
+        {
+            // Tell the NavMeshAgent to walk to the coordinates
+            ghostAgent.SetDestination(waypoint.transform.position);
+        }
+        else
+        {
+            Debug.LogWarning("Could not find a GameObject named POI_" + targetRoom + " in the scene!");
+        }
+    }
 }
 
 // Data structures for JSONUtility
+[Serializable]
+public class GhostCommand
+{
+    public string room;
+}
 [Serializable]
 public class GeminiResponse
 {
