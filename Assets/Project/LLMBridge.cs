@@ -8,8 +8,13 @@ using System.Collections.Generic;
 public class LLMBridge : MonoBehaviour
 {
     [Header("Settings")] 
-    public string apiKey = APIKeys.GeminiKey;
-    public string model = "gemini-2.5-flash";
+    [SerializeField] private string apiKey;
+    private string model = "gemini-2.5-flash";
+    
+    void Awake()
+    {
+        apiKey = APIKeys.GeminiKey;
+    }
     
     // Prompt that forces the AI to behave as a bridge
     private string systemPrompt = "You are a helpful assistant. Keep your response to exactly one sentence. User says: ";

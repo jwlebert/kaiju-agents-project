@@ -80,3 +80,7 @@ crashlytics-build.properties
 
 # Python Environment
 ml-env/
+
+# Ignore the file containing api keys
+Assets/Project/APIKeys.cs
+Assets/Project/APIKeys.cs.meta
