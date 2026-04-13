@@ -148,8 +148,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 75e91b52a8c1ed040941ebb37019548a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LLMBridge
-  apiKey: AIzaSyBENKkk0CGqzi4HTwDb7xN7S9E9FnlHOZI
-  model: gemini-1.5-flash
+  apiKey: 
+  model:
 --- !u!4 &55858460
 Transform:
   m_ObjectHideFlags: 0
