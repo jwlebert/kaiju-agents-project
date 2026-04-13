@@ -10,7 +10,7 @@ public class LLMBridge : MonoBehaviour
 {
     [Header("Settings")] 
     [SerializeField] private string apiKey;
-    private string mainModel = "gemini-3-flash-preview"; 
+    private string mainModel = "gemini-3.1-flash-lite-preview"; 
     private string fallbackModel = "gemini-2.5-flash";
     
     void Awake()
