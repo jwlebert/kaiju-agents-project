@@ -4,12 +4,14 @@ using System.Collections;
 using Project;
 using System;
 using System.Collections.Generic;
+using System.Text;
 
 public class LLMBridge : MonoBehaviour
 {
     [Header("Settings")] 
     [SerializeField] private string apiKey;
-    private string model = "gemini-2.5-flash";
+    private string mainModel = "gemini-3-flash-preview"; 
+    private string fallbackModel = "gemini-2.5-flash";
     
     void Awake()
     {
@@ -36,17 +38,29 @@ public class LLMBridge : MonoBehaviour
     // Network request
     IEnumerator CallGemini(string userInput)
     {
-        // Trimming inputs to prevent accidental spaces
-        string currentModel = model.Trim();
-        string currentKey = apiKey.Trim();
-        
-        // Endpoint URL 
-        string url = $"https://generativelanguage.googleapis.com/v1beta/models/{currentModel}:generateContent?key={currentKey}";
-        
+        // 1. Try the Main Model
+        Debug.Log($"[Attempt 1] Trying {mainModel}...");
+        yield return SendRequest(userInput, mainModel, (success, response) => {
+            if (success) {
+                ProcessResponse(response);
+            } else {
+                // 2. If Main fails with 503, try Fallback
+                Debug.LogWarning($"[503] {mainModel} busy. Switching to {fallbackModel}...");
+                StartCoroutine(SendRequest(userInput, fallbackModel, (fallbackSuccess, fallbackResponse) => {
+                    if (fallbackSuccess) {
+                        ProcessResponse(fallbackResponse);
+                    } else {
+                        Debug.LogError("FATAL: Both Gemini models are currently unavailable.");
+                    }
+                }));
+            }
+        });
+    }
+    IEnumerator SendRequest(string userInput, string targetModel, Action<bool, string> callback)
+    {
+        string url = $"https://generativelanguage.googleapis.com/v1beta/models/{targetModel}:generateContent?key={apiKey.Trim()}";
         string combinedPrompt = systemPrompt + userInput;
         
-        // Formatting JSON payload as the API expects it
-        // Escaping backslashes, quotes, and newlines to prevent JSON errors
         string escapedPrompt = combinedPrompt
             .Replace("\\", "\\\\")
             .Replace("\"", "\\\"")
@@ -55,26 +69,28 @@ public class LLMBridge : MonoBehaviour
             
         string jsonPayload = "{\"contents\": [{\"parts\":[{\"text\":\"" + escapedPrompt + "\"}]}]}";
         
-        // UnityWebRequest is Unity's built in tool for handling HTTP 
         using (UnityWebRequest request = new UnityWebRequest(url, "POST"))
         {
-            byte[] bodyRaw = System.Text.Encoding.UTF8.GetBytes(jsonPayload);
+            byte[] bodyRaw = Encoding.UTF8.GetBytes(jsonPayload);
             request.uploadHandler = new UploadHandlerRaw(bodyRaw);
             request.downloadHandler = new DownloadHandlerBuffer();
             request.SetRequestHeader("Content-Type", "application/json");
-            yield return request.SendWebRequest(); // pause function here, render next frame and come back when server replies
+
+            yield return request.SendWebRequest();
 
             if (request.result == UnityWebRequest.Result.Success)
             {
-                // Pass the JSON string to the parser
-                ProcessResponse(request.downloadHandler.text);
+                callback(true, request.downloadHandler.text);
+            }
+            else if (request.responseCode == 503)
+            {
+                // Return false so the fallback logic triggers
+                callback(false, null);
             }
             else
             {
-                Debug.LogError("API Error: " + request.error);
-                Debug.LogError("Response Code: " + request.responseCode);
-                Debug.LogError("Response Body: " + request.downloadHandler.text);
-                Debug.LogError("Requested URL: " + url);
+                Debug.LogError($"Hard Error on {targetModel}: {request.error}");
+                callback(false, null);
             }
         }
     }
@@ -82,20 +98,16 @@ public class LLMBridge : MonoBehaviour
     // The parser
     void ProcessResponse(string rawResponse)
     {
-        // Convert JSON to C# objects
         GeminiResponse responseData = JsonUtility.FromJson<GeminiResponse>(rawResponse);
         
-        // safety check to prevent null reference errors
-        if (responseData != null && responseData.candidates != null && responseData.candidates.Count > 0)
+        if (responseData?.candidates != null && responseData.candidates.Count > 0)
         {
-            // Extract just the string
             string aiText = responseData.candidates[0].content.parts[0].text;
-        
-            Debug.Log("AI Says: " + aiText);
+            Debug.Log("<color=green>AI Says:</color> " + aiText);
         }
         else
         {
-            Debug.LogError("Failed to parse Gemini response or no candidates returned.");
+            Debug.LogError("Failed to parse Gemini response.");
         }
     }
     
